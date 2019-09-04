@@ -1,0 +1,20 @@
+---
+- target:
+    region: east
+  settings:
+    sip: true
+- target:
+    service: ringswitch
+  settings:
+    logging:
+      level: debug
+- target:
+    service: fe
+  settings:
+    reject_tls_1_0: true
+- target: true
+  settings:
+    logging:
+      level: info
+      streams:
+        CallSimulator: primes
