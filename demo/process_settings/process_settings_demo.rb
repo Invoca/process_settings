@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require 'contextual_logger'
-require 'contextual_logger/process_settings_monitor'
+require 'process_settings'
+require 'process_settings/process_settings_monitor'
 require_relative 'config/process_settings_config'
-require 'contextual_logger/stream_logger'
-require 'contextual_logger/stream_logger_source'
+require 'process_settings/stream_logger'
+require 'process_settings/stream_logger_source'
 require 'logger'
 
 
@@ -17,12 +17,12 @@ static_context = ARGV.reduce({}) do |hash, arg|
   hash
 end
 
-ContextualLogger::ProcessSettingsMonitor.instance.static_context = static_context
+ProcessSettings::ProcessSettingsMonitor.instance.static_context = static_context
 
 static_context_symbols = static_context.reduce({}) { |h, (k, v)| h[k.to_sym] = v; h }
 
 class CallSimulator
-  include ContextualLogger::StreamLoggerSource
+  include ProcessSettings::StreamLoggerSource
 
   attr_reader :logger
 
@@ -36,7 +36,7 @@ class CallSimulator
   def run!
     counter = 0
     loop do
-      puts "\nSettings:\n#{ContextualLogger::TargetedProcessSettings.new(ContextualLogger::ProcessSettingsMonitor.instance.current_statically_targeted_settings).to_yaml}\n"
+      puts "\nSettings:\n#{ProcessSettings::TargetedProcessSettings.new(ProcessSettings::ProcessSettingsMonitor.instance.current_statically_targeted_settings).to_yaml}\n"
 
       from = ['8056807000', '8056487708'][counter % 2]
 
@@ -49,7 +49,7 @@ class CallSimulator
   end
 
   def receive_call(from)
-    if ContextualLogger::ProcessSettingsMonitor.instance.targeted_value('reject_incoming_calls', @logging_context)
+    if ProcessSettings::ProcessSettingsMonitor.instance.targeted_value('reject_incoming_calls', @logging_context)
       @logger.info("REJECTED call from #{from}", @logging_context)
     else
       @logger.info("received call from #{from}", @logging_context)
@@ -84,9 +84,9 @@ end
 
 
 raw_logger = Logger.new(STDOUT)
-logger = ContextualLogger::StreamLogger.new(ContextualLogger.new(raw_logger))
+logger = ProcessSettings::StreamLogger.new(ProcessSettings.new(raw_logger))
 
-ContextualLogger::ProcessSettingsMonitor.instance.on_change do |process_monitor|
+ProcessSettings::ProcessSettingsMonitor.instance.on_change do |process_monitor|
   if (level_string = process_monitor.targeted_value({'logging' => 'level'}, {}))
     puts "\n******* #{level_string} ******"
 
