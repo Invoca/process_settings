@@ -24,10 +24,10 @@ to the existing issue instead.
 <!--
 Code snippet to reproduce
 ``` ruby
-require 'contextual_logger'
+require 'process_settings'
 require 'logger'
 
-logger = ContextualLogger.new(Logger.new(STDOUT))
+logger = ProcessSettings.new(Logger.new(STDOUT))
 ...
 ```
 -->
