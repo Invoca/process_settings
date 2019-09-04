@@ -1,0 +1,6 @@
+---
+settings:
+  honeypot:
+    max_recording_seconds: 600
+    answer_odds: 100
+    status_change_min_days: 10

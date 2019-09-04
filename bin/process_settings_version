@@ -1,0 +1,17 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# Pulls the version from a combined_process_settings.yml file and prints it on STDOUT.
+
+require_relative '../lib/process_settings/targeted_settings'
+
+PROGRAM_NAME = File.basename($PROGRAM_NAME)
+
+unless ARGV.size == 1
+  puts "usage: #{PROGRAM_NAME} <path-to-combined_process_settings.yml>"
+  exit 1
+end
+
+targeted_settings = ProcessSettings::TargetedSettings.from_file(ARGV[0], only_meta: true)
+
+puts targeted_settings.version

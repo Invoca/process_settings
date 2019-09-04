@@ -1,0 +1,5 @@
+---
+target:
+  region: 'east'
+settings:
+  incoming_requests: 0

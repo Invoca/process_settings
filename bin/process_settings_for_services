@@ -1,0 +1,116 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+#TODO: I need to add a test for this file. Probably by moving the algorithm into methods that are tested and leaving
+#TODO: this as a command line shell. -Colin
+
+require_relative '../lib/process_settings/targeted_settings'
+require_relative '../lib/process_settings/util'
+require 'yaml'
+require 'set'
+
+CORRELATION_KEYS = [
+  ['node'],
+  ['app'],
+  ['region'],
+  ['app', 'node'],
+  ['app', 'region'],
+  ['deployGroup'],
+  ['app', 'deployGroup']
+].freeze
+
+PROGRAM_NAME = File.basename($PROGRAM_NAME)
+
+def parse_options(argv)
+  if argv.size == 3
+    argv
+  else
+    warn "usage: #{PROGRAM_NAME} <path-to-flat_services.yml> <path-to-combined_process_settings-OLD.yml> <path-to-combined_process_settings-NEW.yml>"
+    exit(1)
+  end
+end
+
+
+#
+# main
+#
+path_to_flat_services_yml, path_to_combined_process_settings_yml_old, path_to_combined_process_settings_yml_new = parse_options(ARGV.dup)
+
+flat_services_yml_json_doc     = YAML.load_file(path_to_flat_services_yml)
+combined_process_settings_yml_json_doc_old = YAML.load_file(path_to_combined_process_settings_yml_old)
+combined_process_settings_yml_json_doc_new = YAML.load_file(path_to_combined_process_settings_yml_new)
+
+targeted_process_settings_old = ProcessSettings::TargetedSettings.from_array(combined_process_settings_yml_json_doc_old)
+targeted_process_settings_new = ProcessSettings::TargetedSettings.from_array(combined_process_settings_yml_json_doc_new)
+
+flat_services_with_targeted_settings = Hash.new { |h, service| h[service] = Hash.new { |h2, node| h2[node] = [] } }
+
+correlation_scorecard = Hash.new { |h, k| h[k] = { false => Set.new, true => Set.new } }
+
+flat_services_yml_json_doc.each do |service, nodes|
+  nodes.each do |node, pods|
+    pods.each_with_index do |pod_context, pod_index|
+      node_attrs = pod_context.dup
+      node_attrs['service']   = service
+      node_attrs['node']      = node
+      node_attrs['pod_index'] = pod_index if pods.size > 1
+      node_targeted_process_settings_old = targeted_process_settings_old.with_static_context(pod_context)
+      node_targeted_process_settings_new = targeted_process_settings_new.with_static_context(pod_context)
+
+      flat_services_with_targeted_settings[service][node] << node_attrs
+
+      if (changed = node_targeted_process_settings_old != node_targeted_process_settings_new)
+        node_old =  node_targeted_process_settings_old.map do |node_targeted_process_setting|
+                      {
+                        'target'            => node_targeted_process_setting.target,
+                        "process_settings"  => node_targeted_process_setting.process_settings
+                      }
+                    end
+        node_new =  node_targeted_process_settings_new.map do |node_targeted_process_setting|
+                      {
+                        'target'            => node_targeted_process_setting.target,
+                        "process_settings"  => node_targeted_process_setting.process_settings
+                      }
+                    end
+
+        changes_hash = node_attrs['__changes__'] = {
+          'old' => node_old,
+          'new' => node_new
+        }
+        changes_hash['pod_index'] = pod_index if pods.size > 1
+      end
+
+      CORRELATION_KEYS.each do |correlation_key|
+        scorecard = correlation_scorecard[correlation_key]
+
+        correlation_key_values = correlation_key.map { |key| { key => node_attrs[key] } }
+        scorecard[changed] << correlation_key_values
+        if changed
+          scorecard['__changes__'] = changes_hash
+          scorecard['__pods__'] ||= 0
+          scorecard['__pods__'] += 1
+        end
+      end
+    end
+  end
+end
+
+if correlation_scorecard.any? { |_correllation_key, scorecard| scorecard[true].any? }
+  perfect_correlations = correlation_scorecard.select do |_correllation_key, scorecard|
+    (scorecard[false] & scorecard[true]).empty?
+  end
+
+  if (best_correlation = perfect_correlations.min_by { |_correllation_key, scorecard| scorecard[true].size })
+    puts "#{best_correlation.last['__pods__']} pods"
+    puts best_correlation.last[true].to_a.first.to_yaml
+    puts "Diff:"
+    system("rm -f tmp/old.yml tmp/new.yml")
+    File.write("tmp/old.yml", ProcessSettings.plain_hash(best_correlation.last['__changes__']['old']).to_yaml)
+    File.write("tmp/new.yml", ProcessSettings.plain_hash(best_correlation.last['__changes__']['new']).to_yaml)
+    STDOUT << `diff -c tmp/old.yml tmp/new.yml | sed '1,3d'`
+  else
+    puts "No best correlation found?"
+  end
+end
+
+# puts flat_services_with_targeted_settings.to_yaml

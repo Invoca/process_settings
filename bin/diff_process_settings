@@ -1,0 +1,39 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# Diffs two combined_process_settings.yml files. Skips over the meta-data (version) at the END.
+# A filename of - means STDIN.
+
+require 'fileutils'
+
+PROGRAM_NAME = File.basename($PROGRAM_NAME)
+
+unless ARGV.size == 2
+  puts "usage: #{PROGRAM_NAME} <path-to-combined_process_settings-A.yml> <path-to-combined_process_settings-B.yml>"
+  exit 1
+end
+
+path_to_combine_process_settings = ARGV[0]
+
+input_files =
+    ARGV.map do |path|
+      if path == '-'
+        ''
+      else
+        unless File.exists?(path)
+          warn "#{path} not found--must be a path to combined_process_settings.yml"
+          exit 1
+        end
+        "< #{path}"
+      end
+    end
+
+system("rm -f tmp/combined_process_settings-A.yml tmp/combined_process_settings-B.yml")
+
+# remove the meta-data from the end
+system("sed '/^- meta:$/,$d' #{input_files[0]} > tmp/combined_process_settings-A.yml")
+system("sed '/^- meta:$/,$d' #{input_files[1]} > tmp/combined_process_settings-B.yml")
+
+system("diff -c tmp/combined_process_settings-A.yml tmp/combined_process_settings-B.yml | sed '1,3d'")
+
+system("rm -f tmp/combined_process_settings-A.yml tmp/combined_process_settings-B.yml")
