@@ -17,8 +17,8 @@ module ProcessSettings
 
     def to_json_doc
       {
-        "target"    => @target.json_doc,
-        "settings"  => @process_settings.json_doc
+        "target" => @target.json_doc,
+        "settings" => @process_settings.json_doc
       }
     end
 

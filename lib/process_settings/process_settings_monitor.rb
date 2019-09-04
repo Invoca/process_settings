@@ -11,7 +11,7 @@ module ProcessSettings
     DEFAULT_MIN_POLLING_SECONDS = 5
 
     def initialize(file_path, min_polling_seconds: DEFAULT_MIN_POLLING_SECONDS)
-      @file_path       = file_path
+      @file_path = file_path
       @min_polling_seconds = min_polling_seconds
       @on_change_callbacks = []
     end
@@ -53,7 +53,6 @@ module ProcessSettings
         end
         result
       end
-
     end
 
     @min_polling_seconds = DEFAULT_MIN_POLLING_SECONDS
@@ -78,7 +77,7 @@ module ProcessSettings
         begin
           callback.call(self)
         rescue => ex
-          STDERR.puts("notify_on_change rescued exception:\n#{ex.class}: #{ex.message}")
+          warn("notify_on_change rescued exception:\n#{ex.class}: #{ex.message}")
         end
       end
     end

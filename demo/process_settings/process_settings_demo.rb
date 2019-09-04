@@ -7,9 +7,6 @@ require 'process_settings/stream_logger'
 require 'process_settings/stream_logger_source'
 require 'logger'
 
-
-
-
 static_context = ARGV.reduce({}) do |hash, arg|
   key, value = arg.split('=', 2)
   value or raise ArgumentError, "args must be key=value (got #{arg.inspect})"
@@ -40,7 +37,7 @@ class CallSimulator
 
       from = ['8056807000', '8056487708'][counter % 2]
 
-      @logging_context = @static_context.merge(cdr: { 'from' => from, 'to' => '8005554321'})
+      @logging_context = @static_context.merge(cdr: { 'from' => from, 'to' => '8005554321' })
 
       receive_call(from)
       sleep(5)
@@ -54,7 +51,7 @@ class CallSimulator
     else
       @logger.info("received call from #{from}", @logging_context)
 
-      @logger.debug("MORE DETAIL ON RECEIVED CALL\n#{".... :: "*300}", @logging_context)
+      @logger.debug("MORE DETAIL ON RECEIVED CALL\n#{'.... :: ' * 300}", @logging_context)
 
       log_stream(:primes, @logging_context) do |max|
         max = max.to_i.nonzero? || 1000
@@ -73,7 +70,7 @@ class CallSimulator
     primes.each do |p|
       p or next
 
-      (p_squared = p*p) <= max or break
+      (p_squared = p * p) <= max or break
 
       p_squared.step(max, p) { |m| primes[m] = nil }
     end
@@ -82,12 +79,11 @@ class CallSimulator
   end
 end
 
-
 raw_logger = Logger.new(STDOUT)
 logger = ProcessSettings::StreamLogger.new(ProcessSettings.new(raw_logger))
 
 ProcessSettings::ProcessSettingsMonitor.instance.on_change do |process_monitor|
-  if (level_string = process_monitor.targeted_value({'logging' => 'level'}, {}))
+  if (level_string = process_monitor.targeted_value({ 'logging' => 'level' }, {}))
     puts "\n******* #{level_string} ******"
 
     logger.level = level_string

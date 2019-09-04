@@ -48,11 +48,11 @@ describe ProcessSettings::TargetAndProcessSettings do
   private
 
   def sample_target
-    @target ||= ProcessSettings::ProcessTarget.new('region' => 'east')
+    @sample_target ||= ProcessSettings::ProcessTarget.new('region' => 'east')
   end
 
   def sample_process_settings
-    @process_settings ||= ProcessSettings::ProcessSettings.new("carrier" => "AT&T")
+    @sample_process_settings ||= ProcessSettings::ProcessSettings.new("carrier" => "AT&T")
   end
 
   def sample_target_and_process_settings

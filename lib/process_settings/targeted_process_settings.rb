@@ -2,7 +2,6 @@
 
 require_relative 'target_and_process_settings'
 
-
 module ProcessSettings
   class TargetedProcessSettings
     TARGET_KEY_NAME   = "target"
@@ -34,15 +33,15 @@ module ProcessSettings
         settings_json_array.is_a?(Array) or raise ArgumentError, "settings_json_array must be an Array of Hashes; got #{settings_json_array.inspect}"
 
         targeted_settings_array =
-            settings_json_array.map do |json_hash|
-              json_hash.is_a?(Hash) or raise ArgumentError, "settings_json_array entries must each be a hash Hashes; got #{json_hash.inspect}"
-              target_json_hash   = json_hash[TARGET_KEY_NAME]
-              settings_json_hash = json_hash[SETTINGS_KEY_NAME]
-              target_json_hash && settings_json_hash && (remaining_keys = json_hash.keys - KEY_NAMES).empty? or
-                raise ArgumentError, "settings_json_array entries must each have exactly these keys: #{KEY_NAMES.inspect}; got #{json_hash.inspect}"
+          settings_json_array.map do |json_hash|
+            json_hash.is_a?(Hash) or raise ArgumentError, "settings_json_array entries must each be a hash Hashes; got #{json_hash.inspect}"
+            target_json_hash   = json_hash[TARGET_KEY_NAME]
+            settings_json_hash = json_hash[SETTINGS_KEY_NAME]
+            target_json_hash && settings_json_hash && (extra_keys = json_hash.keys - KEY_NAMES).empty? or
+              raise ArgumentError, "settings_json_array entries must each have exactly these keys: #{KEY_NAMES.inspect}; got these extras: #{extra_keys.inspect}"
 
-              TargetAndProcessSettings.from_json(target_json_hash, settings_json_hash)
-            end
+            TargetAndProcessSettings.from_json(target_json_hash, settings_json_hash)
+          end
 
         new(targeted_settings_array)
       end

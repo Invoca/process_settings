@@ -118,7 +118,7 @@ describe ProcessSettings::ProcessSettingsMonitor do
       process_monitor.static_context = { 'region' => 'east' }
 
       result = process_monitor.current_statically_targeted_settings
-      settings = result.map { |settings| settings.process_settings.json_doc }
+      settings = result.map { |s| s.process_settings.json_doc }
 
       expect(settings).to eq([{ 'reject_incoming_calls' => true }, { 'sip' => true }])
     end
@@ -128,7 +128,7 @@ describe ProcessSettings::ProcessSettingsMonitor do
       process_monitor.static_context = { 'region' => 'west' }
 
       result = process_monitor.current_statically_targeted_settings
-      settings = result.map { |settings| settings.process_settings.json_doc }
+      settings = result.map { |s| s.process_settings.json_doc }
 
       expect(settings).to eq([{ 'sip' => true }])
     end

@@ -63,16 +63,16 @@ describe ProcessSettings::HashPath do
       end
 
       it "should return an array index value at a key" do
-        result = described_class.hash_at_path({ key: [:value0, :value1, :value2] }, { key: 2 })
+        result = described_class.hash_at_path({ key: [:value0, :value1, :value2] }, key: 2)
         expect(result).to eq(:value2)
 
-        result = described_class.hash_at_path({ key: [:value0, :value1, :value2] }, { key: 2 })
+        result = described_class.hash_at_path({ key: [:value0, :value1, :value2] }, key: 2)
         expect(result).to eq(:value2)
       end
 
       it "should raise an exception with multiple keys in the path" do
         expect do
-          described_class.hash_at_path({ key: :value }, { key0: 0, key1: 1 })
+          described_class.hash_at_path({ key: :value }, key0: 0, key1: 1)
         end.to raise_exception(ArgumentError, /path may have at most 1 key/)
       end
     end
@@ -88,18 +88,18 @@ describe ProcessSettings::HashPath do
 
       it "should set a new key 2 levels down" do
         result = described_class.set_hash_at_path({ key: { subkey: :value } }, {})
-        expect(result).to eq(key: { subkey: :value } )
+        expect(result).to eq(key: { subkey: :value })
 
         result = described_class.set_hash_at_path({ "key" => { "subkey" => "value" } }, {})
         expect(result).to eq("key" => { "subkey" => "value" })
       end
 
       it "should merge a new key" do
-        result = described_class.set_hash_at_path({ key: :value }, { other_key: :other_value })
+        result = described_class.set_hash_at_path({ key: :value }, other_key: :other_value)
         expect(result).to eq(key: :value, other_key: :other_value)
 
-        result = described_class.set_hash_at_path({ "key" => "value" }, { "other_key" => "other_value" })
-        expect(result).to eq("key" => "value", "other_key" => "other_value" )
+        result = described_class.set_hash_at_path({ "key" => "value" }, "other_key" => "other_value")
+        expect(result).to eq("key" => "value", "other_key" => "other_value")
       end
 
       it "should raise an exception if not a hash" do

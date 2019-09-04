@@ -116,7 +116,7 @@ describe ProcessSettings::ProcessTarget do
       process_target = described_class.new(target_hash)
 
       expect(process_target.target_key_matches?(context_hash)).to be_truthy
-      expect(process_target.target_key_matches?({ })).to be_falsey
+      expect(process_target.target_key_matches?({})).to be_falsey
     end
 
     it "should match an array of values on truthiness" do

@@ -36,7 +36,7 @@ module ProcessSettings
           end
         when Hash
           result = target_value.reduce({}) do |hash, (key, value)|
-            if (static_context_hash.has_key?(key))
+            if static_context_hash.has_key?(key)
               context_at_key = static_context_hash[key]
               sub_value = with_static_context(value, context_at_key)
               case sub_value
