@@ -9,7 +9,8 @@ Gem::Specification.new do |spec|
   spec.description = 'Targed process settings that dynamically reload without restarting the process'
   spec.authors     = ['Colin Kelley']
   spec.email       = 'colin@invoca.com'
-  spec.files       = Dir['lib/**/*']
+  spec.files       = Dir.glob("{bin,lib}/**/*") + %w[README.rdoc LICENCE]
+  spec.executables = ["combine_process_settings.rb"]
   spec.homepage    = 'https://rubygems.org/gems/process_settings'
   spec.metadata    = { 'source_code_uri' => 'https://github.com/Invoca/process_settings' }
 

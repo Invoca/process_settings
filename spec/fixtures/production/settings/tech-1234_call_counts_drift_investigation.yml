@@ -1,0 +1,6 @@
+---
+target:
+  app: 'ccn'
+settings:
+  call_counts:
+    complete_sync_seconds: 60
