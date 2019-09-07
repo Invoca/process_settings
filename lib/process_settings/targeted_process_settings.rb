@@ -29,18 +29,18 @@ module ProcessSettings
     end
 
     class << self
-      def from_json(settings_json_array)
-        settings_json_array.is_a?(Array) or raise ArgumentError, "settings_json_array must be an Array of Hashes; got #{settings_json_array.inspect}"
+      def from_json(settings_array)
+        settings_array.is_a?(Array) or raise ArgumentError, "settings_array must be an Array of Hashes; got #{settings_array.inspect}"
 
         targeted_settings_array =
-          settings_json_array.map do |json_hash|
-            json_hash.is_a?(Hash) or raise ArgumentError, "settings_json_array entries must each be a hash Hashes; got #{json_hash.inspect}"
-            target_json_hash   = json_hash[TARGET_KEY_NAME]
-            settings_json_hash = json_hash[SETTINGS_KEY_NAME]
-            target_json_hash && settings_json_hash && (extra_keys = json_hash.keys - KEY_NAMES).empty? or
-              raise ArgumentError, "settings_json_array entries must each have exactly these keys: #{KEY_NAMES.inspect}; got these extras: #{extra_keys.inspect}"
+          settings_array.map do |settings_hash|
+            settings_hash.is_a?(Hash) or raise ArgumentError, "settings_array entries must each be a Hash; got #{settings_hash.inspect}"
+            target_settings_hash   = settings_hash[TARGET_KEY_NAME]
+            settings_settings_hash = settings_hash[SETTINGS_KEY_NAME]
+            target_settings_hash && settings_settings_hash && (extra_keys = settings_hash.keys - KEY_NAMES).empty? or
+              raise ArgumentError, "settings_array entries must each have exactly these keys: #{KEY_NAMES.inspect}; got these extras: #{extra_keys.inspect}"
 
-            TargetAndProcessSettings.from_json(target_json_hash, settings_json_hash)
+            TargetAndProcessSettings.from_json(target_settings_hash, settings_settings_hash)
           end
 
         new(targeted_settings_array)
@@ -64,7 +64,7 @@ module ProcessSettings
 
     def settings_with_static_context(static_context_hash)
       result_settings =
-        @settings_json_array.map do |target_and_settings|
+        @settings_array.map do |target_and_settings|
           if (new_target = target.with_static_context(static_context_hash))
             TargetAndProcessSettings.new(new_target, target_and_settings.settings)
           end
