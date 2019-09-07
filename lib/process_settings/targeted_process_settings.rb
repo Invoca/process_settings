@@ -12,7 +12,7 @@ module ProcessSettings
 
     def initialize(targeted_settings_array)
       targeted_settings_array.is_a?(Array) or raise ArgumentError, "targeted_settings_array must be an Array of Hashes; got #{targeted_settings_array.inspect}"
-      targeted_settings_array.all? do |target_and_process_settings|
+      targeted_settings_array.each do |target_and_process_settings|
         target_and_process_settings.is_a?(TargetAndProcessSettings) or
           raise ArgumentError, "targeted_settings_array entries must each be a TargetAndProcessSettings; got #{target_and_process_settings.inspect}"
       end
