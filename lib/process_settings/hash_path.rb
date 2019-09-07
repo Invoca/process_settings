@@ -12,8 +12,7 @@ module ProcessSettings
 
     class << self
       def hash_at_path(hash, path)
-        case path
-        when Hash
+        if path.is_a?(Hash)
           case path.size
           when 0
             hash
@@ -32,23 +31,19 @@ module ProcessSettings
       end
 
       def set_hash_at_path(hash, path)
-        case path
-        when Hash
-          case path.size
-          when 0
-            hash
-          when 1
-            path_key, path_value = path.first
-            if path_value.is_a?(Hash)
-              set_hash_at_path(remaining_hash, remaining_path)
-            else
-              hash[path_key] = path_value
-            end
+        path.is_a?(Hash) or raise ArgumentError, "got unexpected non-hash value (#{hash[path]}"
+        case path.size
+        when 0
+          hash
+        when 1
+          path_key, path_value = path.first
+          if path_value.is_a?(Hash)
+            set_hash_at_path(remaining_hash, remaining_path)
           else
-            raise ArgumentError, "path may have at most 1 key (got #{path.inspect})"
+            hash[path_key] = path_value
           end
         else
-          raise ArgumentError, "got unexpected non-hash value (#{hash[path]}"
+          raise ArgumentError, "path may have at most 1 key (got #{path.inspect})"
         end
         hash
       end

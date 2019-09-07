@@ -11,8 +11,7 @@ module ProcessSettings
     def initialize(json_doc)
       json_doc.is_a?(Hash) or raise ArgumentError, "ProcessSettings must be a Hash; got #{json_doc.inspect}"
 
-      @json_doc = json_doc
-      @json_doc_with_hash_path = HashWithHashPath[json_doc]
+      @json_doc = HashWithHashPath[json_doc]
     end
 
     def <=>(rhs)
@@ -24,7 +23,7 @@ module ProcessSettings
     end
 
     def [](key)
-      @json_doc_with_hash_path[key]
+      @json_doc[key]
     end
   end
 end
