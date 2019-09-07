@@ -4,9 +4,10 @@ source 'http://rubygems.org'
 
 gemspec
 
-gem 'coveralls', require: false
+gem 'monotonic_tick_count', '~> 0.2'
 
 group :development do
+  gem 'coveralls', require: false
   gem 'activesupport'
   gem 'bump', '~> 0.6.1'
   gem 'pry'

@@ -14,4 +14,5 @@ Gem::Specification.new do |spec|
   spec.metadata    = { 'source_code_uri' => 'https://github.com/Invoca/process_settings' }
 
   spec.add_runtime_dependency 'json'
+  spec.add_runtime_dependency 'monotonic_tick_count'
 end

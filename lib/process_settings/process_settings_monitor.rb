@@ -2,6 +2,7 @@
 
 require_relative 'targeted_process_settings'
 require 'psych'
+require 'monotonic_tick_count'
 
 module ProcessSettings
   class ProcessSettingsMonitor
@@ -83,7 +84,7 @@ module ProcessSettings
     end
 
     def now
-      Time.now
+      MonotonicTickCount.now
     end
 
     def poll_for_changes?(last_looked_for_changes, time_now, min_polling_seconds)
