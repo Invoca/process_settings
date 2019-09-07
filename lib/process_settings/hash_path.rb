@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 module ProcessSettings
+  # Module for mixing into `Hash` or other class with `[]` that you want to be able to index
+  # with a hash path like:  hash['app.service_name' => 'frontend']
   module HashPath
     def [](key)
       if key.is_a?(Hash)
