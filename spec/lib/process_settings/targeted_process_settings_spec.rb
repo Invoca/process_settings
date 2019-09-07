@@ -16,7 +16,7 @@ describe ProcessSettings::TargetedProcessSettings do
 
   describe "target and process_settings" do
     it "should delegate" do
-      target_and_process_settings = described_class.from_json([TARGET_AND_SETTINGS])
+      target_and_process_settings = described_class.from_array([TARGET_AND_SETTINGS])
 
       target = target_and_process_settings.targeted_settings_array.first.target
       expect(target.json_doc).to eq(true)
@@ -29,7 +29,7 @@ describe ProcessSettings::TargetedProcessSettings do
   end
 
   it "should allow hash key access to settings" do
-    target_and_process_settings = described_class.from_json([TARGET_AND_SETTINGS])
+    target_and_process_settings = described_class.from_array([TARGET_AND_SETTINGS])
 
     result = target_and_process_settings.targeted_settings_array.first.process_settings['honeypot' => 'promo_number']
 

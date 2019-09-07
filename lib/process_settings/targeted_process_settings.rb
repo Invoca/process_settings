@@ -29,7 +29,7 @@ module ProcessSettings
     end
 
     class << self
-      def from_json(settings_array)
+      def from_array(settings_array)
         settings_array.is_a?(Array) or raise ArgumentError, "settings_array must be an Array of Hashes; got #{settings_array.inspect}"
 
         targeted_settings_array =
@@ -40,7 +40,7 @@ module ProcessSettings
             target_settings_hash && settings_settings_hash && (extra_keys = settings_hash.keys - KEY_NAMES).empty? or
               raise ArgumentError, "settings_array entries must each have exactly these keys: #{KEY_NAMES.inspect}; got these extras: #{extra_keys.inspect}"
 
-            TargetAndProcessSettings.from_json(target_settings_hash, settings_settings_hash)
+            TargetAndProcessSettings.from_json_docs(target_settings_hash, settings_settings_hash)
           end
 
         new(targeted_settings_array)

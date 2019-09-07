@@ -106,7 +106,7 @@ module ProcessSettings
 
     def load_file(file_path)
       json_doc = Psych.load_file(file_path)
-      TargetedProcessSettings.from_json(json_doc)
+      TargetedProcessSettings.from_array(json_doc)
     end
   end
 end

@@ -23,7 +23,7 @@ module ProcessSettings
     end
 
     class << self
-      def from_json(target_json_doc, settings_json_doc)
+      def from_json_docs(target_json_doc, settings_json_doc)
         target_json_doc = ProcessTarget.new(target_json_doc)
 
         process_settings = ProcessSettings.new(settings_json_doc)
