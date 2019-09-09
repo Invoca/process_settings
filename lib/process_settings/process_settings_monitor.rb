@@ -11,16 +11,23 @@ module ProcessSettings
 
     DEFAULT_MIN_POLLING_SECONDS = 5
 
-    def initialize(file_path, min_polling_seconds: DEFAULT_MIN_POLLING_SECONDS)
+    def initialize(file_path, min_polling_seconds: nil)
       @file_path = file_path
-      @min_polling_seconds = min_polling_seconds
+      @min_polling_seconds = min_polling_seconds || self.class.min_polling_seconds
       @on_change_callbacks = []
     end
 
+    # Registers the given callback block to be called when settings change.
+    # This needs to be a quick method because it will be called on a borrowed thread (whichever polling code
+    # noticed a change). Note that this means there is no guarantee for how soon it will be called after settings
+    # change.
     def on_change(&callback)
       @on_change_callbacks << callback
     end
 
+    # Returns the most recent settings from disk.
+    # The disk file's mtime is polled no more frequently than DEFAULT_MIN_POLLING_SECONDS. If the mtime has changed,
+    # the settings are reloaded from disk.
     def untargeted_settings
       time_now = now
       if poll_for_changes?(@last_looked_for_changes, time_now, @min_polling_seconds)
@@ -83,6 +90,7 @@ module ProcessSettings
       end
     end
 
+    # Returns a clock suitable for relative time comparisons. Wrapped in a method for easy stubbing.
     def now
       MonotonicTickCount.now
     end

@@ -15,15 +15,33 @@ describe ProcessSettings::ProcessSettingsMonitor do
   EMPTY_SAMPLE_SETTINGS_YAML = EMPTY_SAMPLE_SETTINGS.to_yaml
 
   describe "#initialize" do
-    it "should default min_polling_seconds to 5" do
+    it "should default min_polling_seconds to 5 when min_polling_seconds not passed" do
       process_monitor = described_class.new(SETTINGS_PATH)
       expect(process_monitor.instance_variable_get(:@min_polling_seconds)).to eq(5)
+    end
+
+    it "should default min_polling_seconds to 5 when min_polling_seconds is nil" do
+      process_monitor = described_class.new(SETTINGS_PATH, min_polling_seconds: nil)
+      expect(process_monitor.instance_variable_get(:@min_polling_seconds)).to eq(5)
+    end
+
+    it "should default min_polling_seconds to global default when min_polling_seconds not passed" do
+      described_class.min_polling_seconds = 20
+      process_monitor = described_class.new(SETTINGS_PATH)
+      expect(process_monitor.instance_variable_get(:@min_polling_seconds)).to eq(20)
+    end
+
+    it "should default min_polling_seconds to global default when min_polling_seconds is nil" do
+      described_class.min_polling_seconds = 20
+      process_monitor = described_class.new(SETTINGS_PATH, min_polling_seconds: nil)
+      expect(process_monitor.instance_variable_get(:@min_polling_seconds)).to eq(20)
     end
   end
 
   describe ".instance method" do
     before do
       described_class.clear_instance
+      described_class.min_polling_seconds = 5
     end
 
     it "should raise an exception if not configured" do
