@@ -4,8 +4,6 @@ source 'http://rubygems.org'
 
 gemspec
 
-gem 'monotonic_tick_count', '~> 0.2'
-
 group :development do
   gem 'coveralls', require: false
   gem 'activesupport'

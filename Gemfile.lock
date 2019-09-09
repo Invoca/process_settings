@@ -90,7 +90,6 @@ DEPENDENCIES
   activesupport
   bump (~> 0.6.1)
   coveralls
-  monotonic_tick_count (~> 0.2)
   process_settings!
   pry
   rake
