@@ -33,7 +33,7 @@ class CallSimulator
   def run!
     counter = 0
     loop do
-      puts "\nSettings:\n#{ProcessSettings::TargetedProcessSettings.new(ProcessSettings::ProcessSettingsMonitor.instance.current_statically_targeted_settings).to_yaml}\n"
+      puts "\nSettings:\n#{ProcessSettings::TargetedProcessSettings.new(ProcessSettings::ProcessSettingsMonitor.instance.statically_targeted_settings).to_yaml}\n"
 
       from = ['8056807000', '8056487708'][counter % 2]
 

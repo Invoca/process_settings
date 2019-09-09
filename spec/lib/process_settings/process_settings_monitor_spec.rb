@@ -71,7 +71,7 @@ describe ProcessSettings::ProcessSettingsMonitor do
 
     it "should read from disk the first time" do
       process_monitor = described_class.new(SETTINGS_PATH)
-      matching_settings = process_monitor.current_untargeted_settings.matching_settings({})
+      matching_settings = process_monitor.untargeted_settings.matching_settings({})
       expect(matching_settings.size).to eq(1)
       expect(matching_settings.first.target.json_doc).to eq(SAMPLE_SETTINGS.first['target'])
       expect(matching_settings.first.process_settings.instance_variable_get(:@json_doc)).to eq(SAMPLE_SETTINGS.first['settings'])
@@ -79,19 +79,19 @@ describe ProcessSettings::ProcessSettingsMonitor do
 
     it "should not re-read from disk immediately" do
       process_monitor = described_class.new(SETTINGS_PATH)
-      matching_settings = process_monitor.current_untargeted_settings.matching_settings({})
+      matching_settings = process_monitor.untargeted_settings.matching_settings({})
       expect(matching_settings.size).to eq(1)
       expect(matching_settings.first.process_settings.json_doc).to eq(SAMPLE_SETTINGS.first['settings'])
 
       File.write(SETTINGS_PATH, EMPTY_SAMPLE_SETTINGS_YAML)
 
-      matching_settings = process_monitor.current_untargeted_settings.matching_settings({})
+      matching_settings = process_monitor.untargeted_settings.matching_settings({})
       expect(matching_settings.first.process_settings.json_doc).to eq(SAMPLE_SETTINGS.first['settings'])
     end
 
     it "should re-read from disk after the min_polling_interval" do
       process_monitor = described_class.new(SETTINGS_PATH, min_polling_seconds: 0.1)
-      matching_settings = process_monitor.current_untargeted_settings.matching_settings({})
+      matching_settings = process_monitor.untargeted_settings.matching_settings({})
       expect(matching_settings.size).to eq(1)
       expect(matching_settings.first.process_settings.json_doc).to eq(SAMPLE_SETTINGS.first['settings'])
 
@@ -99,7 +99,7 @@ describe ProcessSettings::ProcessSettingsMonitor do
 
       sleep(0.2)
 
-      matching_settings = process_monitor.current_untargeted_settings.matching_settings({})
+      matching_settings = process_monitor.untargeted_settings.matching_settings({})
       expect(matching_settings.first.process_settings.json_doc).to eq({})
     end
   end
@@ -117,7 +117,7 @@ describe ProcessSettings::ProcessSettingsMonitor do
       process_monitor = described_class.new(SETTINGS_PATH)
       process_monitor.static_context = { 'region' => 'east' }
 
-      result = process_monitor.current_statically_targeted_settings
+      result = process_monitor.statically_targeted_settings
       settings = result.map { |s| s.process_settings.json_doc }
 
       expect(settings).to eq([{ 'reject_incoming_calls' => true }, { 'sip' => true }])
@@ -127,7 +127,7 @@ describe ProcessSettings::ProcessSettingsMonitor do
       process_monitor = described_class.new(SETTINGS_PATH)
       process_monitor.static_context = { 'region' => 'west' }
 
-      result = process_monitor.current_statically_targeted_settings
+      result = process_monitor.statically_targeted_settings
       settings = result.map { |s| s.process_settings.json_doc }
 
       expect(settings).to eq([{ 'sip' => true }])

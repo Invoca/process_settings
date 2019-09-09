@@ -21,7 +21,7 @@ module ProcessSettings
       @on_change_callbacks << callback
     end
 
-    def current_untargeted_settings
+    def untargeted_settings
       time_now = now
       if poll_for_changes?(@last_looked_for_changes, time_now, @min_polling_seconds)
         @last_looked_for_changes = time_now
@@ -34,8 +34,8 @@ module ProcessSettings
       @current_untargetted_settings
     end
 
-    def current_statically_targeted_settings
-      current = current_untargeted_settings
+    def statically_targeted_settings
+      current = untargeted_settings
 
       if !@current_statically_targetted_settings || @previous_untargetted_settings != current
         @current_statically_targetted_settings = current.with_static_context(static_context)
@@ -45,7 +45,7 @@ module ProcessSettings
     end
 
     def targeted_value(path, context)
-      current_statically_targeted_settings.reduce(nil) do |result, target_and_settings|
+      statically_targeted_settings.reduce(nil) do |result, target_and_settings|
         # find last value from matching targets
         if target_and_settings.target.target_key_matches?(context)
           unless (value = ProcessSettings::HashPath.hash_at_path(target_and_settings.process_settings, path)).nil?
