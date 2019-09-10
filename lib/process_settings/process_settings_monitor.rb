@@ -63,8 +63,8 @@ module ProcessSettings
       @statically_targetted_settings
     end
 
-    # Returns the process settings value at the given `path` using the given `dynamic_context`
-    # (It is assumed that the static context was already set through the class method static_context=.)
+    # Returns the process settings value at the given `path` using the given `dynamic_context`.
+    # (It is assumed that the static context was already set through static_context=.)
     # Returns `nil` if nothing set at the given `path`.
     def targeted_value(path, dynamic_context)
       statically_targeted_settings.reduce(nil) do |result, target_and_settings|
