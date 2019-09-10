@@ -14,6 +14,7 @@ group :development do
   gem 'rubocop-git'
   gem 'ruby-prof'
   gem 'ruby-prof-flamegraph'
+  gem 'pry'
 end
 
 group :test do
