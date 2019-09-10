@@ -1,0 +1,7 @@
+---
+target:
+  app: 'ringswitch'
+  region: 'west'
+settings:
+  log_stream:
+    sip: 'caller_id_privacy'
