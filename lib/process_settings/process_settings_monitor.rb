@@ -1,13 +1,14 @@
 # frozen_string_literal: true
 
 require_relative 'targeted_process_settings'
+require_relative 'hash_path'
 require 'psych'
 require 'monotonic_tick_count'
 
 module ProcessSettings
   class ProcessSettingsMonitor
     attr_reader :file_path, :min_polling_seconds
-    attr_accessor :static_context
+    attr_reader :static_context
 
     DEFAULT_MIN_POLLING_SECONDS = 5
 
@@ -15,6 +16,7 @@ module ProcessSettings
       @file_path = file_path
       @min_polling_seconds = min_polling_seconds || self.class.min_polling_seconds
       @on_change_callbacks = []
+      @static_context = {}
     end
 
     # Registers the given callback block to be called when settings change.
@@ -33,29 +35,42 @@ module ProcessSettings
       if poll_for_changes?(@last_looked_for_changes, time_now, @min_polling_seconds)
         @last_looked_for_changes = time_now
         if (changes = load_file_if_changed(@last_mtime, @file_path))
-          @last_mtime, @current_untargetted_settings = changes
+          @last_mtime, @untargetted_settings = changes
           notify_on_change
         end
       end
 
-      @current_untargetted_settings
+      @untargetted_settings
     end
 
-    def statically_targeted_settings
-      current = untargeted_settings
+    # Assigns a new static context. This clears the cache used by statically_targeted_settings so that
+    # will be recomputed.
+    def static_context=(context)
+      @last_untargetted_settings = nil
+      @static_context = context
+    end
 
-      if !@current_statically_targetted_settings || @previous_untargetted_settings != current
-        @current_statically_targetted_settings = current.with_static_context(static_context)
+    # Returns the current process settings as a TargetAndProcessSettings given by applying the static context to the current untargeted settings
+    # from disk.
+    def statically_targeted_settings
+      current_untargeted_settings = untargeted_settings
+
+      if @last_untargetted_settings != current_untargeted_settings
+        @statically_targetted_settings = current_untargeted_settings.with_static_context(@static_context)
+        @last_untargetted_settings = current_untargeted_settings
       end
 
-      @current_statically_targetted_settings
+      @statically_targetted_settings
     end
 
-    def targeted_value(path, context)
+    # Returns the process settings value at the given `path` using the given `dynamic_context`
+    # (It is assumed that the static context was already set through the class method static_context=.)
+    # Returns `nil` if nothing set at the given `path`.
+    def targeted_value(path, dynamic_context)
       statically_targeted_settings.reduce(nil) do |result, target_and_settings|
         # find last value from matching targets
-        if target_and_settings.target.target_key_matches?(context)
-          unless (value = ProcessSettings::HashPath.hash_at_path(target_and_settings.process_settings, path)).nil?
+        if target_and_settings.target.target_key_matches?(dynamic_context)
+          unless (value = HashPath.hash_at_path(target_and_settings.process_settings, path)).nil?
             result = value
           end
         end
