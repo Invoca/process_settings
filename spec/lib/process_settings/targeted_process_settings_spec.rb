@@ -5,7 +5,7 @@ require 'logger'
 require 'process_settings/targeted_process_settings'
 
 describe ProcessSettings::TargetedProcessSettings do
-  TARGET_AND_SETTINGS = {
+  TARGET_AND_SETTINGS = [{
     'filename' => 'honeypot.yml',
     'target' => true,
     'settings' => {
@@ -13,11 +13,12 @@ describe ProcessSettings::TargetedProcessSettings do
         'promo_number' => '+18005554321'
       }
     }
-  }.freeze
+  },
+  { 'end' => true }].freeze
 
-  describe "target and process_settings" do
-    it "should delegate" do
-      target_and_process_settings = described_class.from_array([TARGET_AND_SETTINGS])
+  describe ".from_array" do
+    it "delegates" do
+      target_and_process_settings = described_class.from_array(TARGET_AND_SETTINGS)
 
       target = target_and_process_settings.targeted_settings_array.first.target
       expect(target.json_doc).to eq(true)
@@ -27,13 +28,21 @@ describe ProcessSettings::TargetedProcessSettings do
       expect(process_settings.json_doc).to eq('honeypot' => { 'promo_number' => '+18005554321' })
       expect(process_settings).to be_kind_of(ProcessSettings::ProcessSettings)
     end
+
+    it "confirms end is at end" do
+      expect do
+        described_class.from_array(TARGET_AND_SETTINGS.reverse)
+      end.to raise_error(ArgumentError, /Got \{"filename"=>"honeypot.yml",/)
+    end
   end
 
-  it "should allow hash key access to settings" do
-    target_and_process_settings = described_class.from_array([TARGET_AND_SETTINGS])
+  describe "[]" do
+    it "allows hash key access to settings" do
+      target_and_process_settings = described_class.from_array(TARGET_AND_SETTINGS)
 
-    result = target_and_process_settings.targeted_settings_array.first.process_settings['honeypot' => 'promo_number']
+      result = target_and_process_settings.targeted_settings_array.first.process_settings['honeypot' => 'promo_number']
 
-    expect(result).to eq('+18005554321')
+      expect(result).to eq('+18005554321')
+    end
   end
 end
