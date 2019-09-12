@@ -6,6 +6,7 @@ require 'process_settings/targeted_process_settings'
 
 describe ProcessSettings::TargetedProcessSettings do
   TARGET_AND_SETTINGS = {
+    'filename' => 'honeypot.yml',
     'target' => true,
     'settings' => {
       'honeypot' => {

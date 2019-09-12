@@ -5,9 +5,11 @@ require_relative 'process_settings'
 
 module ProcessSettings
   class TargetAndProcessSettings
-    attr_reader :target, :process_settings
+    attr_reader :filename, :target, :process_settings
 
-    def initialize(target, settings)
+    def initialize(filename, target, settings)
+      @filename = filename
+
       target.is_a?(ProcessTarget) or raise ArgumentError, "target must be a ProcessTarget; got #{target.inspect}"
       @target = target
 
@@ -23,12 +25,12 @@ module ProcessSettings
     end
 
     class << self
-      def from_json_docs(target_json_doc, settings_json_doc)
+      def from_json_docs(filename, target_json_doc, settings_json_doc)
         target_json_doc = ProcessTarget.new(target_json_doc)
 
         process_settings = ProcessSettings.new(settings_json_doc)
 
-        new(target_json_doc, process_settings)
+        new(filename, target_json_doc, process_settings)
       end
     end
 
@@ -38,7 +40,7 @@ module ProcessSettings
       if new_target == @target
         self
       else
-        self.class.new(new_target, @process_settings)
+        self.class.new(@filename, new_target, @process_settings)
       end
     end
   end

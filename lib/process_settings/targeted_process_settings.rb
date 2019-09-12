@@ -4,9 +4,7 @@ require_relative 'target_and_process_settings'
 
 module ProcessSettings
   class TargetedProcessSettings
-    TARGET_KEY_NAME   = "target"
-    SETTINGS_KEY_NAME = "settings"
-    KEY_NAMES = [TARGET_KEY_NAME, SETTINGS_KEY_NAME].freeze
+    KEY_NAMES = ["filename", "target", "settings"].freeze
 
     attr_reader :targeted_settings_array
 
@@ -35,12 +33,13 @@ module ProcessSettings
         targeted_settings_array =
           settings_array.map do |settings_hash|
             settings_hash.is_a?(Hash) or raise ArgumentError, "settings_array entries must each be a Hash; got #{settings_hash.inspect}"
-            target_settings_hash   = settings_hash[TARGET_KEY_NAME]
-            settings_settings_hash = settings_hash[SETTINGS_KEY_NAME]
+            filename               = settings_hash["filename"]
+            target_settings_hash   = settings_hash["target"]
+            settings_settings_hash = settings_hash["settings"]
             target_settings_hash && settings_settings_hash && (extra_keys = settings_hash.keys - KEY_NAMES).empty? or
               raise ArgumentError, "settings_array entries must each have exactly these keys: #{KEY_NAMES.inspect}; got these extras: #{extra_keys.inspect}"
 
-            TargetAndProcessSettings.from_json_docs(target_settings_hash, settings_settings_hash)
+            TargetAndProcessSettings.from_json_docs(filename, target_settings_hash, settings_settings_hash)
           end
 
         new(targeted_settings_array)

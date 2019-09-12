@@ -4,9 +4,12 @@ require 'spec_helper'
 require 'process_settings/target_and_process_settings'
 
 describe ProcessSettings::TargetAndProcessSettings do
-  describe "#target" do
-    it "should return target passed to #initialize" do
-      expect(sample_target_and_process_settings.target).to eq(sample_target)
+  describe "#initialize" do
+    it "should store args passed in" do
+      sample = sample_target_and_process_settings
+      expect(sample.filename).to eq("settings.yml")
+      expect(sample.target).to eq(sample_target)
+      expect(sample.process_settings).to eq(sample_process_settings)
     end
   end
 
@@ -16,11 +19,11 @@ describe ProcessSettings::TargetAndProcessSettings do
     end
   end
 
-  describe ".from_json" do
+  describe ".from_json_docs" do
     it "should parse json pair" do
       target_json_doc = { 'region' => 'east' }
       target_settings_json_doc = { 'sip' => true }
-      target_and_process_settings = described_class.from_json_docs(target_json_doc, target_settings_json_doc)
+      target_and_process_settings = described_class.from_json_docs("sip.yml", target_json_doc, target_settings_json_doc)
 
       expect(target_and_process_settings.target.json_doc).to eq(target_json_doc)
       expect(target_and_process_settings.process_settings.json_doc).to eq(target_settings_json_doc)
@@ -57,7 +60,7 @@ describe ProcessSettings::TargetAndProcessSettings do
 
   def sample_target_and_process_settings
     @sample_target_and_process_settings ||= begin
-      described_class.new(sample_target, sample_process_settings)
+      described_class.new("settings.yml", sample_target, sample_process_settings)
     end
   end
 end
