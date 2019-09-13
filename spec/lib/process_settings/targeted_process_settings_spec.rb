@@ -14,7 +14,7 @@ describe ProcessSettings::TargetedProcessSettings do
       }
     }
   },
-  { 'end' => true }].freeze
+  { 'END' => true }].freeze
 
   describe ".from_array" do
     it "delegates" do

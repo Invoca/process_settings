@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'yaml'
 require_relative 'target_and_process_settings'
 
 module ProcessSettings
@@ -35,9 +36,9 @@ module ProcessSettings
           settings_array.map do |settings_hash|
             settings_hash.is_a?(Hash) or raise ArgumentError, "settings_array entries must each be a Hash; got #{settings_hash.inspect}"
 
-            end_found and raise ArgumentError, "\"end\" marker must be at end. (Got #{settings_hash.inspect} after.)"
-            if settings_hash.has_key?("end")
-              settings_hash == { "end" => true } or raise ArgumentError, "end marker must be solely { \"end\" => true }. (Got #{setings_hash.inspect}.)"
+            end_found and raise ArgumentError, "\"END\" marker must be at end. (Got #{settings_hash.inspect} after.)"
+            if settings_hash.has_key?("END")
+              settings_hash == { "END" => true } or raise ArgumentError, "END marker must be solely { \"END\" => true }. (Got #{setings_hash.inspect}.)"
               end_found = true
               next
             end
@@ -46,7 +47,9 @@ module ProcessSettings
             target_settings_hash   = settings_hash["target"] || true
             settings_settings_hash = settings_hash["settings"]
 
-            target_settings_hash && settings_settings_hash && (extra_keys = settings_hash.keys - KEY_NAMES).empty? or
+            settings_settings_hash or raise ArgumentError, "settings_array entries must each have 'settings' hash: #{settings_hash.inspect}"
+
+            (extra_keys = settings_hash.keys - KEY_NAMES).empty? or
               raise ArgumentError, "settings_array entries must each have exactly these keys: #{KEY_NAMES.inspect}; got these extras: #{extra_keys.inspect}\nsettings_hash: #{settings_hash.inspect}"
 
             TargetAndProcessSettings.from_json_docs(filename, target_settings_hash, settings_settings_hash)
