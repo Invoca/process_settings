@@ -14,8 +14,8 @@ module ProcessSettings
       @json_doc = HashWithHashPath[json_doc]
     end
 
-    def <=>(rhs)
-      json_doc <=> rhs.json_doc
+    def ==(rhs)
+      json_doc == rhs.json_doc
     end
 
     def eql?(rhs)

@@ -19,8 +19,8 @@ module ProcessSettings
       self.class.new(new_json_doc)
     end
 
-    def <=>(rhs)
-      json_doc <=> rhs.json_doc
+    def ==(rhs)
+      json_doc == rhs.json_doc
     end
 
     def eql?(rhs)

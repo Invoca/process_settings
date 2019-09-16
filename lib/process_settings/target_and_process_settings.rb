@@ -17,6 +17,14 @@ module ProcessSettings
       @process_settings = settings
     end
 
+    def ==(rhs)
+      to_json_doc == rhs.to_json_doc
+    end
+
+    def eql?(rhs)
+      self == rhs
+    end
+
     def to_json_doc
       {
         "target" => @target.json_doc,

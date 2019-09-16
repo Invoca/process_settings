@@ -48,6 +48,40 @@ describe ProcessSettings::TargetAndProcessSettings do
     end
   end
 
+  describe "#== and .eql?" do
+    it "is equal when dup'd" do
+      initial_value = sample_target_and_process_settings
+      dup_value = initial_value.dup
+
+      expect(initial_value).to eq(dup_value)
+      expect(initial_value.eql?(dup_value)).to be_truthy
+    end
+
+    it "is equal even if filename is different" do
+      initial_value = sample_target_and_process_settings
+      dup_value = described_class.new("different_filename.yml", initial_value.target, initial_value.process_settings)
+
+      expect(initial_value).to eq(dup_value)
+      expect(initial_value.eql?(dup_value)).to be_truthy
+    end
+
+    it "is unequal if target is different" do
+      initial_value = sample_target_and_process_settings
+      new_value = described_class.new(initial_value.filename, ProcessSettings::ProcessTarget.new('region' => 'west'), initial_value.process_settings)
+
+      expect(initial_value).to_not eq(new_value)
+      expect(initial_value.eql?(new_value)).to be_falsey
+    end
+
+    it "is unequal if process settings are different" do
+      initial_value = sample_target_and_process_settings
+      dup_value = described_class.new(initial_value.filename, initial_value.target, ProcessSettings::ProcessSettings.new("carrier" => "O2"))
+
+      expect(initial_value).to_not eq(dup_value)
+      expect(initial_value.eql?(dup_value)).to be_falsey
+    end
+  end
+
   private
 
   def sample_target

@@ -19,6 +19,14 @@ module ProcessSettings
       @targeted_settings_array = targeted_settings_array
     end
 
+    def ==(rhs)
+      to_json_doc == rhs.to_json_doc
+    end
+
+    def eql?(rhs)
+      self == rhs
+    end
+
     def to_json_doc
       @targeted_settings_array.map(&:to_json_doc)
     end
