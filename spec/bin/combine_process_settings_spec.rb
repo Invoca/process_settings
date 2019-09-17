@@ -7,12 +7,17 @@ describe 'combine_process_settings' do
   it "should print usage and exit 1 if no arguments given" do
     output = `bin/combine_process_settings.rb 2>&1`
 
-    expect(output).to eq("usage: combine_process_settings.rb <root_folder> > combined_process_settings.yml\n")
+    expect(output).to eq(<<~EOS)
+      usage: combine_process_settings.rb -r staging|production -o combined_process_settings.yml
+          -v, --verbose                    Verbose mode.
+          -r, --root_folder=ROOT
+          -o, --output=FILENAME            Output file.
+    EOS
     expect($?.exitstatus).to eq(1)
   end
 
   it "should combine all settings files alphabetically, with a magic comment at the top and END: true at the end" do
-    output = `bin/combine_process_settings.rb spec/fixtures/production`
+    output = `bin/combine_process_settings.rb -r spec/fixtures/production -o combined_process_settings.yml && cat spec/fixtures/production/combined_process_settings.yml && rm -f spec/fixtures/production/combined_process_settings.yml`
 
     expect(output).to eq(<<~EOS)
       ---
