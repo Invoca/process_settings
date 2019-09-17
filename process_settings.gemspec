@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.authors     = ['Colin Kelley']
   spec.email       = 'colin@invoca.com'
   spec.files       = Dir.glob("{bin,lib}/**/*") + %w[README.rdoc LICENCE]
-  spec.executables = Dir.glob("bin/*")
+  spec.executables = Dir.glob("bin/*").map { |f| f.sub("\A bin\/x", "") }
   spec.homepage    = 'https://rubygems.org/gems/process_settings'
   spec.metadata    = { 'source_code_uri' => 'https://github.com/Invoca/process_settings' }
 
