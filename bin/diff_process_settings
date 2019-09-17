@@ -20,4 +20,4 @@ end
 system("rm -f                  tmp/previous-combined_process_settings.yml") or exit 1
 system("git show deployed:$1 > tmp/previous-combined_process_settings.yml") or exit 1
 
-system("diff tmp/previous-combined_process_settings.yml $1") or exit 1
+system("diff tmp/previous-combined_process_settings.yml #{path_to_combine_process_settings.inspect}") or exit 1
