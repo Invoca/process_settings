@@ -90,6 +90,7 @@ DEPENDENCIES
   activesupport
   bump (~> 0.6.1)
   coveralls
+  diff-lcs
   process_settings!
   pry
   rake

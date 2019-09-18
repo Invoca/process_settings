@@ -4,6 +4,8 @@ source 'http://rubygems.org'
 
 gemspec
 
+gem 'diff-lcs'
+
 group :development do
   gem 'coveralls', require: false
   gem 'activesupport'

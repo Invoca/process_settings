@@ -18,6 +18,6 @@ unless File.exists?(path_to_combine_process_settings)
 end
 
 system("rm -f tmp/previous-combined_process_settings.yml") or exit 1
-system("git show deployed:#{path_to_combine_process_settings} > tmp/previous-combined_process_settings.yml") or exit 1
+system("git show origin/production:#{path_to_combine_process_settings} > tmp/previous-combined_process_settings.yml") or exit 1
 
-system("diff tmp/previous-combined_process_settings.yml #{path_to_combine_process_settings}")
+system("diff tmp/previous-combined_process_settings.yml #{path_to_combine_process_settings}") # can't easily check status since it seems to vary for different versions of diff
