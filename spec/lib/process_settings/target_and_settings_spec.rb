@@ -75,7 +75,7 @@ describe ProcessSettings::TargetAndSettings do
 
     it "is unequal if process settings are different" do
       initial_value = sample_target_and_process_settings
-      dup_value = described_class.new(initial_value.filename, initial_value.target, ProcessSettings::ProcessSettings.new("carrier" => "O2"))
+      dup_value = described_class.new(initial_value.filename, initial_value.target, ProcessSettings::Settings.new("carrier" => "O2"))
 
       expect(initial_value).to_not eq(dup_value)
       expect(initial_value.eql?(dup_value)).to be_falsey
@@ -89,7 +89,7 @@ describe ProcessSettings::TargetAndSettings do
   end
 
   def sample_process_settings
-    @sample_process_settings ||= ProcessSettings::ProcessSettings.new("carrier" => "AT&T")
+    @sample_process_settings ||= ProcessSettings::Settings.new("carrier" => "AT&T")
   end
 
   def sample_target_and_process_settings

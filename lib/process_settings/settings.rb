@@ -3,7 +3,7 @@
 require_relative 'hash_with_hash_path'
 
 module ProcessSettings
-  class ProcessSettings
+  class Settings
     include Comparable
 
     attr_reader :json_doc

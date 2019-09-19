@@ -26,7 +26,7 @@ describe ProcessSettings::TargetedSettings do
 
       process_settings = target_and_settings.targeted_settings_array.first.process_settings
       expect(process_settings.json_doc).to eq('honeypot' => { 'promo_number' => '+18005554321' })
-      expect(process_settings).to be_kind_of(ProcessSettings::ProcessSettings)
+      expect(process_settings).to be_kind_of(ProcessSettings::Settings)
     end
 
     it "confirms end is at end" do

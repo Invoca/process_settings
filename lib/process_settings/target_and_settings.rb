@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'process_target'
-require_relative 'process_settings'
+require_relative 'settings'
 
 module ProcessSettings
   # This class encapsulates a single YAML file with target and process_settings.
@@ -14,7 +14,7 @@ module ProcessSettings
       target.is_a?(ProcessTarget) or raise ArgumentError, "target must be a ProcessTarget; got #{target.inspect}"
       @target = target
 
-      settings.is_a?(ProcessSettings) or raise ArgumentError, "settings must be a ProcessSettings; got #{settings.inspect}"
+      settings.is_a?(Settings) or raise ArgumentError, "settings must be a ProcessSettings; got #{settings.inspect}"
       @process_settings = settings
     end
 
@@ -37,7 +37,7 @@ module ProcessSettings
       def from_json_docs(filename, target_json_doc, settings_json_doc)
         target_json_doc = ProcessTarget.new(target_json_doc)
 
-        process_settings = ProcessSettings.new(settings_json_doc)
+        process_settings = Settings.new(settings_json_doc)
 
         new(filename, target_json_doc, process_settings)
       end
