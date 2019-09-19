@@ -2,9 +2,9 @@
 
 require 'spec_helper'
 require 'logger'
-require 'process_settings/process_settings_monitor'
+require 'process_settings/monitor'
 
-describe ProcessSettings::ProcessSettingsMonitor do
+describe ProcessSettings::Monitor do
   SETTINGS_PATH = "./settings.yml"
   SAMPLE_SETTINGS = [{ 'target' => true, 'settings' => { 'sip' => true } }].freeze
   EAST_SETTINGS = [{ 'target' => { 'region' => 'east' }, 'settings' => { 'reject_call' => true } },

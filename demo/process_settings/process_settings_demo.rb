@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../../lib/process_settings/process_settings_monitor'
+require_relative '../../lib/process_settings/monitor'
 require_relative 'config/process_settings_config'
 require 'logger'
 
@@ -11,7 +11,7 @@ static_context = ARGV.reduce({}) do |hash, arg|
   hash
 end
 
-ProcessSettings::ProcessSettingsMonitor.instance.static_context = static_context
+ProcessSettings::Monitor.instance.static_context = static_context
 
 static_context_symbols = static_context.reduce({}) { |h, (k, v)| h[k.to_sym] = v; h }
 
@@ -24,7 +24,7 @@ class CallSimulator
   def run!
     counter = 0
     loop do
-      puts "\nSettings:\n#{ProcessSettings::TargetedProcessSettings.new(ProcessSettings::ProcessSettingsMonitor.instance.statically_targeted_settings).to_yaml}\n"
+      puts "\nSettings:\n#{ProcessSettings::TargetedProcessSettings.new(ProcessSettings::Monitor.instance.statically_targeted_settings).to_yaml}\n"
 
       from = ['8056807000', '8056487708'][counter % 2]
 
@@ -37,7 +37,7 @@ class CallSimulator
   end
 
   def receive_call(from)
-    if ProcessSettings::ProcessSettingsMonitor.instance.targeted_value('reject_incoming_calls', @logging_context)
+    if ProcessSettings::Monitor.instance.targeted_value('reject_incoming_calls', @logging_context)
       @logger.info("REJECTED call from #{from}")
     else
       @logger.info("received call from #{from}")
@@ -67,7 +67,7 @@ end
 
 logger = Logger.new(STDOUT)
 
-ProcessSettings::ProcessSettingsMonitor.instance.on_change do |process_monitor|
+ProcessSettings::Monitor.instance.on_change do |process_monitor|
   if (level_string = process_monitor.targeted_value({ 'logging' => 'level' }, {}))
     puts "\n******* #{level_string} ******"
 

@@ -6,7 +6,7 @@ require 'psych'
 require 'monotonic_tick_count'
 
 module ProcessSettings
-  class ProcessSettingsMonitor
+  class Monitor
     attr_reader :file_path, :min_polling_seconds
     attr_reader :static_context
 
