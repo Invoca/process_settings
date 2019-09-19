@@ -5,7 +5,7 @@ require 'logger'
 require 'process_settings/targeted_settings'
 
 describe ProcessSettings::TargetedSettings do
-  TARGET_AND_SETTINGS = [{
+  TARGETED_SETTINGS = [{
     'filename' => 'honeypot.yml',
     'target' => true,
     'settings' => {
@@ -18,7 +18,7 @@ describe ProcessSettings::TargetedSettings do
 
   describe ".from_array" do
     it "delegates" do
-      target_and_settings = described_class.from_array(TARGET_AND_SETTINGS)
+      target_and_settings = described_class.from_array(TARGETED_SETTINGS)
 
       target = target_and_settings.targeted_settings_array.first.target
       expect(target.json_doc).to eq(true)
@@ -31,14 +31,14 @@ describe ProcessSettings::TargetedSettings do
 
     it "confirms end is at end" do
       expect do
-        described_class.from_array(TARGET_AND_SETTINGS.reverse)
+        described_class.from_array(TARGETED_SETTINGS.reverse)
       end.to raise_error(ArgumentError, /Got \{"filename"=>"honeypot.yml",/)
     end
   end
 
   describe "[]" do
     it "allows hash key access to settings" do
-      target_and_settings = described_class.from_array(TARGET_AND_SETTINGS)
+      target_and_settings = described_class.from_array(TARGETED_SETTINGS)
 
       result = target_and_settings.targeted_settings_array.first.process_settings['honeypot' => 'promo_number']
 

@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require_relative '../lib/process_settings/targeted_settings'
+require_relative '../lib/process_settings/util'
 require 'yaml'
 require 'set'
 
@@ -23,23 +24,6 @@ def parse_options(argv)
   else
     warn "usage: #{PROGRAM_NAME} <path-to-flat_services.yml> <path-to-combined_process_settings-OLD.yml <path-to-combined_process_settings-NEW.yml"
     exit(1)
-  end
-end
-
-def plain_hash(json_doc)
-  case json_doc
-  when Hash
-    result = {}
-    json_doc.each { |key, value| result[key] = plain_hash(value) }
-    result
-  when Array
-    json_doc.map { |value| plain_hash(value) }
-  else
-    if json_doc.respond_to?(:json_doc)
-      plain_hash(json_doc.json_doc)
-    else
-      json_doc
-    end
   end
 end
 
@@ -118,8 +102,8 @@ if correlation_scorecard.any? { |_correllation_key, scorecard| scorecard[true].a
     puts best_correlation.last[true].to_a.first.to_yaml
     puts "Diff:"
     system("rm -f tmp/old.yml tmp/new.yml")
-    File.write("tmp/old.yml", plain_hash(best_correlation.last['__changes__']['old']).to_yaml)
-    File.write("tmp/new.yml", plain_hash(best_correlation.last['__changes__']['new']).to_yaml)
+    File.write("tmp/old.yml", ProcessSettings.plain_hash(best_correlation.last['__changes__']['old']).to_yaml)
+    File.write("tmp/new.yml", ProcessSettings.plain_hash(best_correlation.last['__changes__']['new']).to_yaml)
     STDOUT << `diff tmp/old.yml tmp/new.yml`
   else
     puts "No best correlation found?"
