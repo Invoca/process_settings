@@ -2,9 +2,9 @@
 
 require 'spec_helper'
 require 'logger'
-require 'process_settings/process_target'
+require 'process_settings/target'
 
-describe ProcessSettings::ProcessTarget do
+describe ProcessSettings::Target do
   describe "#process_target" do
     it "should return what was constructed with" do
       process_target = described_class.new(true)

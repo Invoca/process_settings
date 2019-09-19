@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module ProcessSettings
-  class ProcessTarget
+  class Target
     include Comparable
 
     attr_reader :json_doc

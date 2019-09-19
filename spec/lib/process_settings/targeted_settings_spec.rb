@@ -22,7 +22,7 @@ describe ProcessSettings::TargetedSettings do
 
       target = target_and_settings.targeted_settings_array.first.target
       expect(target.json_doc).to eq(true)
-      expect(target).to be_kind_of(ProcessSettings::ProcessTarget)
+      expect(target).to be_kind_of(ProcessSettings::Target)
 
       process_settings = target_and_settings.targeted_settings_array.first.process_settings
       expect(process_settings.json_doc).to eq('honeypot' => { 'promo_number' => '+18005554321' })

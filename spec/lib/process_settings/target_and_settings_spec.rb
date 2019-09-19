@@ -67,7 +67,7 @@ describe ProcessSettings::TargetAndSettings do
 
     it "is unequal if target is different" do
       initial_value = sample_target_and_process_settings
-      new_value = described_class.new(initial_value.filename, ProcessSettings::ProcessTarget.new('region' => 'west'), initial_value.process_settings)
+      new_value = described_class.new(initial_value.filename, ProcessSettings::Target.new('region' => 'west'), initial_value.process_settings)
 
       expect(initial_value).to_not eq(new_value)
       expect(initial_value.eql?(new_value)).to be_falsey
@@ -85,7 +85,7 @@ describe ProcessSettings::TargetAndSettings do
   private
 
   def sample_target
-    @sample_target ||= ProcessSettings::ProcessTarget.new('region' => 'east')
+    @sample_target ||= ProcessSettings::Target.new('region' => 'east')
   end
 
   def sample_process_settings
