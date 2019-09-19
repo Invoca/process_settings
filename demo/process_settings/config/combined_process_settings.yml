@@ -4,11 +4,11 @@
   settings:
     sip: true
 - target:
-    service: ringswitch
+    app: ringswitch
   settings:
     logging:
       level: debug
 - target:
-    service: fe
+    app: frontend
   settings:
     reject_tls_1_0: true

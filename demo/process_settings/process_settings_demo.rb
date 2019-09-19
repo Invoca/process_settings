@@ -42,7 +42,7 @@ class CallSimulator
     else
       @logger.info("received call from #{from}")
 
-      @logger.debug("MORE DETAIL ON RECEIVED CALL\n#{'.... :: ' * 300}")
+      @logger.debug("MORE DETAIL ON RECEIVED CALL\n#{'.... :: ' * 30}")
     end
   end
 
