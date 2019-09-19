@@ -70,11 +70,11 @@ flat_services_yml_json_doc.each do |service, nodes|
                       }
                     end
 
-        node_attrs['__changes__'] = {
+        changes_hash = node_attrs['__changes__'] = {
           'old' => node_old,
           'new' => node_new
         }
-        node_attrs['__changes__']['pod_index'] = pod_index if pods.size > 1
+        changes_hash['pod_index'] = pod_index if pods.size > 1
       end
 
       CORRELATION_KEYS.each do |correlation_key|
@@ -83,7 +83,7 @@ flat_services_yml_json_doc.each do |service, nodes|
         correlation_key_values = correlation_key.map { |key| { key => node_attrs[key] } }
         scorecard[changed] << correlation_key_values
         if changed
-          scorecard['__changes__'] = node_attrs['__changes__']
+          scorecard['__changes__'] = changes_hash
           scorecard['__pods__'] ||= 0
           scorecard['__pods__'] += 1
         end
