@@ -4,7 +4,8 @@ require 'yaml'
 require_relative 'target_and_settings'
 
 module ProcessSettings
-  class TargetedProcessSettings
+  # This class encapsulates an ordered collection of TargetAndSettings (each of which came from one YAML file).
+  class TargetedSettings
     KEY_NAMES = ["filename", "target", "settings"].freeze
 
     attr_reader :targeted_settings_array

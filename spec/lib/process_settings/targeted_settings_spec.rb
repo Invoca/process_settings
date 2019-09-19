@@ -2,9 +2,9 @@
 
 require 'spec_helper'
 require 'logger'
-require 'process_settings/targeted_process_settings'
+require 'process_settings/targeted_settings'
 
-describe ProcessSettings::TargetedProcessSettings do
+describe ProcessSettings::TargetedSettings do
   TARGET_AND_SETTINGS = [{
     'filename' => 'honeypot.yml',
     'target' => true,

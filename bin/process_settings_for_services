@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require_relative '../lib/process_settings/targeted_process_settings'
+require_relative '../lib/process_settings/targeted_settings'
 require 'yaml'
 require 'set'
 
@@ -53,8 +53,8 @@ flat_services_yml_json_doc     = YAML.load_file(path_to_flat_services_yml)
 combined_process_settings_yml_json_doc_old = YAML.load_file(path_to_combined_process_settings_yml_old)
 combined_process_settings_yml_json_doc_new = YAML.load_file(path_to_combined_process_settings_yml_new)
 
-targeted_process_settings_old = ProcessSettings::TargetedProcessSettings.from_array(combined_process_settings_yml_json_doc_old)
-targeted_process_settings_new = ProcessSettings::TargetedProcessSettings.from_array(combined_process_settings_yml_json_doc_new)
+targeted_process_settings_old = ProcessSettings::TargetedSettings.from_array(combined_process_settings_yml_json_doc_old)
+targeted_process_settings_new = ProcessSettings::TargetedSettings.from_array(combined_process_settings_yml_json_doc_new)
 
 flat_services_with_targeted_settings = Hash.new { |h, service| h[service] = Hash.new { |h2, node| h2[node] = [] } }
 

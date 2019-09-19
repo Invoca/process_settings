@@ -4,6 +4,7 @@ require_relative 'process_target'
 require_relative 'process_settings'
 
 module ProcessSettings
+  # This class encapsulates a single YAML file with target and process_settings.
   class TargetAndSettings
     attr_reader :filename, :target, :process_settings
 
