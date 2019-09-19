@@ -4,7 +4,7 @@ require_relative 'process_target'
 require_relative 'process_settings'
 
 module ProcessSettings
-  class TargetAndProcessSettings
+  class TargetAndSettings
     attr_reader :filename, :target, :process_settings
 
     def initialize(filename, target, settings)

@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require 'process_settings/target_and_process_settings'
+require 'process_settings/target_and_settings'
 
-describe ProcessSettings::TargetAndProcessSettings do
+describe ProcessSettings::TargetAndSettings do
   describe "#initialize" do
     it "should store args passed in" do
       sample = sample_target_and_process_settings
@@ -23,10 +23,10 @@ describe ProcessSettings::TargetAndProcessSettings do
     it "should parse json pair" do
       target_json_doc = { 'region' => 'east' }
       target_settings_json_doc = { 'sip' => true }
-      target_and_process_settings = described_class.from_json_docs("sip.yml", target_json_doc, target_settings_json_doc)
+      target_and_settings = described_class.from_json_docs("sip.yml", target_json_doc, target_settings_json_doc)
 
-      expect(target_and_process_settings.target.json_doc).to eq(target_json_doc)
-      expect(target_and_process_settings.process_settings.json_doc).to eq(target_settings_json_doc)
+      expect(target_and_settings.target.json_doc).to eq(target_json_doc)
+      expect(target_and_settings.process_settings.json_doc).to eq(target_settings_json_doc)
     end
   end
 
