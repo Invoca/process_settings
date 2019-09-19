@@ -1,10 +1,7 @@
 # frozen_string_literal: true
 
-require 'process_settings'
-require 'process_settings/process_settings_monitor'
+require_relative '../../lib/process_settings/process_settings_monitor'
 require_relative 'config/process_settings_config'
-require 'process_settings/stream_logger'
-require 'process_settings/stream_logger_source'
 require 'logger'
 
 static_context = ARGV.reduce({}) do |hash, arg|
@@ -19,12 +16,6 @@ ProcessSettings::ProcessSettingsMonitor.instance.static_context = static_context
 static_context_symbols = static_context.reduce({}) { |h, (k, v)| h[k.to_sym] = v; h }
 
 class CallSimulator
-  include ProcessSettings::StreamLoggerSource
-
-  attr_reader :logger
-
-  log_stream_source :CallSimulator, streams: [:detail, :primes]
-
   def initialize(logger, static_context)
     @logger = logger
     @static_context = static_context
@@ -47,40 +38,34 @@ class CallSimulator
 
   def receive_call(from)
     if ProcessSettings::ProcessSettingsMonitor.instance.targeted_value('reject_incoming_calls', @logging_context)
-      @logger.info("REJECTED call from #{from}", @logging_context)
+      @logger.info("REJECTED call from #{from}")
     else
-      @logger.info("received call from #{from}", @logging_context)
+      @logger.info("received call from #{from}")
 
-      @logger.debug("MORE DETAIL ON RECEIVED CALL\n#{'.... :: ' * 300}", @logging_context)
-
-      log_stream(:primes, @logging_context) do |max|
-        max = max.to_i.nonzero? || 1000
-        "First #{max} primes are: #{primes(max)}"
-      end
+      @logger.debug("MORE DETAIL ON RECEIVED CALL\n#{'.... :: ' * 300}")
     end
   end
 
   private
 
   def primes(max)
-    primes = (0...max).to_a
+    result = (0...max).to_a
 
-    primes[0] = primes[1] = nil
+    result[0] = result[1] = nil
 
-    primes.each do |p|
+    result.each do |p|
       p or next
 
       (p_squared = p * p) <= max or break
 
-      p_squared.step(max, p) { |m| primes[m] = nil }
+      p_squared.step(max, p) { |m| result[m] = nil }
     end
 
-    primes.compact
+    result.compact
   end
 end
 
-raw_logger = Logger.new(STDOUT)
-logger = ProcessSettings::StreamLogger.new(ProcessSettings.new(raw_logger))
+logger = Logger.new(STDOUT)
 
 ProcessSettings::ProcessSettingsMonitor.instance.on_change do |process_monitor|
   if (level_string = process_monitor.targeted_value({ 'logging' => 'level' }, {}))
