@@ -1,6 +1,10 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+
+#TODO: I need to add a test for this file. Probably by moving the algorithm into methods that are tested and leaving
+#TODO: this as a command line shell. -Colin
+
 require_relative '../lib/process_settings/targeted_process_settings'
 require 'yaml'
 require 'set'
