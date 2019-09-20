@@ -36,7 +36,7 @@ describe ProcessSettings::TargetedProcessSettings do
     end
   end
 
-  describe "[]" do
+  describe "#[]" do
     it "allows hash key access to settings" do
       target_and_process_settings = described_class.from_array(TARGET_AND_SETTINGS)
 
