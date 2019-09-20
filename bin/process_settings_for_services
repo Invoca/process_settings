@@ -25,7 +25,7 @@ def parse_options(argv)
   if argv.size == 3
     argv
   else
-    warn "usage: #{PROGRAM_NAME} <path-to-flat_services.yml> <path-to-combined_process_settings-OLD.yml <path-to-combined_process_settings-NEW.yml"
+    warn "usage: #{PROGRAM_NAME} <path-to-flat_services.yml> <path-to-combined_process_settings-OLD.yml> <path-to-combined_process_settings-NEW.yml>"
     exit(1)
   end
 end
