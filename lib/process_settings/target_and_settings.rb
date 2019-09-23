@@ -1,19 +1,20 @@
 # frozen_string_literal: true
 
-require_relative 'process_target'
-require_relative 'process_settings'
+require_relative 'target'
+require_relative 'settings'
 
 module ProcessSettings
-  class TargetAndProcessSettings
+  # This class encapsulates a single YAML file with target and process_settings.
+  class TargetAndSettings
     attr_reader :filename, :target, :process_settings
 
     def initialize(filename, target, settings)
       @filename = filename
 
-      target.is_a?(ProcessTarget) or raise ArgumentError, "target must be a ProcessTarget; got #{target.inspect}"
+      target.is_a?(Target) or raise ArgumentError, "target must be a ProcessTarget; got #{target.inspect}"
       @target = target
 
-      settings.is_a?(ProcessSettings) or raise ArgumentError, "settings must be a ProcessSettings; got #{settings.inspect}"
+      settings.is_a?(Settings) or raise ArgumentError, "settings must be a ProcessSettings; got #{settings.inspect}"
       @process_settings = settings
     end
 
@@ -34,9 +35,9 @@ module ProcessSettings
 
     class << self
       def from_json_docs(filename, target_json_doc, settings_json_doc)
-        target_json_doc = ProcessTarget.new(target_json_doc)
+        target_json_doc = Target.new(target_json_doc)
 
-        process_settings = ProcessSettings.new(settings_json_doc)
+        process_settings = Settings.new(settings_json_doc)
 
         new(filename, target_json_doc, process_settings)
       end

@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-require_relative 'targeted_process_settings'
+require_relative 'targeted_settings'
 require_relative 'hash_path'
 require 'psych'
 require 'monotonic_tick_count'
 
 module ProcessSettings
-  class ProcessSettingsMonitor
+  class Monitor
     attr_reader :file_path, :min_polling_seconds
     attr_reader :static_context
 
@@ -129,7 +129,7 @@ module ProcessSettings
 
     def load_file(file_path)
       json_doc = Psych.load_file(file_path)
-      TargetedProcessSettings.from_array(json_doc)
+      TargetedSettings.from_array(json_doc)
     end
   end
 end

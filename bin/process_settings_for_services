@@ -1,11 +1,11 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-
 #TODO: I need to add a test for this file. Probably by moving the algorithm into methods that are tested and leaving
 #TODO: this as a command line shell. -Colin
 
-require_relative '../lib/process_settings/targeted_process_settings'
+require_relative '../lib/process_settings/targeted_settings'
+require_relative '../lib/process_settings/util'
 require 'yaml'
 require 'set'
 
@@ -30,23 +30,6 @@ def parse_options(argv)
   end
 end
 
-def plain_hash(json_doc)
-  case json_doc
-  when Hash
-    result = {}
-    json_doc.each { |key, value| result[key] = plain_hash(value) }
-    result
-  when Array
-    json_doc.map { |value| plain_hash(value) }
-  else
-    if json_doc.respond_to?(:json_doc)
-      plain_hash(json_doc.json_doc)
-    else
-      json_doc
-    end
-  end
-end
-
 
 #
 # main
@@ -57,8 +40,8 @@ flat_services_yml_json_doc     = YAML.load_file(path_to_flat_services_yml)
 combined_process_settings_yml_json_doc_old = YAML.load_file(path_to_combined_process_settings_yml_old)
 combined_process_settings_yml_json_doc_new = YAML.load_file(path_to_combined_process_settings_yml_new)
 
-targeted_process_settings_old = ProcessSettings::TargetedProcessSettings.from_array(combined_process_settings_yml_json_doc_old)
-targeted_process_settings_new = ProcessSettings::TargetedProcessSettings.from_array(combined_process_settings_yml_json_doc_new)
+targeted_process_settings_old = ProcessSettings::TargetedSettings.from_array(combined_process_settings_yml_json_doc_old)
+targeted_process_settings_new = ProcessSettings::TargetedSettings.from_array(combined_process_settings_yml_json_doc_new)
 
 flat_services_with_targeted_settings = Hash.new { |h, service| h[service] = Hash.new { |h2, node| h2[node] = [] } }
 
@@ -90,11 +73,11 @@ flat_services_yml_json_doc.each do |service, nodes|
                       }
                     end
 
-        node_attrs['__changes__'] = {
+        changes_hash = node_attrs['__changes__'] = {
           'old' => node_old,
           'new' => node_new
         }
-        node_attrs['__changes__']['pod_index'] = pod_index if pods.size > 1
+        changes_hash['pod_index'] = pod_index if pods.size > 1
       end
 
       CORRELATION_KEYS.each do |correlation_key|
@@ -103,7 +86,7 @@ flat_services_yml_json_doc.each do |service, nodes|
         correlation_key_values = correlation_key.map { |key| { key => node_attrs[key] } }
         scorecard[changed] << correlation_key_values
         if changed
-          scorecard['__changes__'] = node_attrs['__changes__']
+          scorecard['__changes__'] = changes_hash
           scorecard['__pods__'] ||= 0
           scorecard['__pods__'] += 1
         end
@@ -122,8 +105,8 @@ if correlation_scorecard.any? { |_correllation_key, scorecard| scorecard[true].a
     puts best_correlation.last[true].to_a.first.to_yaml
     puts "Diff:"
     system("rm -f tmp/old.yml tmp/new.yml")
-    File.write("tmp/old.yml", plain_hash(best_correlation.last['__changes__']['old']).to_yaml)
-    File.write("tmp/new.yml", plain_hash(best_correlation.last['__changes__']['new']).to_yaml)
+    File.write("tmp/old.yml", ProcessSettings.plain_hash(best_correlation.last['__changes__']['old']).to_yaml)
+    File.write("tmp/new.yml", ProcessSettings.plain_hash(best_correlation.last['__changes__']['new']).to_yaml)
     STDOUT << `diff tmp/old.yml tmp/new.yml`
   else
     puts "No best correlation found?"

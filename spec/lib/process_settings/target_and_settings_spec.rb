@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require 'process_settings/target_and_process_settings'
+require 'process_settings/target_and_settings'
 
-describe ProcessSettings::TargetAndProcessSettings do
+describe ProcessSettings::TargetAndSettings do
   describe "#initialize" do
     it "should store args passed in" do
       sample = sample_target_and_process_settings
@@ -23,10 +23,10 @@ describe ProcessSettings::TargetAndProcessSettings do
     it "should parse json pair" do
       target_json_doc = { 'region' => 'east' }
       target_settings_json_doc = { 'sip' => true }
-      target_and_process_settings = described_class.from_json_docs("sip.yml", target_json_doc, target_settings_json_doc)
+      target_and_settings = described_class.from_json_docs("sip.yml", target_json_doc, target_settings_json_doc)
 
-      expect(target_and_process_settings.target.json_doc).to eq(target_json_doc)
-      expect(target_and_process_settings.process_settings.json_doc).to eq(target_settings_json_doc)
+      expect(target_and_settings.target.json_doc).to eq(target_json_doc)
+      expect(target_and_settings.process_settings.json_doc).to eq(target_settings_json_doc)
     end
   end
 
@@ -67,7 +67,7 @@ describe ProcessSettings::TargetAndProcessSettings do
 
     it "is unequal if target is different" do
       initial_value = sample_target_and_process_settings
-      new_value = described_class.new(initial_value.filename, ProcessSettings::ProcessTarget.new('region' => 'west'), initial_value.process_settings)
+      new_value = described_class.new(initial_value.filename, ProcessSettings::Target.new('region' => 'west'), initial_value.process_settings)
 
       expect(initial_value).to_not eq(new_value)
       expect(initial_value.eql?(new_value)).to be_falsey
@@ -75,7 +75,7 @@ describe ProcessSettings::TargetAndProcessSettings do
 
     it "is unequal if process settings are different" do
       initial_value = sample_target_and_process_settings
-      dup_value = described_class.new(initial_value.filename, initial_value.target, ProcessSettings::ProcessSettings.new("carrier" => "O2"))
+      dup_value = described_class.new(initial_value.filename, initial_value.target, ProcessSettings::Settings.new("carrier" => "O2"))
 
       expect(initial_value).to_not eq(dup_value)
       expect(initial_value.eql?(dup_value)).to be_falsey
@@ -85,11 +85,11 @@ describe ProcessSettings::TargetAndProcessSettings do
   private
 
   def sample_target
-    @sample_target ||= ProcessSettings::ProcessTarget.new('region' => 'east')
+    @sample_target ||= ProcessSettings::Target.new('region' => 'east')
   end
 
   def sample_process_settings
-    @sample_process_settings ||= ProcessSettings::ProcessSettings.new("carrier" => "AT&T")
+    @sample_process_settings ||= ProcessSettings::Settings.new("carrier" => "AT&T")
   end
 
   def sample_target_and_process_settings

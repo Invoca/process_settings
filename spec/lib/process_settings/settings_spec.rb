@@ -2,9 +2,9 @@
 
 require 'spec_helper'
 require 'logger'
-require 'process_settings/process_settings'
+require 'process_settings/settings'
 
-describe ProcessSettings::ProcessSettings do
+describe ProcessSettings::Settings do
   describe "initialize" do
     it "should take a json doc" do
       process_settings = described_class.new("carrier" => "AT&T")
@@ -15,7 +15,7 @@ describe ProcessSettings::ProcessSettings do
     it "should reject anything not a hash" do
       expect do
         described_class.new("{}")
-      end.to raise_exception(ArgumentError, /ProcessSettings must be a Hash/)
+      end.to raise_exception(ArgumentError, /Settings must be a Hash/)
     end
   end
 

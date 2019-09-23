@@ -2,9 +2,9 @@
 
 Gem::Specification.new do |spec|
   spec.name        = 'process_settings'
-  spec.version     = '0.0.1'
+  spec.version     = '0.1.0'
   spec.license     = 'MIT'
-  spec.date        = '2019-09-04'
+  spec.date        = '2019-09-19'
   spec.summary     = 'Dynamic process settings'
   spec.description = 'Targed process settings that dynamically reload without restarting the process'
   spec.authors     = ['Colin Kelley']
