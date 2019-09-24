@@ -16,8 +16,6 @@ describe ProcessSettings::TargetedSettings do
   },
   { 'END' => true }].freeze
 
-  puts "\n\n\n=================\n#{TARGETED_SETTINGS.inspect}"
-
   describe ".from_array" do
     it "delegates" do
       target_and_settings = described_class.from_array(TARGETED_SETTINGS)
@@ -33,7 +31,6 @@ describe ProcessSettings::TargetedSettings do
 
     it "confirms end is at end" do
       expect do
-        puts "\n\n***************\n#{TARGETED_SETTINGS.inspect}\n\n"
         described_class.from_array(TARGETED_SETTINGS.reverse)
       end.to raise_error(ArgumentError, /Got \{"filename"=>"honeypot.yml",/)
     end
