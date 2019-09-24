@@ -34,7 +34,7 @@ def read_and_combine_settings(settings_folder)
   combined_settings = []
 
   pushd(settings_folder) do
-    Dir.glob("**/*.yml") do |settings_path|
+    Dir.glob("**/*.yml").sort.each do |settings_path|
       settings = { 'filename' => settings_path }
       settings.merge!(YAML.load_file(settings_path))
 
