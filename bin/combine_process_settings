@@ -9,7 +9,25 @@ require 'yaml'
 
 PROGRAM_NAME = File.basename($PROGRAM_NAME)
 SETTINGS_FOLDER = 'settings'
-END_MARKER = { 'END' => true }.freeze
+
+def end_marker(version)
+  {
+    'END' => {
+      'version' => version
+    }
+  }
+end
+
+# returns a floating point version: major.minor
+# where the major is the same as in the old_output_file
+# and the minor is the current time_t
+def default_version_number(old_output_file)
+  json_doc = YAML.load_file(old_output_file)
+  version = json_doc.last['END']&.[]('version') or raise "No END: version: #{json_doc.inspect}"
+  major = version.to_f / 1
+  minor = Time.now.to_i
+  major + minor / 10_000_000_000.0
+end
 
 
 def parse_options(argv)
@@ -69,7 +87,8 @@ end
 options = parse_options(ARGV.dup)
 
 combined_settings = read_and_combine_settings(Pathname.new(options.root_folder) + SETTINGS_FOLDER)
-combined_settings << END_MARKER
+version_number = ENV['BUILD_NUMBER']&.to_f || default_version_number(options.output_filename)
+combined_settings << end_marker(version_number)
 
 yaml = combined_settings.to_yaml
 yaml_with_warning_comment = add_warning_comment(yaml, options.root_folder, PROGRAM_NAME, SETTINGS_FOLDER)
