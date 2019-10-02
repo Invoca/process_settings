@@ -5,16 +5,15 @@ source 'http://rubygems.org'
 gemspec
 
 group :development do
-  gem 'coveralls', require: false
   gem 'activesupport'
   gem 'bump', '~> 0.6.1'
+  gem 'coveralls', require: false
   gem 'pry'
   gem 'rake'
   gem 'rubocop', '0.54.0'
   gem 'rubocop-git'
   gem 'ruby-prof'
   gem 'ruby-prof-flamegraph'
-  gem 'pry'
 end
 
 group :test do
