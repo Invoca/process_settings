@@ -49,7 +49,7 @@ module ProcessSettings
 
             end_hash and raise ArgumentError, "\"END\" marker must be at end. (Got #{settings_hash.inspect} after.)"
             if settings_hash.has_key?("END")
-              end_hash = settings_hash['END']
+              end_hash = settings_hash['END'] == true ? { 'version' => 0.0 } : settings_hash['END']
               next
             end
 

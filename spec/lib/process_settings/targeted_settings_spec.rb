@@ -94,5 +94,10 @@ describe ProcessSettings::TargetedSettings do
       targeted_settings = described_class.from_array(TARGETED_SETTINGS)
       expect(targeted_settings.version).to eq(17.9)
     end
+
+    it "treats old END: true format at { 'version' => 0.0 }" do
+      targeted_settings = described_class.from_array([{ 'END' => true }])
+      expect(targeted_settings.version).to eq(0.0)
+    end
   end
 end
