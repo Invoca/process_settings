@@ -13,7 +13,9 @@ describe ProcessSettings do
                                  'promo_number' => '+18005554321'
                                }
                              }
-                           }].freeze
+                           },
+                           { 'END' => { 'version' => 19.0 } }
+                           ].freeze
 
   let(:target_and_settings) { ProcessSettings::TargetedSettings.from_array(UTIL_TARGETED_SETTINGS) }
 
@@ -50,6 +52,8 @@ describe ProcessSettings do
             settings:
               honeypot:
                 promo_number: "+18005554321"
+          - END:
+              version: 19.0
         EOS
       end
     end
