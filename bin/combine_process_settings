@@ -37,12 +37,13 @@ def parse_options(argv)
     opt.on('-v', '--verbose', 'Verbose mode.') { options.verbose = true }
     opt.on('-r', '--root_folder=ROOT') { |o| options.root_folder = o }
     opt.on('-o', '--output=FILENAME', 'Output file.') { |o| options.output_filename = o }
+    opt.on('-i', '--initial=FILENAME', 'Initial settings file for version inference.') { |o| options.initial_filename = o }
   end
 
-  if option_parser.parse! && options.root_folder && options.output_filename
+  if option_parser.parse! && options.root_folder && options.output_filename && (ENV['BUILD_NUMBER'] || options.initial_filename)
     options
   else
-    warn "usage: #{PROGRAM_NAME} -r staging|production -o combined_process_settings.yml"
+    warn "usage: #{PROGRAM_NAME} -r staging|production -o combined_process_settings.yml [-i initial_combined_process_settings.yml] (required if BUILD_NUMBER not set)"
     option_parser.summarize(STDERR)
     exit(1)
   end
@@ -84,16 +85,17 @@ end
 #
 # main
 #
+
 options = parse_options(ARGV.dup)
 
 combined_settings = read_and_combine_settings(Pathname.new(options.root_folder) + SETTINGS_FOLDER)
-version_number = ENV['BUILD_NUMBER']&.to_f || default_version_number(options.output_filename)
+version_number = ENV['BUILD_NUMBER']&.to_f || default_version_number(options.initial_filename)
 combined_settings << end_marker(version_number)
 
 yaml = combined_settings.to_yaml
 yaml_with_warning_comment = add_warning_comment(yaml, options.root_folder, PROGRAM_NAME, SETTINGS_FOLDER)
 
-output_filename     = Pathname.new(options.root_folder) + options.output_filename
+output_filename     = options.output_filename
 tmp_output_filename = "#{output_filename}.tmp"
 
 system("rm -f #{tmp_output_filename}")
