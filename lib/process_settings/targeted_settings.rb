@@ -8,9 +8,9 @@ module ProcessSettings
   class TargetedSettings
     KEY_NAMES = ["filename", "target", "settings"].freeze
 
-    attr_reader :targeted_settings_array
+    attr_reader :targeted_settings_array, :version
 
-    def initialize(targeted_settings_array)
+    def initialize(targeted_settings_array, version:)
       targeted_settings_array.is_a?(Array) or raise ArgumentError, "targeted_settings_array must be an Array of Hashes; got #{targeted_settings_array.inspect}"
       targeted_settings_array.each do |target_and_settings|
         target_and_settings.is_a?(TargetAndSettings) or
@@ -18,6 +18,8 @@ module ProcessSettings
       end
 
       @targeted_settings_array = targeted_settings_array
+
+      @version = version or raise ArgumentError, "version must not be empty"
     end
 
     def ==(rhs)
@@ -39,16 +41,15 @@ module ProcessSettings
     class << self
       def from_array(settings_array)
         settings_array.is_a?(Array) or raise ArgumentError, "settings_array must be an Array of Hashes; got #{settings_array.inspect}"
-        end_found = false
+        end_hash = nil
 
         targeted_settings_array =
           settings_array.map do |settings_hash|
             settings_hash.is_a?(Hash) or raise ArgumentError, "settings_array entries must each be a Hash; got #{settings_hash.inspect}"
 
-            end_found and raise ArgumentError, "\"END\" marker must be at end. (Got #{settings_hash.inspect} after.)"
+            end_hash and raise ArgumentError, "\"END\" marker must be at end. (Got #{settings_hash.inspect} after.)"
             if settings_hash.has_key?("END")
-              settings_hash == { "END" => true } or raise ArgumentError, "END marker must be solely { \"END\" => true }. (Got #{setings_hash.inspect}.)"
-              end_found = true
+              end_hash = settings_hash['END']
               next
             end
 
@@ -64,7 +65,14 @@ module ProcessSettings
             TargetAndSettings.from_json_docs(filename, target_settings_hash, settings_settings_hash)
           end.compact
 
-        new(targeted_settings_array)
+        end_hash or raise ArgumentError, "Missing END marker at end; got #{settings_array.inspect}"
+
+        new(targeted_settings_array, version: end_hash['version'])
+      end
+
+      def from_file(file_path)
+        json_doc = Psych.load_file(file_path)
+        from_array(json_doc)
       end
     end
 
