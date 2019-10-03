@@ -1,0 +1,15 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative '../lib/process_settings/targeted_settings'
+
+PROGRAM_NAME = File.basename($PROGRAM_NAME)
+
+unless ARGV.size == 1
+  echo "usage: #{PROGRAM_NAME} <path-to-combined_process_settings.yml>"
+  exit 1
+end
+
+targeted_settings = ProcessSettings::TargetedSettings.from_file(ARGV[0])
+
+puts targeted_settings.version
