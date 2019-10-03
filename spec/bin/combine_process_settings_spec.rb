@@ -80,7 +80,7 @@ describe 'combine_process_settings' do
     end
 
     it "use a default END: version of the old version with timestamp beyond decimal place" do
-      time_t = Time.now.to_i
+      time_t = Time.now.to_f
 
       output = `bin/combine_process_settings -r spec/fixtures/production -o tmp/combined_process_settings.yml -i tmp/combined_process_settings.yml && cat tmp/combined_process_settings.yml`
       expect($?.exitstatus).to eq(0), output
@@ -92,7 +92,7 @@ describe 'combine_process_settings' do
       major, minor = version.divmod(1)
 
       expect(major).to eq(42), version.to_s
-      expect(minor * 10_000_000_000).to be_between(time_t, time_t + 10), version.to_s
+      expect(minor * 10_000_000_000).to be_between(time_t - 1.0, time_t + 10.0), [minor * 10_000_000_000, time_t - 1.0, time_t + 10.0].inspect
     end
   end
 end
