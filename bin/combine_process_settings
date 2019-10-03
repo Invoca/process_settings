@@ -23,8 +23,8 @@ end
 # and the minor is the current time_t
 def default_version_number(old_output_file)
   json_doc = YAML.load_file(old_output_file)
-  version = json_doc.last['END']&.[]('version') or raise "No END: version: #{json_doc.inspect}"
-  major = version.to_f / 1
+  version = json_doc.last['END']&.[]('version') or raise "No END.version: #{json_doc.inspect}"
+  major = version.to_f.truncate
   minor = Time.now.to_i
   major + minor / 10_000_000_000.0
 end
@@ -89,7 +89,9 @@ end
 options = parse_options(ARGV.dup)
 
 combined_settings = read_and_combine_settings(Pathname.new(options.root_folder) + SETTINGS_FOLDER)
-version_number = ENV['BUILD_NUMBER']&.to_f || default_version_number(options.initial_filename)
+
+# Note: version number will be an int if it came from the build number, or a float if we fell to the default
+version_number = ENV['BUILD_NUMBER']&.to_i || default_version_number(options.initial_filename)
 combined_settings << end_marker(version_number)
 
 yaml = combined_settings.to_yaml

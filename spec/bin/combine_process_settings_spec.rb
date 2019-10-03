@@ -63,7 +63,7 @@ describe 'combine_process_settings' do
           call_counts:
             complete_sync_seconds: 60
       - END:
-          version: 42.0
+          version: 42
     EOS
 
     expect($?.exitstatus).to eq(0)
