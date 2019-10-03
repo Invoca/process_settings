@@ -128,8 +128,7 @@ module ProcessSettings
     end
 
     def load_file(file_path)
-      json_doc = Psych.load_file(file_path)
-      TargetedSettings.from_array(json_doc)
+      TargetedSettings.from_file(file_path)
     end
   end
 end
