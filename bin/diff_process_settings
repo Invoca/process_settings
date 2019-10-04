@@ -5,19 +5,32 @@ require 'fileutils'
 
 PROGRAM_NAME = File.basename($PROGRAM_NAME)
 
-unless ARGV.size == 1
-  echo "usage: #{PROGRAM_NAME} <path-to-combined_process_settings.yml>"
+unless ARGV.size == 2
+  puts "usage: #{PROGRAM_NAME} <path-to-combined_process_settings-A.yml> <path-to-combined_process_settings-B.yml>"
   exit 1
 end
 
 path_to_combine_process_settings = ARGV[0]
 
-unless File.exists?(path_to_combine_process_settings)
-  warn "#{path_to_combine_process_settings} not found--must be a path to combined_process_settings.yml"
-  exit 1
-end
+input_files =
+    ARGV.map do |path|
+      if path == '-'
+        ''
+      else
+        unless File.exists?(path)
+          warn "#{path} not found--must be a path to combined_process_settings.yml"
+          exit 1
+        end
+        "< #{path}"
+      end
+    end
 
-system("rm -f tmp/previous-combined_process_settings.yml") or exit 1
-system("git show origin/latest:#{path_to_combine_process_settings} > tmp/previous-combined_process_settings.yml") or exit 1
+system("rm -f tmp/combined_process_settings-A.yml tmp/combined_process_settings-B.yml")
 
-system("diff tmp/previous-combined_process_settings.yml #{path_to_combine_process_settings}") # can't easily check status since it seems to vary for different versions of diff
+# remove the meta-data from the end
+system("sed '/^- END:$/,$d' #{input_files[0]} > tmp/combined_process_settings-A.yml")
+system("sed '/^- END:$/,$d' #{input_files[1]} > tmp/combined_process_settings-B.yml")
+
+system("diff tmp/combined_process_settings-A.yml tmp/combined_process_settings-B.yml")
+
+system("rm -f tmp/combined_process_settings-A.yml tmp/combined_process_settings-B.yml")
