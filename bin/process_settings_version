@@ -10,6 +10,6 @@ unless ARGV.size == 1
   exit 1
 end
 
-targeted_settings = ProcessSettings::TargetedSettings.from_file(ARGV[0])
+targeted_settings = ProcessSettings::TargetedSettings.from_file(ARGV[0], only_meta: true)
 
 puts targeted_settings.version

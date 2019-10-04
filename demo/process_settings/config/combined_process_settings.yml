@@ -38,4 +38,4 @@
     call_counts:
       complete_sync_seconds: 60
 - END:
-    version: 17.9
+    version: 17

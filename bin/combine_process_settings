@@ -6,6 +6,7 @@ require 'ostruct'
 require 'pathname'
 require 'fileutils'
 require 'yaml'
+require_relative '../lib/process_settings/targeted_settings'
 
 PROGRAM_NAME = File.basename($PROGRAM_NAME)
 SETTINGS_FOLDER = 'settings'
@@ -18,15 +19,10 @@ def end_marker(version)
   }
 end
 
-# returns a floating point version: major.minor
-# where the major is the same as in the old_output_file
-# and the minor is the current time_t
-def default_version_number(old_output_file)
-  json_doc = YAML.load_file(old_output_file)
-  version = json_doc.last['END']&.[]('version') or raise "No END.version: #{json_doc.inspect}"
-  major = version.to_f.truncate
-  minor = Time.now.to_i
-  major + minor / 10_000_000_000.0
+# returns a version number one higher than what's in the latest_output_file
+def default_version_number(latest_output_file)
+  process_settings = ProcessSettings::TargetedSettings.from_file(latest_output_file, only_meta: true)
+  process_settings.version + 1
 end
 
 

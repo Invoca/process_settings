@@ -72,16 +72,14 @@ describe 'combine_process_settings' do
   context "with initial combined_process_settings.yml" do
     before do
       FileUtils.mkdir("tmp") rescue nil
-      File.write("tmp/combined_process_settings.yml", [{ 'END' => { 'version' => 42.0 } }].to_yaml)
+      File.write("tmp/combined_process_settings.yml", [{ 'END' => { 'version' => 42 } }].to_yaml)
     end
 
     after do
       FileUtils.rm_f("tmp/combined_process_settings.yml")
     end
 
-    it "use a default END: version of the old version with timestamp beyond decimal place" do
-      time_t = Time.now.to_f
-
+    it "use a default END: version of the latest + 1" do
       output = `bin/combine_process_settings -r spec/fixtures/production -o tmp/combined_process_settings.yml -i tmp/combined_process_settings.yml && cat tmp/combined_process_settings.yml`
       expect($?.exitstatus).to eq(0), output
 
@@ -89,10 +87,7 @@ describe 'combine_process_settings' do
 
       version = output_json_doc.last['END']&.[]('version')
 
-      major, minor = version.divmod(1)
-
-      expect(major).to eq(42), version.to_s
-      expect(minor * 10_000_000_000).to be_between(time_t - 1.0, time_t + 10.0), [minor * 10_000_000_000, time_t - 1.0, time_t + 10.0].inspect
+      expect(version).to eq(43)
     end
   end
 end

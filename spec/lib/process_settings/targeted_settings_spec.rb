@@ -15,7 +15,7 @@ describe ProcessSettings::TargetedSettings do
     }
   }, {
     'END' => {
-      'version' => 17.9
+      'version' => 17
     }
   }].freeze
 
@@ -60,7 +60,19 @@ describe ProcessSettings::TargetedSettings do
 
         expect(targeted_settings.targeted_settings_array.size).to eq(1)
         expect(targeted_settings.targeted_settings_array.first.process_settings.json_doc.keys.first).to eq('honeypot')
-        expect(targeted_settings.version).to eq(17.9)
+        expect(targeted_settings.version).to eq(17)
+      end
+
+      it "infers version from END" do
+        targeted_settings = described_class.from_file(TMP_FILE_PATH)
+        expect(targeted_settings.targeted_settings_array.size).to eq(1)
+        expect(targeted_settings.version).to eq(17)
+      end
+
+      it "infers version from END faster with only_meta: true" do
+        targeted_settings = described_class.from_file(TMP_FILE_PATH, only_meta: true)
+        expect(targeted_settings.targeted_settings_array.size).to eq(0)
+        expect(targeted_settings.version).to eq(17)
       end
     end
   end
@@ -92,12 +104,19 @@ describe ProcessSettings::TargetedSettings do
 
     it "infers version from END" do
       targeted_settings = described_class.from_array(TARGETED_SETTINGS)
-      expect(targeted_settings.version).to eq(17.9)
+      expect(targeted_settings.targeted_settings_array.size).to eq(1)
+      expect(targeted_settings.version).to eq(17)
+    end
+
+    it "infers version from END faster with only_meta: true" do
+      targeted_settings = described_class.from_array(TARGETED_SETTINGS, only_meta: true)
+      expect(targeted_settings.targeted_settings_array.size).to eq(0)
+      expect(targeted_settings.version).to eq(17)
     end
 
     it "treats old END: true format as { 'version' => 0 }" do
       targeted_settings = described_class.from_array([{ 'END' => true }])
-      expect(targeted_settings.version).to eq(0.0)
+      expect(targeted_settings.version).to eq(0)
     end
   end
 end

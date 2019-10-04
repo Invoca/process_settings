@@ -6,12 +6,12 @@ require 'process_settings/monitor'
 
 describe ProcessSettings::Monitor do
   SETTINGS_PATH = "./settings.yml"
-  SAMPLE_SETTINGS = [{ 'target' => true, 'settings' => { 'sip' => true } }, { 'END' => { 'version' => 19.0 } }].freeze
+  SAMPLE_SETTINGS = [{ 'target' => true, 'settings' => { 'sip' => true } }, { 'END' => { 'version' => 19 } }].freeze
   EAST_SETTINGS = [{ 'target' => { 'region' => 'east' }, 'settings' => { 'reject_call' => true } },
                    { 'target' => true, 'settings' => { 'sip' => true } },
                    { 'target' => { 'caller_id' => ['+18003334444', '+18887776666']}, 'settings' => { 'reject_call' => false }},
-                   { 'END' => { 'version' => 19.0 }}].freeze
-  EMPTY_SAMPLE_SETTINGS = [{ 'target' => true, 'settings' => {} }, { 'END' => { 'version' => 19.0 }}].freeze
+                   { 'END' => { 'version' => 19 }}].freeze
+  EMPTY_SAMPLE_SETTINGS = [{ 'target' => true, 'settings' => {} }, { 'END' => { 'version' => 19 }}].freeze
   SAMPLE_SETTINGS_YAML = SAMPLE_SETTINGS.to_yaml
   EAST_SETTINGS_YAML = EAST_SETTINGS.to_yaml
   EMPTY_SAMPLE_SETTINGS_YAML = EMPTY_SAMPLE_SETTINGS.to_yaml

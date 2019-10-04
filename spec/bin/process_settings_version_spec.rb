@@ -7,6 +7,6 @@ describe 'process_settings_version' do
   it "returns the version on its own line on STDOUT" do
     output = `./bin/process_settings_version spec/fixtures/production/combined_process_settings.yml`
 
-    expect(output).to eq("17.9\n")
+    expect(output).to eq("17\n")
   end
 end
