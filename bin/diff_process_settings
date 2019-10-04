@@ -1,6 +1,9 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+# Diffs two combined_process_settings.yml files. Skips over the meta-data (version) at the END.
+# A filename of - means STDIN.
+
 require 'fileutils'
 
 PROGRAM_NAME = File.basename($PROGRAM_NAME)

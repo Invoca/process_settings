@@ -1,6 +1,8 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+# Pulls the version from a combined_process_settings.yml file and prints it on STDOUT.
+
 require_relative '../lib/process_settings/targeted_settings'
 
 PROGRAM_NAME = File.basename($PROGRAM_NAME)

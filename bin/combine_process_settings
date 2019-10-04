@@ -86,7 +86,6 @@ options = parse_options(ARGV.dup)
 
 combined_settings = read_and_combine_settings(Pathname.new(options.root_folder) + SETTINGS_FOLDER)
 
-# Note: version number will be an int if it came from the build number, or a float if we fell to the default
 version_number = ENV['BUILD_NUMBER']&.to_i || default_version_number(options.initial_filename)
 combined_settings << end_marker(version_number)
 
