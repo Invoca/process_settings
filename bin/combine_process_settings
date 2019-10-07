@@ -46,18 +46,13 @@ def parse_options(argv)
 end
 
 def read_and_combine_settings(settings_folder)
-  combined_settings = []
-
   pushd(settings_folder) do
-    Dir.glob("**/*.yml").sort.each do |settings_path|
-      settings = { 'filename' => settings_path }
+    Dir.glob("**/*.yml").sort.map do |settings_path|
+      settings = { 'filename' => settings_path }  # start with the filename so it appears at the top of each section
       settings.merge!(YAML.load_file(settings_path))
-
-      combined_settings << settings
+      settings
     end
   end
-
-  combined_settings
 end
 
 def pushd(folder)
