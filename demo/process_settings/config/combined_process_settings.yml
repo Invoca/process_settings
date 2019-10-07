@@ -37,5 +37,6 @@
   settings:
     call_counts:
       complete_sync_seconds: 60
-- END:
+- meta:
     version: 17
+    END: true

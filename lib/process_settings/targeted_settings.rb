@@ -41,15 +41,15 @@ module ProcessSettings
     class << self
       def from_array(settings_array, only_meta: false)
         settings_array.is_a?(Array) or raise ArgumentError, "settings_array must be an Array of Hashes; got #{settings_array.inspect}"
-        end_hash = nil
+        meta_hash = nil
 
         targeted_settings_array =
           settings_array.map do |settings_hash|
             settings_hash.is_a?(Hash) or raise ArgumentError, "settings_array entries must each be a Hash; got #{settings_hash.inspect}"
 
-            end_hash and raise ArgumentError, "\"END\" marker must be at end. (Got #{settings_hash.inspect} after.)"
-            if settings_hash.has_key?("END")
-              end_hash = settings_hash['END'] == true ? { 'version' => 0 } : settings_hash['END']
+            meta_hash and raise ArgumentError, "\"meta\" marker must be at end; got #{settings_hash.inspect} after"
+            if (meta_hash = settings_hash["meta"])
+              meta_hash.to_a.last == ['END', true] or raise ArgumentError, "END: true must be at end of file; got #{meta_hash.inspect}"
               next
             end
 
@@ -67,9 +67,9 @@ module ProcessSettings
             end
           end.compact
 
-        end_hash or raise ArgumentError, "Missing END marker at end; got #{settings_array.inspect}"
+        meta_hash or raise ArgumentError, "Missing meta: marker at end; got #{settings_array.inspect}"
 
-        new(targeted_settings_array, version: end_hash['version'])
+        new(targeted_settings_array, version: meta_hash['version'])
       end
 
       def from_file(file_path, only_meta: false)

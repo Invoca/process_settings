@@ -13,8 +13,9 @@ SETTINGS_FOLDER = 'settings'
 
 def end_marker(version)
   {
-    'END' => {
-      'version' => version
+    'meta' => {
+      'version' => version,
+      'END' => true
     }
   }
 end

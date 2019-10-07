@@ -14,8 +14,9 @@ describe ProcessSettings::TargetedSettings do
       }
     }
   }, {
-    'END' => {
-      'version' => 17
+    'meta' => {
+      'version' => 17,
+      'END' => true
     }
   }].freeze
 
@@ -90,33 +91,34 @@ describe ProcessSettings::TargetedSettings do
       expect(process_settings).to be_kind_of(ProcessSettings::Settings)
     end
 
-    it "confirms END is at end" do
+    it "confirms meta: is at end" do
       expect do
         described_class.from_array(TARGETED_SETTINGS.reverse)
-      end.to raise_error(ArgumentError, /Got \{"filename"=>"honeypot.yml",/)
+      end.to raise_error(ArgumentError, /got \{"filename"=>"honeypot.yml",/)
     end
 
-    it "requires END at end" do
+    it "requires meta: at end" do
       expect do
         described_class.from_array(TARGETED_SETTINGS[0, 1])
-      end.to raise_error(ArgumentError, /Missing END/)
+      end.to raise_error(ArgumentError, /Missing meta:/)
     end
 
-    it "infers version from END" do
+    it "requires END: true at end of meta: section" do
+      expect do
+        described_class.from_array(TARGETED_SETTINGS[0, 1] + [ { 'meta' => { 'END' => true, 'version' => 42 } }])
+      end.to raise_error(ArgumentError, /END: true must be at end of file/)
+    end
+
+    it "infers version from meta" do
       targeted_settings = described_class.from_array(TARGETED_SETTINGS)
       expect(targeted_settings.targeted_settings_array.size).to eq(1)
       expect(targeted_settings.version).to eq(17)
     end
 
-    it "infers version from END faster with only_meta: true" do
+    it "infers version from meta faster with only_meta: true" do
       targeted_settings = described_class.from_array(TARGETED_SETTINGS, only_meta: true)
       expect(targeted_settings.targeted_settings_array.size).to eq(0)
       expect(targeted_settings.version).to eq(17)
-    end
-
-    it "treats old END: true format as { 'version' => 0 }" do
-      targeted_settings = described_class.from_array([{ 'END' => true }])
-      expect(targeted_settings.version).to eq(0)
     end
   end
 end

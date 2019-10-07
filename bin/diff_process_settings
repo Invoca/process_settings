@@ -31,8 +31,8 @@ input_files =
 system("rm -f tmp/combined_process_settings-A.yml tmp/combined_process_settings-B.yml")
 
 # remove the meta-data from the end
-system("sed '/^- END:$/,$d' #{input_files[0]} > tmp/combined_process_settings-A.yml")
-system("sed '/^- END:$/,$d' #{input_files[1]} > tmp/combined_process_settings-B.yml")
+system("sed '/^- meta:$/,$d' #{input_files[0]} > tmp/combined_process_settings-A.yml")
+system("sed '/^- meta:$/,$d' #{input_files[1]} > tmp/combined_process_settings-B.yml")
 
 system("diff tmp/combined_process_settings-A.yml tmp/combined_process_settings-B.yml")
 

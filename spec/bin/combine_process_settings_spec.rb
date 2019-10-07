@@ -30,7 +30,7 @@ describe 'combine_process_settings' do
     expect($?.exitstatus).to eq(1)
   end
 
-  it "should combine all settings files alphabetically, with a magic comment at the top and END: at the end" do
+  it "should combine all settings files alphabetically, with a magic comment at the top and meta: at the end" do
     output = `BUILD_NUMBER=42 bin/combine_process_settings -r spec/fixtures/production -o tmp/combined_process_settings.yml && cat tmp/combined_process_settings.yml && rm -f tmp/combined_process_settings.yml`
 
     expect(output).to eq(<<~EOS)
@@ -62,8 +62,9 @@ describe 'combine_process_settings' do
         settings:
           call_counts:
             complete_sync_seconds: 60
-      - END:
+      - meta:
           version: 42
+          END: true
     EOS
 
     expect($?.exitstatus).to eq(0)
@@ -72,20 +73,20 @@ describe 'combine_process_settings' do
   context "with initial combined_process_settings.yml" do
     before do
       FileUtils.mkdir("tmp") rescue nil
-      File.write("tmp/combined_process_settings.yml", [{ 'END' => { 'version' => 42 } }].to_yaml)
+      File.write("tmp/combined_process_settings.yml", [{ 'meta' => { 'version' => 42, 'END' => true } }].to_yaml)
     end
 
     after do
       FileUtils.rm_f("tmp/combined_process_settings.yml")
     end
 
-    it "use a default END: version of the latest + 1" do
+    it "use a default version of the latest + 1" do
       output = `bin/combine_process_settings -r spec/fixtures/production -o tmp/combined_process_settings.yml -i tmp/combined_process_settings.yml && cat tmp/combined_process_settings.yml`
       expect($?.exitstatus).to eq(0), output
 
       output_json_doc = YAML.load(output)
 
-      version = output_json_doc.last['END']&.[]('version')
+      version = output_json_doc.last['meta']&.[]('version')
 
       expect(version).to eq(43)
     end
