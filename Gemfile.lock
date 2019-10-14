@@ -3,7 +3,7 @@ PATH
   specs:
     process_settings (0.3.0)
       json
-      monotonic_tick_count
+      rb-inotify
 
 GEM
   remote: http://rubygems.org/
@@ -25,13 +25,12 @@ GEM
       tins (~> 1.6)
     diff-lcs (1.3)
     docile (1.3.1)
+    ffi (1.11.1)
     i18n (0.9.5)
       concurrent-ruby (~> 1.0)
     json (2.1.0)
     method_source (0.9.0)
     minitest (5.11.3)
-    monotonic_tick_count (0.2.0)
-      activesupport (~> 4.2)
     parallel (1.12.1)
     parser (2.5.1.2)
       ast (~> 2.4.0)
@@ -41,6 +40,8 @@ GEM
       method_source (~> 0.9.0)
     rainbow (3.0.0)
     rake (12.3.3)
+    rb-inotify (0.10.0)
+      ffi (~> 1.0)
     rspec (3.8.0)
       rspec-core (~> 3.8.0)
       rspec-expectations (~> 3.8.0)
@@ -93,6 +94,7 @@ DEPENDENCIES
   process_settings!
   pry
   rake
+  rb-inotify
   rspec
   rspec-mocks
   rspec_junit_formatter
