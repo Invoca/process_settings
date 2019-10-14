@@ -14,7 +14,7 @@ gem 'process_settings', '~> 0.1'
 
 To use an unreleased version, add it to your Gemfile for Bundler:
 ```ruby
-gem 'process_settings', git: 'git://github.com/Invoca/process_settings.git'
+gem 'process_settings', git: 'git@github.com:Invoca/process_settings'
 ```
 
 ## Usage
