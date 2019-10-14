@@ -21,16 +21,21 @@ module ProcessSettings
       @on_change_callbacks = []
       @static_context = {}
 
-      # to eliminate any race condition:
-      # 1. set up file watcher first
-      # 2. load the file
-      # 3. then run the watcher (which should see any changes made after (1))
+      if (notifier = file_change_notifier)
+        # to eliminate any race condition:
+        # 1. set up file watcher first
+        # 2. load the file
+        # 3. run the watcher (which should trigger if any changes have been made since (1))
 
-      file_change_notifier.watch(@file_path, :modify) { load_untargeted_settings }
+        notifier.watch(@file_path, :modify) { load_untargeted_settings }
 
-      load_untargeted_settings
+        load_untargeted_settings
 
-      Thread.new { file_change_notifier.run }.run
+        Thread.new { notifier.run }.run
+      else
+        warn "\nWarning: Loading process_settings from #{ProcessSettings::Monitor.file_path} just once. INotifier not available to watch for file changes."
+        load_untargeted_settings
+      end
     end
 
     # Registers the given callback block to be called when settings change.
@@ -109,9 +114,10 @@ module ProcessSettings
       TargetedSettings.from_file(file_path)
     end
 
-    # note: this is a private method for easier stubbing
     def file_change_notifier
-      @file_change_notifier ||= INotify::Notifier.new
+      if defined?(INotify)
+        @file_change_notifier ||= INotify::Notifier.new
+      end
     end
   end
 end
