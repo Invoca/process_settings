@@ -17,26 +17,12 @@ describe ProcessSettings::Monitor do
   EMPTY_SAMPLE_SETTINGS_YAML = EMPTY_SAMPLE_SETTINGS.to_yaml
 
   describe "#initialize" do
-    it "should default min_polling_seconds to 5 when min_polling_seconds not passed" do
-      process_monitor = described_class.new(SETTINGS_PATH)
-      expect(process_monitor.instance_variable_get(:@min_polling_seconds)).to eq(5)
+    before do
+      File.write(SETTINGS_PATH, SAMPLE_SETTINGS_YAML)
     end
 
-    it "should default min_polling_seconds to 5 when min_polling_seconds is nil" do
-      process_monitor = described_class.new(SETTINGS_PATH, min_polling_seconds: nil)
-      expect(process_monitor.instance_variable_get(:@min_polling_seconds)).to eq(5)
-    end
-
-    it "should default min_polling_seconds to global default when min_polling_seconds not passed" do
-      described_class.min_polling_seconds = 20
-      process_monitor = described_class.new(SETTINGS_PATH)
-      expect(process_monitor.instance_variable_get(:@min_polling_seconds)).to eq(20)
-    end
-
-    it "should default min_polling_seconds to global default when min_polling_seconds is nil" do
-      described_class.min_polling_seconds = 20
-      process_monitor = described_class.new(SETTINGS_PATH, min_polling_seconds: nil)
-      expect(process_monitor.instance_variable_get(:@min_polling_seconds)).to eq(20)
+    after do
+      FileUtils.rm_f(SETTINGS_PATH)
     end
 
     it "defaults to empty static_context" do
@@ -49,7 +35,6 @@ describe ProcessSettings::Monitor do
     describe ".instance method" do
       before do
         described_class.clear_instance
-        described_class.min_polling_seconds = 5
       end
 
       it "should raise an exception if not configured" do
@@ -61,28 +46,13 @@ describe ProcessSettings::Monitor do
       end
 
       it "should return a global instance" do
-        described_class.file_path = "./process_settings.yml"
+        described_class.file_path = "./spec/fixtures/production/combined_process_settings.yml"
 
         instance_1 = described_class.instance
         instance_2 = described_class.instance
 
         expect(instance_1).to be_kind_of(described_class)
         expect(instance_1.object_id).to eq(instance_2.object_id)
-
-        expect(instance_1.min_polling_seconds).to eq(5)
-      end
-
-      it "should use the configured min_polling_seconds" do
-        described_class.file_path = "./process_settings.yml"
-        described_class.min_polling_seconds = 20
-
-        instance_1 = described_class.instance
-        instance_2 = described_class.instance
-
-        expect(instance_1).to be_kind_of(described_class)
-        expect(instance_1.object_id).to eq(instance_2.object_id)
-
-        expect(instance_1.min_polling_seconds).to eq(20)
       end
     end
   end
@@ -116,15 +86,15 @@ describe ProcessSettings::Monitor do
       expect(matching_settings.first.process_settings.json_doc).to eq(SAMPLE_SETTINGS.first['settings'])
     end
 
-    it "should re-read from disk after the min_polling_interval" do
-      process_monitor = described_class.new(SETTINGS_PATH, min_polling_seconds: 0.1)
+    it "should re-read from disk when watcher triggered" do
+      process_monitor = described_class.new(SETTINGS_PATH)
       matching_settings = process_monitor.untargeted_settings.matching_settings({})
       expect(matching_settings.size).to eq(1)
       expect(matching_settings.first.process_settings.json_doc).to eq(SAMPLE_SETTINGS.first['settings'])
 
       File.write(SETTINGS_PATH, EMPTY_SAMPLE_SETTINGS_YAML)
 
-      sleep(0.2)
+      process_monitor.instance_variable_get(:@file_change_notifier).trigger_watchers
 
       matching_settings = process_monitor.untargeted_settings.matching_settings({})
       expect(matching_settings.first.process_settings.json_doc).to eq({})
@@ -136,7 +106,6 @@ describe ProcessSettings::Monitor do
 
     before do
       File.write(SETTINGS_PATH, EAST_SETTINGS_YAML)
-      expect(process_monitor).to receive(:now) { MonotonicTickCount.now }.at_least(1).times
     end
 
     after do
@@ -183,7 +152,6 @@ describe ProcessSettings::Monitor do
 
     before do
       File.write(SETTINGS_PATH, EAST_SETTINGS_YAML)
-      expect(process_monitor).to receive(:now) { MonotonicTickCount.now }.at_least(1).times
     end
 
     after do

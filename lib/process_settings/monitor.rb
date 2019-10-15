@@ -3,64 +3,71 @@
 require_relative 'targeted_settings'
 require_relative 'hash_path'
 require 'psych'
-require 'monotonic_tick_count'
+begin
+  require 'rb-inotify'
+rescue FFI::NotFoundError
+end
+
 
 module ProcessSettings
   class Monitor
     attr_reader :file_path, :min_polling_seconds
-    attr_reader :static_context
+    attr_reader :static_context, :untargeted_settings, :statically_targeted_settings
 
     DEFAULT_MIN_POLLING_SECONDS = 5
 
-    def initialize(file_path, min_polling_seconds: nil)
+    def initialize(file_path)
       @file_path = file_path
-      @min_polling_seconds = min_polling_seconds || self.class.min_polling_seconds
       @on_change_callbacks = []
       @static_context = {}
+
+      if (notifier = file_change_notifier)
+        # to eliminate any race condition:
+        # 1. set up file watcher first
+        # 2. load the file
+        # 3. run the watcher (which should trigger if any changes have been made since (1))
+
+        notifier.watch(@file_path, :modify) { load_untargeted_settings }
+
+        load_untargeted_settings
+
+        Thread.new { notifier.run }.run
+      else
+        warn "\nWarning: Loading process_settings from #{ProcessSettings::Monitor.file_path} just once. INotifier not available to watch for file changes."
+        load_untargeted_settings
+      end
     end
 
     # Registers the given callback block to be called when settings change.
-    # This needs to be a quick method because it will be called on a borrowed thread (whichever polling code
-    # noticed a change). Note that this means there is no guarantee for how soon it will be called after settings
-    # change.
+    # These are run using the shared thread that monitors for changes so be courteous and don't monopolize it!
     def on_change(&callback)
       @on_change_callbacks << callback
     end
 
-    # Returns the most recent settings from disk.
-    # The disk file's mtime is polled no more frequently than DEFAULT_MIN_POLLING_SECONDS. If the mtime has changed,
-    # the settings are reloaded from disk.
-    def untargeted_settings
-      time_now = now
-      if poll_for_changes?(@last_looked_for_changes, time_now, @min_polling_seconds)
-        @last_looked_for_changes = time_now
-        if (changes = load_file_if_changed(@last_mtime, @file_path))
-          @last_mtime, @untargetted_settings = changes
-          notify_on_change
-        end
-      end
-
-      @untargetted_settings
+    # Loads the most recent settings from disk and returns them.
+    def load_untargeted_settings
+      @untargeted_settings = load_file(file_path)
     end
 
-    # Assigns a new static context. This clears the cache used by statically_targeted_settings so that
-    # will be recomputed.
+    # Assigns a new static context. Recomputes statically_targeted_settings.
     def static_context=(context)
-      @last_untargetted_settings = nil
       @static_context = context
+
+      statically_targeted_settings(force: true)
     end
 
-    # Returns the current process settings as a TargetAndProcessSettings given by applying the static context to the current untargeted settings
-    # from disk.
-    def statically_targeted_settings
-      current_untargeted_settings = untargeted_settings
+    # Loads the latest untargeted settings from disk. Returns the current process settings as a TargetAndProcessSettings given
+    # by applying the static context to the current untargeted settings from disk.
+    # If these have changed, borrows this thread to call notify_on_change.
+    def statically_targeted_settings(force: false)
+      if force || @last_untargetted_settings != @untargeted_settings
+        @statically_targeted_settings = @untargeted_settings.with_static_context(@static_context)
+        @last_untargetted_settings = @untargeted_settings
 
-      if @last_untargetted_settings != current_untargeted_settings
-        @statically_targetted_settings = current_untargeted_settings.with_static_context(@static_context)
-        @last_untargetted_settings = current_untargeted_settings
+        notify_on_change
       end
 
-      @statically_targetted_settings
+      @statically_targeted_settings
     end
 
     # Returns the process settings value at the given `path` using the given `dynamic_context`.
@@ -78,10 +85,8 @@ module ProcessSettings
       end
     end
 
-    @min_polling_seconds = DEFAULT_MIN_POLLING_SECONDS
-
     class << self
-      attr_accessor :file_path, :min_polling_seconds
+      attr_accessor :file_path
 
       def clear_instance
         @instance = nil
@@ -89,7 +94,7 @@ module ProcessSettings
 
       def instance
         file_path or raise ArgumentError, "#{self}::file_path must be set before calling instance method"
-        @instance ||= new(file_path, min_polling_seconds: min_polling_seconds)
+        @instance ||= new(file_path)
       end
     end
 
@@ -105,30 +110,14 @@ module ProcessSettings
       end
     end
 
-    # Returns a clock suitable for relative time comparisons. Wrapped in a method for easy stubbing.
-    def now
-      MonotonicTickCount.now
-    end
-
-    def poll_for_changes?(last_looked_for_changes, time_now, min_polling_seconds)
-      last_looked_for_changes.nil? || time_now > (last_looked_for_changes + min_polling_seconds)
-    end
-
-    # if changed, returns [mtime, file contents]
-    # if not changed, returns nil
-    def load_file_if_changed(last_mtime, file_path)
-      mtime = current_mtime(file_path)
-      if mtime != last_mtime
-        [mtime, load_file(file_path)]
-      end
-    end
-
-    def current_mtime(file_path)
-      File.stat(file_path).mtime
-    end
-
     def load_file(file_path)
       TargetedSettings.from_file(file_path)
+    end
+
+    def file_change_notifier
+      if defined?(INotify)
+        @file_change_notifier ||= INotify::Notifier.new
+      end
     end
   end
 end

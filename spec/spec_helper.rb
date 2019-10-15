@@ -13,3 +13,21 @@ RSpec.configure do |config|
   end
   config.shared_context_metadata_behavior = :apply_to_host_groups
 end
+
+module INotify
+  class Notifier
+    def initialize
+      @watches = []
+    end
+
+    def watch(*args, &block)
+      @watches << [*args, block]
+    end
+
+    def trigger_watchers
+      while (watch = @watches.shift)
+        watch.last.call
+      end
+    end
+  end
+end
