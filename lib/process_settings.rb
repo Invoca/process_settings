@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
-require 'rb-inotify'
+begin
+  require 'rb-inotify'
+rescue FFI::NotFoundError
+end
 
 module ProcessSettings
 end
