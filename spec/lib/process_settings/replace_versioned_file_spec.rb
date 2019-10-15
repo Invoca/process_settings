@@ -17,6 +17,7 @@ describe ProcessSettings::ReplaceVersionedFile do
         params = [combined_settings_v18, combined_settings_v16]
 
         expect(FileUtils).to receive(:mv).with(*params)
+        expect(FileUtils).to_not receive(:remove_file)
         described_class.new.replace_file_on_newer_file_version(*params)
       end
 
@@ -25,6 +26,7 @@ describe ProcessSettings::ReplaceVersionedFile do
           params = [combined_settings_v18, combined_settings_v16_50]
 
           expect(FileUtils).to receive(:mv).with(*params)
+          expect(FileUtils).to_not receive(:remove_file)
           described_class.new.replace_file_on_newer_file_version(*params)
         end
       end
@@ -34,6 +36,7 @@ describe ProcessSettings::ReplaceVersionedFile do
           params = combined_settings_v18_1, combined_settings_v16
 
           expect(FileUtils).to receive(:mv).with(*params)
+          expect(FileUtils).to_not receive(:remove_file)
           described_class.new.replace_file_on_newer_file_version(*params)
         end
       end
@@ -43,6 +46,7 @@ describe ProcessSettings::ReplaceVersionedFile do
           params = combined_settings_v18_1, combined_settings_v16_50
 
           expect(FileUtils).to receive(:mv).with(*params)
+          expect(FileUtils).to_not receive(:remove_file)
           described_class.new.replace_file_on_newer_file_version(*params)
         end
       end
@@ -52,16 +56,18 @@ describe ProcessSettings::ReplaceVersionedFile do
           params = combined_settings_v18_1, combined_settings_v16_0
 
           expect(FileUtils).to receive(:mv).with(*params)
+          expect(FileUtils).to_not receive(:remove_file)
           described_class.new.replace_file_on_newer_file_version(*params)
         end
       end
     end
 
-    context "when source major verion is equal to destination major version" do
+    context "when source major verion is equal to destination major version and no minor versions" do
       it "should not replace the file" do
         params = [combined_settings_v16, combined_settings_v16]
 
         expect(FileUtils).to_not receive(:mv).with(*params)
+        expect(FileUtils).to_not receive(:remove_file)
         described_class.new.replace_file_on_newer_file_version(*params)
       end
 
@@ -70,6 +76,7 @@ describe ProcessSettings::ReplaceVersionedFile do
           params = [combined_settings_v16, combined_settings_v16_0]
 
           expect(FileUtils).to_not receive(:mv).with(*params)
+          expect(FileUtils).to receive(:remove_file)
           described_class.new.replace_file_on_newer_file_version(*params)
         end
       end
@@ -79,6 +86,7 @@ describe ProcessSettings::ReplaceVersionedFile do
           params = combined_settings_v16_0, combined_settings_v16
 
           expect(FileUtils).to_not receive(:mv).with(*params)
+          expect(FileUtils).to receive(:remove_file)
           described_class.new.replace_file_on_newer_file_version(*params)
         end
       end
@@ -88,6 +96,7 @@ describe ProcessSettings::ReplaceVersionedFile do
           params = [combined_settings_v16, combined_settings_v16_50]
 
           expect(FileUtils).to_not receive(:mv).with(*params)
+          expect(FileUtils).to receive(:remove_file)
           described_class.new.replace_file_on_newer_file_version(*params)
         end
       end
@@ -97,6 +106,7 @@ describe ProcessSettings::ReplaceVersionedFile do
           params = combined_settings_v16_50, combined_settings_v16
 
           expect(FileUtils).to receive(:mv).with(*params)
+          expect(FileUtils).to_not receive(:remove_file)
           described_class.new.replace_file_on_newer_file_version(*params)
         end
       end
@@ -106,6 +116,7 @@ describe ProcessSettings::ReplaceVersionedFile do
           params = combined_settings_v16_0, combined_settings_v16_50
 
           expect(FileUtils).to_not receive(:mv).with(*params)
+          expect(FileUtils).to receive(:remove_file)
           described_class.new.replace_file_on_newer_file_version(*params)
         end
       end
@@ -115,6 +126,7 @@ describe ProcessSettings::ReplaceVersionedFile do
           params = combined_settings_v16_50, combined_settings_v16_0
 
           expect(FileUtils).to receive(:mv).with(*params)
+          expect(FileUtils).to_not receive(:remove_file)
           described_class.new.replace_file_on_newer_file_version(*params)
         end
       end
@@ -125,6 +137,7 @@ describe ProcessSettings::ReplaceVersionedFile do
         params = [combined_settings_v16, combined_settings_v18]
 
         expect(FileUtils).to_not receive(:mv).with(*params)
+        expect(FileUtils).to receive(:remove_file)
         described_class.new.replace_file_on_newer_file_version(*params)
       end
 
@@ -133,6 +146,7 @@ describe ProcessSettings::ReplaceVersionedFile do
           params = [combined_settings_v16, combined_settings_v18_1]
 
           expect(FileUtils).to_not receive(:mv).with(*params)
+          expect(FileUtils).to receive(:remove_file)
           described_class.new.replace_file_on_newer_file_version(*params)
         end
       end
@@ -142,6 +156,7 @@ describe ProcessSettings::ReplaceVersionedFile do
           params = combined_settings_v16_50, combined_settings_v18
 
           expect(FileUtils).to_not receive(:mv).with(*params)
+          expect(FileUtils).to receive(:remove_file)
           described_class.new.replace_file_on_newer_file_version(*params)
         end
       end
@@ -151,6 +166,7 @@ describe ProcessSettings::ReplaceVersionedFile do
           params = combined_settings_v16_0, combined_settings_v18_1
 
           expect(FileUtils).to_not receive(:mv).with(*params)
+          expect(FileUtils).to receive(:remove_file)
           described_class.new.replace_file_on_newer_file_version(*params)
         end
       end
@@ -160,6 +176,7 @@ describe ProcessSettings::ReplaceVersionedFile do
           params = combined_settings_v16_50, combined_settings_v18_1
 
           expect(FileUtils).to_not receive(:mv).with(*params)
+          expect(FileUtils).to receive(:remove_file)
           described_class.new.replace_file_on_newer_file_version(*params)
         end
       end

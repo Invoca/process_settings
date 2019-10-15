@@ -9,6 +9,8 @@ module ProcessSettings
     def replace_file_on_newer_file_version(source_file_name, destination_file_name)
       if source_version_is_newer?(source_file_name, destination_file_name)
         FileUtils.mv(source_file_name, destination_file_name)
+      elsif source_file_name != destination_file_name # make sure we're not deleting destination file
+        FileUtils.remove_file(source_file_name) # clean up, remove left over file
       end
     end
 
