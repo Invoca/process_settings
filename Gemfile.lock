@@ -94,7 +94,6 @@ DEPENDENCIES
   process_settings!
   pry
   rake
-  rb-inotify
   rspec
   rspec-mocks
   rspec_junit_formatter

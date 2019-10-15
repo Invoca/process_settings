@@ -4,8 +4,6 @@ source 'http://rubygems.org'
 
 gemspec
 
-gem 'rb-inotify'
-
 group :development do
   gem 'activesupport'
   gem 'bump', '~> 0.6.1'

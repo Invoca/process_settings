@@ -13,6 +13,7 @@ Gem::Specification.new do |spec|
   spec.executables = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
   spec.homepage    = 'https://rubygems.org/gems/process_settings'
   spec.metadata    = { 'source_code_uri' => 'https://github.com/Invoca/process_settings' }
+  spec.require_paths = ["lib"]
 
   spec.add_runtime_dependency 'json'
   spec.add_runtime_dependency 'rb-inotify'
