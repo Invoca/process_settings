@@ -12,8 +12,9 @@ module ProcessSettings
 
     DEFAULT_MIN_POLLING_SECONDS = 5
 
-    def initialize(file_path)
+    def initialize(file_path, logger:)
       @file_path = File.expand_path(file_path)
+      @logger = logger
       @on_change_callbacks = []
       @static_context = {}
 
@@ -26,8 +27,8 @@ module ProcessSettings
       path = File.dirname(@file_path)
 
       listener = file_change_notifier.to(path) do |modified, _added, _removed|
-        warn "Callback #{modified.inspect}, #{_added.inspect} #{_removed.inspect}"
         if modified.include?(@file_path)
+          @logger.info("ProcessSettings::Monitor file #{@file_path} changed. Reloading.")
           load_untargeted_settings
         end
       end
@@ -40,7 +41,7 @@ module ProcessSettings
         begin
           sleep
         rescue Exception => ex # using Exception base class since we're in a thread, we don't want any exceptions flying out... since they won't be logged
-          warn "ProcessSettings::Monitor thread exception! #{ex.class}: #{ex.messages}"
+          logger.fatal("ProcessSettings::Monitor thread exception! #{ex.class}: #{ex.messages}")
         end
       end.run
     end
@@ -94,6 +95,7 @@ module ProcessSettings
 
     class << self
       attr_accessor :file_path
+      attr_accessor :logger
 
       def clear_instance
         @instance = nil
@@ -101,7 +103,8 @@ module ProcessSettings
 
       def instance
         file_path or raise ArgumentError, "#{self}::file_path must be set before calling instance method"
-        @instance ||= new(file_path)
+        logger or raise ArgumentError, "#{self}::logger must be set before calling instance method"
+        @instance ||= new(file_path, logger: logger)
       end
     end
 
@@ -112,7 +115,7 @@ module ProcessSettings
         begin
           callback.call(self)
         rescue => ex
-          warn("notify_on_change rescued exception:\n#{ex.class}: #{ex.message}")
+          logger.error("ProcessSettings::Monitor#notify_on_change rescued exception:\n#{ex.class}: #{ex.message}")
         end
       end
     end
