@@ -95,7 +95,7 @@ module ProcessSettings
 
     class << self
       attr_accessor :file_path
-      attr_accessor :logger
+      attr_reader :logger
 
       def clear_instance
         @instance = nil
@@ -105,6 +105,11 @@ module ProcessSettings
         file_path or raise ArgumentError, "#{self}::file_path must be set before calling instance method"
         logger or raise ArgumentError, "#{self}::logger must be set before calling instance method"
         @instance ||= new(file_path, logger: logger)
+      end
+
+      def logger=(new_logger)
+        @logger = new_logger
+        Listen.logger = new_logger
       end
     end
 

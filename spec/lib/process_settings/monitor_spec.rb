@@ -16,7 +16,7 @@ describe ProcessSettings::Monitor do
   EAST_SETTINGS_YAML = EAST_SETTINGS.to_yaml
   EMPTY_SAMPLE_SETTINGS_YAML = EMPTY_SAMPLE_SETTINGS.to_yaml
 
-  let(:logger) { Logger.new(STDERR) }
+  let(:logger) { Logger.new(STDERR).tap { |logger| logger.level = ::Logger::ERROR } }
 
   describe "#initialize" do
     before do
@@ -53,6 +53,11 @@ describe ProcessSettings::Monitor do
         expect do
           described_class.instance
         end.to raise_exception(ArgumentError, /::logger must be set before calling instance method/)
+      end
+
+      it "logger = should set the Listen logger" do
+        described_class.logger = logger
+        expect(Listen.logger).to be(logger)
       end
 
       it "should return a global instance" do
