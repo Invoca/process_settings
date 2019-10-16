@@ -15,25 +15,3 @@ RSpec.configure do |config|
   end
   config.shared_context_metadata_behavior = :apply_to_host_groups
 end
-
-module ListenStub
-  @watches = []
-  @args = []
-
-  class << self
-    attr_accessor :args
-
-    def to(*args, &block)
-      @watches << [*args, block]
-    end
-
-    def start
-    end
-
-    def trigger_watchers
-      while (watch = @watches.shift)
-        watch.last.call(*args.shift)
-      end
-    end
-  end
-end

@@ -18,22 +18,26 @@ module ProcessSettings
       @static_context = {}
 
       # to eliminate any race condition:
-      # 1. set up file watcher first
-      # 2. load the file
-      # 3. run the watcher (which should trigger if any changes have been made since (1))
+      # 1. set up file watcher
+      # 2. start it
+      # 3. load the file
+      # 4. run the watcher (which should trigger if any changes have been made since (2))
 
       path = File.dirname(@file_path)
+
       listener = file_change_notifier.to(path) do |modified, _added, _removed|
+        warn "Callback #{modified.inspect}, #{_added.inspect} #{_removed.inspect}"
         if modified.include?(@file_path)
           load_untargeted_settings
         end
       end
 
+      listener.start
+
       load_untargeted_settings
 
       Thread.new do
         begin
-          listener.start
           sleep
         rescue => ex
           warn "ProcessSettings::Monitor thread exception! #{ex.class}: #{ex.messages}"
