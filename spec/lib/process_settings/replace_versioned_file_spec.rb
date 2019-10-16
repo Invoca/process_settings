@@ -12,6 +12,26 @@ describe ProcessSettings::ReplaceVersionedFile do
   let(:combined_settings_v18_1)  { "spec/fixtures/production/combined_process_settings-18-1.yml" }
 
   describe "replace_file_on_newer_file_version" do
+    context "when source file exists but destination does not" do
+      it "should replace the file" do
+        params = [combined_settings_v18, "spec/fixtures/production/combined_process_settings-xxx.yml"]
+
+        expect(FileUtils).to receive(:mv).with(*params)
+        expect(FileUtils).to_not receive(:remove_file)
+        described_class.new.replace_file_on_newer_file_version(*params)
+      end
+    end
+
+    context "when source file does not exists" do
+      it "should replace the file" do
+        params = ["spec/fixtures/production/combined_process_settings-xxx.yml", combined_settings_v18]
+
+        expect(FileUtils).to_not receive(:mv).with(*params)
+        expect(FileUtils).to_not receive(:remove_file)
+        described_class.new.replace_file_on_newer_file_version(*params)
+      end
+    end
+
     context "when source major verion is greater than destination major version" do
       it "should replace the file" do
         params = [combined_settings_v18, combined_settings_v16]
