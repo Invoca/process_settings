@@ -39,7 +39,7 @@ module ProcessSettings
       Thread.new do
         begin
           sleep
-        rescue => ex
+        rescue Exception => ex # using Exception base class since we're in a thread, we don't want any exceptions flying out... since they won't be logged
           warn "ProcessSettings::Monitor thread exception! #{ex.class}: #{ex.messages}"
         end
       end.run
