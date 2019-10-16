@@ -3,11 +3,7 @@
 require_relative 'targeted_settings'
 require_relative 'hash_path'
 require 'psych'
-begin
-  require 'rb-inotify'
-rescue FFI::NotFoundError
-end
-
+require 'listen'
 
 module ProcessSettings
   class Monitor
@@ -17,25 +13,36 @@ module ProcessSettings
     DEFAULT_MIN_POLLING_SECONDS = 5
 
     def initialize(file_path)
-      @file_path = file_path
+      @file_path = File.expand_path(file_path)
       @on_change_callbacks = []
       @static_context = {}
 
-      if (notifier = file_change_notifier)
-        # to eliminate any race condition:
-        # 1. set up file watcher first
-        # 2. load the file
-        # 3. run the watcher (which should trigger if any changes have been made since (1))
+      # to eliminate any race condition:
+      # 1. set up file watcher
+      # 2. start it
+      # 3. load the file
+      # 4. run the watcher (which should trigger if any changes have been made since (2))
 
-        notifier.watch(@file_path, :modify) { load_untargeted_settings }
+      path = File.dirname(@file_path)
 
-        load_untargeted_settings
-
-        Thread.new { notifier.run }.run
-      else
-        warn "\nWarning: Loading process_settings from #{ProcessSettings::Monitor.file_path} just once. INotifier not available to watch for file changes."
-        load_untargeted_settings
+      listener = file_change_notifier.to(path) do |modified, _added, _removed|
+        warn "Callback #{modified.inspect}, #{_added.inspect} #{_removed.inspect}"
+        if modified.include?(@file_path)
+          load_untargeted_settings
+        end
       end
+
+      listener.start
+
+      load_untargeted_settings
+
+      Thread.new do
+        begin
+          sleep
+        rescue Exception => ex # using Exception base class since we're in a thread, we don't want any exceptions flying out... since they won't be logged
+          warn "ProcessSettings::Monitor thread exception! #{ex.class}: #{ex.messages}"
+        end
+      end.run
     end
 
     # Registers the given callback block to be called when settings change.
@@ -115,9 +122,7 @@ module ProcessSettings
     end
 
     def file_change_notifier
-      if defined?(INotify)
-        @file_change_notifier ||= INotify::Notifier.new
-      end
+      Listen
     end
   end
 end

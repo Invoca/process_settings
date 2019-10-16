@@ -88,13 +88,14 @@ describe ProcessSettings::Monitor do
 
     it "should re-read from disk when watcher triggered" do
       process_monitor = described_class.new(SETTINGS_PATH)
+
       matching_settings = process_monitor.untargeted_settings.matching_settings({})
       expect(matching_settings.size).to eq(1)
-      expect(matching_settings.first.process_settings.json_doc).to eq(SAMPLE_SETTINGS.first['settings'])
+      expect(matching_settings.first.process_settings.json_doc).to eq('sip' => true)
 
       File.write(SETTINGS_PATH, EMPTY_SAMPLE_SETTINGS_YAML)
 
-      process_monitor.instance_variable_get(:@file_change_notifier).trigger_watchers
+      sleep(0.5)  # allow enough time for the listen gem to notify us of the changed file
 
       matching_settings = process_monitor.untargeted_settings.matching_settings({})
       expect(matching_settings.first.process_settings.json_doc).to eq({})
