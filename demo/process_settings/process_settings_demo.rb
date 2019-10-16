@@ -37,7 +37,7 @@ class CallSimulator
   end
 
   def receive_call(from)
-    if ProcessSettings::Monitor.instance.targeted_value('reject_incoming_calls', @logging_context)
+    if ProcessSettings::Monitor.instance.targeted_value('incoming_requests', @logging_context)
       @logger.info("REJECTED call from #{from}")
     else
       @logger.info("received call from #{from}")

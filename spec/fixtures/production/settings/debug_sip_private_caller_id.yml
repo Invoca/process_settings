@@ -1,6 +1,6 @@
 ---
 target:
-  app: 'ringswitch'
+  app: 'telecom'
   region: 'west'
 settings:
   log_stream:

@@ -40,22 +40,22 @@ describe 'combine_process_settings' do
       #
       - filename: debug_sip_private_caller_id.yml
         target:
-          app: ringswitch
+          app: telecom
           region: west
         settings:
           log_stream:
             sip: caller_id_privacy
-      - filename: flag_drop.yml
-        target:
-          region: east
-        settings:
-          reject_incoming_calls: 0
       - filename: honeypot.yml
         settings:
           honeypot:
             max_recording_seconds: 600
             answer_odds: 100
             status_change_min_days: 10
+      - filename: stop_incoming_requests.yml
+        target:
+          region: east
+        settings:
+          incoming_requests: 0
       - filename: tech-1234_call_counts_drift_investigation.yml
         target:
           app: ccn
