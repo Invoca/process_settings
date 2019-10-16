@@ -7,8 +7,8 @@ Gem::Specification.new do |spec|
   spec.date        = '2019-09-19'
   spec.summary     = 'Dynamic process settings'
   spec.description = 'Targed process settings that dynamically reload without restarting the process'
-  spec.authors     = ['Colin Kelley']
-  spec.email       = 'colin@invoca.com'
+  spec.authors     = ['Invoca']
+  spec.email       = 'development+ps@invoca.com'
   spec.files       = Dir.glob("{bin,lib}/**/*") + %w[README.md LICENSE]
   spec.executables = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
   spec.homepage    = 'https://rubygems.org/gems/process_settings'
