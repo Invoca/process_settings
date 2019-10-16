@@ -3,7 +3,7 @@ PATH
   specs:
     process_settings (0.3.0)
       json
-      rb-inotify
+      listen (~> 3.0)
 
 GEM
   remote: http://rubygems.org/
@@ -29,6 +29,9 @@ GEM
     i18n (0.9.5)
       concurrent-ruby (~> 1.0)
     json (2.1.0)
+    listen (3.2.0)
+      rb-fsevent (~> 0.10, >= 0.10.3)
+      rb-inotify (~> 0.9, >= 0.9.10)
     method_source (0.9.0)
     minitest (5.11.3)
     parallel (1.12.1)
@@ -40,6 +43,7 @@ GEM
       method_source (~> 0.9.0)
     rainbow (3.0.0)
     rake (12.3.3)
+    rb-fsevent (0.10.3)
     rb-inotify (0.10.0)
       ffi (~> 1.0)
     rspec (3.8.0)

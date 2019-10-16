@@ -87,14 +87,17 @@ describe ProcessSettings::Monitor do
     end
 
     it "should re-read from disk when watcher triggered" do
+      allow_any_instance_of(described_class).to receive(:file_change_notifier) { ListenStub }
       process_monitor = described_class.new(SETTINGS_PATH)
+
       matching_settings = process_monitor.untargeted_settings.matching_settings({})
       expect(matching_settings.size).to eq(1)
       expect(matching_settings.first.process_settings.json_doc).to eq(SAMPLE_SETTINGS.first['settings'])
 
       File.write(SETTINGS_PATH, EMPTY_SAMPLE_SETTINGS_YAML)
 
-      process_monitor.instance_variable_get(:@file_change_notifier).trigger_watchers
+      ListenStub.args << [[File.expand_path(SETTINGS_PATH)], [], []]
+      ListenStub.trigger_watchers
 
       matching_settings = process_monitor.untargeted_settings.matching_settings({})
       expect(matching_settings.first.process_settings.json_doc).to eq({})
