@@ -19,13 +19,12 @@ describe ProcessSettings::Monitor do
 
   let(:logger) { Logger.new(STDERR).tap { |logger| logger.level = ::Logger::ERROR } }
 
-  # borrowed from https://github.com/guard/listen/blob/587f4a7edb75fac80faa3408c4513af715dace87/spec/spec_helper.rb
   RSpec.configuration.before(:each) do
-    Listen::Internals::ThreadPool.stop
+    Listen.stop
   end
 
   RSpec.configuration.after(:each) do
-    Listen::Internals::ThreadPool.stop
+    Listen.stop
   end
 
   describe "#initialize" do
