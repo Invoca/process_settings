@@ -16,6 +16,17 @@ describe ProcessSettings::Monitor do
   EAST_SETTINGS_YAML = EAST_SETTINGS.to_yaml
   EMPTY_SAMPLE_SETTINGS_YAML = EMPTY_SAMPLE_SETTINGS.to_yaml
 
+  let(:logger) { Logger.new(STDERR).tap { |logger| logger.level = ::Logger::ERROR } }
+
+  # borrowed from https://github.com/guard/listen/blob/587f4a7edb75fac80faa3408c4513af715dace87/spec/spec_helper.rb
+  RSpec.configuration.before(:each) do
+    Listen::Internals::ThreadPool.stop
+  end
+
+  RSpec.configuration.after(:each) do
+    Listen::Internals::ThreadPool.stop
+  end
+
   describe "#initialize" do
     before do
       File.write(SETTINGS_PATH, SAMPLE_SETTINGS_YAML)
@@ -26,7 +37,7 @@ describe ProcessSettings::Monitor do
     end
 
     it "defaults to empty static_context" do
-      process_monitor = described_class.new(SETTINGS_PATH)
+      process_monitor = described_class.new(SETTINGS_PATH, logger: logger)
       expect(process_monitor.static_context).to eq({})
     end
   end
@@ -45,8 +56,22 @@ describe ProcessSettings::Monitor do
         end.to raise_exception(ArgumentError, /::file_path must be set before calling instance method/)
       end
 
+      it "should raise an exception if logger not set" do
+        described_class.file_path = "./spec/fixtures/production/combined_process_settings.yml"
+
+        expect do
+          described_class.instance
+        end.to raise_exception(ArgumentError, /::logger must be set before calling instance method/)
+      end
+
+      it "logger = should set the Listen logger" do
+        described_class.logger = logger
+        expect(Listen.logger).to be(logger)
+      end
+
       it "should return a global instance" do
         described_class.file_path = "./spec/fixtures/production/combined_process_settings.yml"
+        described_class.logger = logger
 
         instance_1 = described_class.instance
         instance_2 = described_class.instance
@@ -67,7 +92,7 @@ describe ProcessSettings::Monitor do
     end
 
     it "should read from disk the first time" do
-      process_monitor = described_class.new(SETTINGS_PATH)
+      process_monitor = described_class.new(SETTINGS_PATH, logger: logger)
       matching_settings = process_monitor.untargeted_settings.matching_settings({})
       expect(matching_settings.size).to eq(1)
       expect(matching_settings.first.target.json_doc).to eq(SAMPLE_SETTINGS.first['target'])
@@ -75,7 +100,7 @@ describe ProcessSettings::Monitor do
     end
 
     it "should not re-read from disk immediately" do
-      process_monitor = described_class.new(SETTINGS_PATH)
+      process_monitor = described_class.new(SETTINGS_PATH, logger: logger)
       matching_settings = process_monitor.untargeted_settings.matching_settings({})
       expect(matching_settings.size).to eq(1)
       expect(matching_settings.first.process_settings.json_doc).to eq(SAMPLE_SETTINGS.first['settings'])
@@ -87,7 +112,7 @@ describe ProcessSettings::Monitor do
     end
 
     it "should re-read from disk when watcher triggered" do
-      process_monitor = described_class.new(SETTINGS_PATH)
+      process_monitor = described_class.new(SETTINGS_PATH, logger: logger)
 
       matching_settings = process_monitor.untargeted_settings.matching_settings({})
       expect(matching_settings.size).to eq(1)
@@ -103,7 +128,7 @@ describe ProcessSettings::Monitor do
   end
 
   describe "#statically_targeted_settings" do
-    let(:process_monitor) { described_class.new(SETTINGS_PATH) }
+    let(:process_monitor) { described_class.new(SETTINGS_PATH, logger: logger) }
 
     before do
       File.write(SETTINGS_PATH, EAST_SETTINGS_YAML)
@@ -149,7 +174,7 @@ describe ProcessSettings::Monitor do
   end
 
   describe "#targeted_value" do
-    let(:process_monitor) { described_class.new(SETTINGS_PATH) }
+    let(:process_monitor) { described_class.new(SETTINGS_PATH, logger: logger) }
 
     before do
       File.write(SETTINGS_PATH, EAST_SETTINGS_YAML)
