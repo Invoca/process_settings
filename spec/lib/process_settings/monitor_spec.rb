@@ -2,7 +2,6 @@
 
 require 'spec_helper'
 require 'logger'
-require 'process_settings/monitor'
 
 describe ProcessSettings::Monitor do
   SETTINGS_PATH = "./settings.yml"
@@ -187,6 +186,8 @@ describe ProcessSettings::Monitor do
       expect(process_monitor.targeted_value('collective', {})).to eq(nil)
       expect(process_monitor.targeted_value('collective', { 'caller_id' => '+18880006666' })).to eq(nil)
       expect(process_monitor.targeted_value('collective', { 'caller_id' => '+18887776666' })).to eq(true)
+      expect(process_monitor.targeted_value('collective', { 'region' => 'west', 'caller_id' => '+18880006666' })).to eq(nil)
+      expect(process_monitor.targeted_value('collective', { 'region' => 'west', 'caller_id' => '+18887776666' })).to eq(true)
     end
   end
 end

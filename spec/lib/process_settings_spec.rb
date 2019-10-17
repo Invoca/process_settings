@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require 'process_settings'
 
 describe ProcessSettings do
   describe 'Array Operator' do
