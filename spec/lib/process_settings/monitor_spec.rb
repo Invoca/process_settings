@@ -10,6 +10,7 @@ describe ProcessSettings::Monitor do
   EAST_SETTINGS = [{ 'target' => { 'region' => 'east' }, 'settings' => { 'reject_call' => true } },
                    { 'target' => true, 'settings' => { 'sip' => true } },
                    { 'target' => { 'caller_id' => ['+18003334444', '+18887776666']}, 'settings' => { 'reject_call' => false }},
+                   { 'target' => { 'region' => 'east', 'caller_id' => ['+18003334444', '+18887776666'] }, 'settings' => { 'collective' => true }},
                    { 'meta' => { 'version' => 19, 'END' => true }}].freeze
   EMPTY_SAMPLE_SETTINGS = [{ 'target' => true, 'settings' => {} }, { 'meta' => { 'version' => 19, 'END' => true }}].freeze
   SAMPLE_SETTINGS_YAML = SAMPLE_SETTINGS.to_yaml
@@ -134,7 +135,7 @@ describe ProcessSettings::Monitor do
       result = process_monitor.statically_targeted_settings
       settings = result.map { |s| s.process_settings.json_doc }
 
-      expect(settings).to eq([{ 'reject_call' => true }, { 'sip' => true }, {'reject_call' => false}])
+      expect(settings).to eq([{ 'reject_call' => true }, { 'sip' => true }, { 'reject_call' => false }, { 'collective' => true }])
     end
 
     it "keeps subset of targeted entries" do
@@ -174,13 +175,19 @@ describe ProcessSettings::Monitor do
       FileUtils.rm_f(SETTINGS_PATH)
     end
 
-    it "should respect static targeting with dynamic ovrrides" do
+    it "should respect static targeting with dynamic overrides" do
       process_monitor.static_context = { 'region' => 'east' }
+
       expect(process_monitor.targeted_value('sip', {})).to eq(true)
+
       expect(process_monitor.targeted_value('reject_call', {})).to eq(true)
       expect(process_monitor.targeted_value('reject_call', { 'caller_id' => '+18003334444' })).to eq(false)
       expect(process_monitor.targeted_value('reject_call', { 'caller_id' => '+18887776666' })).to eq(false)
       expect(process_monitor.targeted_value('reject_call', { 'caller_id' => '+12223334444' })).to eq(true)
+
+      expect(process_monitor.targeted_value('collective', {})).to eq(nil)
+      expect(process_monitor.targeted_value('collective', { 'caller_id' => '+18880006666' })).to eq(nil)
+      expect(process_monitor.targeted_value('collective', { 'caller_id' => '+18887776666' })).to eq(true)
     end
   end
 end

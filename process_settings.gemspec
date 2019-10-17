@@ -15,6 +15,7 @@ Gem::Specification.new do |spec|
   spec.metadata    = { 'source_code_uri' => 'https://github.com/Invoca/process_settings' }
   spec.require_paths = ["lib"]
 
+  spec.add_runtime_dependency 'activesupport'
   spec.add_runtime_dependency 'json'
   spec.add_runtime_dependency 'listen', '~> 3.0'
 end
