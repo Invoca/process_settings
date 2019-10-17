@@ -26,24 +26,21 @@ module ProcessSettings
 
       path = File.dirname(@file_path)
 
-      listener = file_change_notifier.to(path) do |modified, _added, _removed|
+      @listener = file_change_notifier.to(path) do |modified, _added, _removed|
         if modified.include?(@file_path)
           @logger.info("ProcessSettings::Monitor file #{@file_path} changed. Reloading.")
           load_untargeted_settings
         end
       end
 
-      listener.start
+      @listener.start
 
       load_untargeted_settings
+    end
 
-      Thread.new do
-        begin
-          sleep
-        rescue Exception => ex # using Exception base class since we're in a thread, we don't want any exceptions flying out... since they won't be logged
-          logger.fatal("ProcessSettings::Monitor thread exception! #{ex.class}: #{ex.messages}")
-        end
-      end.run
+    # stops listening for changes
+    def stop
+      @listener.stop
     end
 
     # Registers the given callback block to be called when settings change.
