@@ -99,18 +99,6 @@ describe ProcessSettings::Monitor do
       expect(matching_settings.first.process_settings.instance_variable_get(:@json_doc)).to eq(SAMPLE_SETTINGS.first['settings'])
     end
 
-    it "should not re-read from disk immediately" do
-      process_monitor = described_class.new(SETTINGS_PATH, logger: logger)
-      matching_settings = process_monitor.untargeted_settings.matching_settings({})
-      expect(matching_settings.size).to eq(1)
-      expect(matching_settings.first.process_settings.json_doc).to eq(SAMPLE_SETTINGS.first['settings'])
-
-      File.write(SETTINGS_PATH, EMPTY_SAMPLE_SETTINGS_YAML)
-
-      matching_settings = process_monitor.untargeted_settings.matching_settings({})
-      expect(matching_settings.first.process_settings.json_doc).to eq(SAMPLE_SETTINGS.first['settings'])
-    end
-
     it "should re-read from disk when watcher triggered" do
       process_monitor = described_class.new(SETTINGS_PATH, logger: logger)
 
@@ -118,9 +106,11 @@ describe ProcessSettings::Monitor do
       expect(matching_settings.size).to eq(1)
       expect(matching_settings.first.process_settings.json_doc).to eq('sip' => true)
 
+      sleep(0.15)
+
       File.write(SETTINGS_PATH, EMPTY_SAMPLE_SETTINGS_YAML)
 
-      sleep(0.5)  # allow enough time for the listen gem to notify us of the changed file
+      sleep(0.3)  # allow enough time for the listen gem to notify us of the changed file
 
       matching_settings = process_monitor.untargeted_settings.matching_settings({})
       expect(matching_settings.first.process_settings.json_doc).to eq({})
