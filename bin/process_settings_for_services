@@ -111,8 +111,6 @@ if correlation_scorecard.any? { |_correllation_key, scorecard| scorecard[true].a
   else
     puts "No best correlation found?"
   end
-else
-  puts "No changes"
 end
 
 # puts flat_services_with_targeted_settings.to_yaml
