@@ -18,7 +18,7 @@ describe ProcessSettings::ReplaceVersionedFile do
 
         expect(FileUtils).to receive(:mv).with(*params)
         expect(FileUtils).to_not receive(:remove_file)
-        described_class.new.replace_file_on_newer_file_version(*params)
+        described_class.replace_file_on_newer_file_version(*params)
       end
     end
 
@@ -28,7 +28,7 @@ describe ProcessSettings::ReplaceVersionedFile do
 
         expect(FileUtils).to_not receive(:mv).with(*params)
         expect(FileUtils).to_not receive(:remove_file)
-        described_class.new.replace_file_on_newer_file_version(*params)
+        described_class.replace_file_on_newer_file_version(*params)
       end
     end
 
@@ -38,7 +38,7 @@ describe ProcessSettings::ReplaceVersionedFile do
 
         expect(FileUtils).to receive(:mv).with(*params)
         expect(FileUtils).to_not receive(:remove_file)
-        described_class.new.replace_file_on_newer_file_version(*params)
+        described_class.replace_file_on_newer_file_version(*params)
       end
 
       context "when source minor version is not specified and destination minor version is specified" do
@@ -47,7 +47,7 @@ describe ProcessSettings::ReplaceVersionedFile do
 
           expect(FileUtils).to receive(:mv).with(*params)
           expect(FileUtils).to_not receive(:remove_file)
-          described_class.new.replace_file_on_newer_file_version(*params)
+          described_class.replace_file_on_newer_file_version(*params)
         end
       end
 
@@ -57,7 +57,7 @@ describe ProcessSettings::ReplaceVersionedFile do
 
           expect(FileUtils).to receive(:mv).with(*params)
           expect(FileUtils).to_not receive(:remove_file)
-          described_class.new.replace_file_on_newer_file_version(*params)
+          described_class.replace_file_on_newer_file_version(*params)
         end
       end
 
@@ -67,7 +67,7 @@ describe ProcessSettings::ReplaceVersionedFile do
 
           expect(FileUtils).to receive(:mv).with(*params)
           expect(FileUtils).to_not receive(:remove_file)
-          described_class.new.replace_file_on_newer_file_version(*params)
+          described_class.replace_file_on_newer_file_version(*params)
         end
       end
 
@@ -77,7 +77,7 @@ describe ProcessSettings::ReplaceVersionedFile do
 
           expect(FileUtils).to receive(:mv).with(*params)
           expect(FileUtils).to_not receive(:remove_file)
-          described_class.new.replace_file_on_newer_file_version(*params)
+          described_class.replace_file_on_newer_file_version(*params)
         end
       end
     end
@@ -88,7 +88,7 @@ describe ProcessSettings::ReplaceVersionedFile do
 
         expect(FileUtils).to_not receive(:mv).with(*params)
         expect(FileUtils).to_not receive(:remove_file)
-        described_class.new.replace_file_on_newer_file_version(*params)
+        described_class.replace_file_on_newer_file_version(*params)
       end
 
       context "when source minor version is not specified and destination minor version is zero" do
@@ -97,7 +97,7 @@ describe ProcessSettings::ReplaceVersionedFile do
 
           expect(FileUtils).to_not receive(:mv).with(*params)
           expect(FileUtils).to receive(:remove_file)
-          described_class.new.replace_file_on_newer_file_version(*params)
+          described_class.replace_file_on_newer_file_version(*params)
         end
       end
 
@@ -107,7 +107,7 @@ describe ProcessSettings::ReplaceVersionedFile do
 
           expect(FileUtils).to_not receive(:mv).with(*params)
           expect(FileUtils).to receive(:remove_file)
-          described_class.new.replace_file_on_newer_file_version(*params)
+          described_class.replace_file_on_newer_file_version(*params)
         end
       end
 
@@ -117,7 +117,7 @@ describe ProcessSettings::ReplaceVersionedFile do
 
           expect(FileUtils).to_not receive(:mv).with(*params)
           expect(FileUtils).to receive(:remove_file)
-          described_class.new.replace_file_on_newer_file_version(*params)
+          described_class.replace_file_on_newer_file_version(*params)
         end
       end
 
@@ -127,7 +127,7 @@ describe ProcessSettings::ReplaceVersionedFile do
 
           expect(FileUtils).to receive(:mv).with(*params)
           expect(FileUtils).to_not receive(:remove_file)
-          described_class.new.replace_file_on_newer_file_version(*params)
+          described_class.replace_file_on_newer_file_version(*params)
         end
       end
 
@@ -137,7 +137,7 @@ describe ProcessSettings::ReplaceVersionedFile do
 
           expect(FileUtils).to_not receive(:mv).with(*params)
           expect(FileUtils).to receive(:remove_file)
-          described_class.new.replace_file_on_newer_file_version(*params)
+          described_class.replace_file_on_newer_file_version(*params)
         end
       end
 
@@ -147,7 +147,7 @@ describe ProcessSettings::ReplaceVersionedFile do
 
           expect(FileUtils).to receive(:mv).with(*params)
           expect(FileUtils).to_not receive(:remove_file)
-          described_class.new.replace_file_on_newer_file_version(*params)
+          described_class.replace_file_on_newer_file_version(*params)
         end
       end
     end
@@ -158,7 +158,7 @@ describe ProcessSettings::ReplaceVersionedFile do
 
         expect(FileUtils).to_not receive(:mv).with(*params)
         expect(FileUtils).to receive(:remove_file)
-        described_class.new.replace_file_on_newer_file_version(*params)
+        described_class.replace_file_on_newer_file_version(*params)
       end
 
       context "when source minor version is not specified and destination minor is not zero" do
@@ -167,7 +167,7 @@ describe ProcessSettings::ReplaceVersionedFile do
 
           expect(FileUtils).to_not receive(:mv).with(*params)
           expect(FileUtils).to receive(:remove_file)
-          described_class.new.replace_file_on_newer_file_version(*params)
+          described_class.replace_file_on_newer_file_version(*params)
         end
       end
 
@@ -177,7 +177,7 @@ describe ProcessSettings::ReplaceVersionedFile do
 
           expect(FileUtils).to_not receive(:mv).with(*params)
           expect(FileUtils).to receive(:remove_file)
-          described_class.new.replace_file_on_newer_file_version(*params)
+          described_class.replace_file_on_newer_file_version(*params)
         end
       end
 
@@ -187,7 +187,7 @@ describe ProcessSettings::ReplaceVersionedFile do
 
           expect(FileUtils).to_not receive(:mv).with(*params)
           expect(FileUtils).to receive(:remove_file)
-          described_class.new.replace_file_on_newer_file_version(*params)
+          described_class.replace_file_on_newer_file_version(*params)
         end
       end
 
@@ -197,7 +197,7 @@ describe ProcessSettings::ReplaceVersionedFile do
 
           expect(FileUtils).to_not receive(:mv).with(*params)
           expect(FileUtils).to receive(:remove_file)
-          described_class.new.replace_file_on_newer_file_version(*params)
+          described_class.replace_file_on_newer_file_version(*params)
         end
       end
     end
