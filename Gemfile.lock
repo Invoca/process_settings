@@ -2,6 +2,7 @@ PATH
   remote: .
   specs:
     process_settings (0.3.0)
+      activesupport
       json
       listen (~> 3.0)
 
@@ -92,7 +93,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  activesupport
   bump (~> 0.6.1)
   coveralls
   process_settings!

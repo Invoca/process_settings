@@ -4,6 +4,7 @@ require_relative 'targeted_settings'
 require_relative 'hash_path'
 require 'psych'
 require 'listen'
+require 'active_support'
 
 module ProcessSettings
   class Monitor
@@ -81,9 +82,10 @@ module ProcessSettings
     # (It is assumed that the static context was already set through static_context=.)
     # Returns `nil` if nothing set at the given `path`.
     def targeted_value(path, dynamic_context)
+      full_context = dynamic_context.deep_merge(static_context)
       statically_targeted_settings.reduce(nil) do |result, target_and_settings|
         # find last value from matching targets
-        if target_and_settings.target.target_key_matches?(dynamic_context)
+        if target_and_settings.target.target_key_matches?(full_context)
           unless (value = HashPath.hash_at_path(target_and_settings.process_settings, path)).nil?
             result = value
           end
