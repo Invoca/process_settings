@@ -29,8 +29,6 @@ module ProcessSettings
           Gem::Version.new(source_version) > Gem::Version.new(destination_version)
         elsif source_file_exists
           true
-        else
-          false
         end
       end
     end
