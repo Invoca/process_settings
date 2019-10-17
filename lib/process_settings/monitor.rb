@@ -82,6 +82,10 @@ module ProcessSettings
     # (It is assumed that the static context was already set through static_context=.)
     # Returns `nil` if nothing set at the given `path`.
     def targeted_value(path, dynamic_context)
+      # Merging the static context in is necessary to make sure that the static context isn't shifting
+      # this can be rather costly to do every time if the dynamic context is not changing
+      # TODO: Warn in the case where dynamic context was attempting to change a static value
+      # TODO: Cache the last used dynamic context as a potential optimization to avoid unnecessary deep merges
       full_context = dynamic_context.deep_merge(static_context)
       statically_targeted_settings.reduce(nil) do |result, target_and_settings|
         # find last value from matching targets
