@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |spec|
   spec.name        = 'process_settings'
-  spec.version     = '0.3.0'
+  spec.version     = '0.3.1'
   spec.license     = 'MIT'
   spec.date        = '2019-09-19'
   spec.summary     = 'Dynamic process settings'
