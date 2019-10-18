@@ -12,6 +12,22 @@ describe ProcessSettings::ReplaceVersionedFile do
   let(:combined_settings_v18_1)  { "spec/fixtures/production/combined_process_settings-18-1.yml" }
 
   describe "replace_file_on_newer_file_version" do
+    context "when source file path is not provided" do
+      it "raises an error" do
+        params = ["", combined_settings_v16]
+
+        expect { described_class.replace_file_on_newer_file_version(*params) }.to raise_error(ArgumentError, "source_file_path not present")
+      end
+    end
+
+    context "when destination path is not provided" do
+      it "raises an error" do
+        params = [combined_settings_v18, ""]
+
+        expect { described_class.replace_file_on_newer_file_version(*params) }.to raise_error(ArgumentError, "destination_file_path not present")
+      end
+    end
+
     context "when source file exists but destination does not" do
       it "should replace the file" do
         params = [combined_settings_v18, "spec/fixtures/production/combined_process_settings-xxx.yml"]
