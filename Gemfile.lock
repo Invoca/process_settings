@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    process_settings (0.3.0)
+    process_settings (0.3.1)
       activesupport
       json
       listen (~> 3.0)
@@ -34,7 +34,7 @@ GEM
       rb-fsevent (~> 0.10, >= 0.10.3)
       rb-inotify (~> 0.9, >= 0.9.10)
     method_source (0.9.0)
-    minitest (5.11.3)
+    minitest (5.12.2)
     parallel (1.12.1)
     parser (2.5.1.2)
       ast (~> 2.4.0)

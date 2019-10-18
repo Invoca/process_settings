@@ -6,7 +6,7 @@ Gem::Specification.new do |spec|
   spec.license     = 'MIT'
   spec.date        = '2019-09-19'
   spec.summary     = 'Dynamic process settings'
-  spec.description = 'Targed process settings that dynamically reload without restarting the process'
+  spec.description = 'Targeted process settings that dynamically reload without restarting the process'
   spec.authors     = ['Invoca']
   spec.email       = 'development+ps@invoca.com'
   spec.files       = Dir.glob("{bin,lib}/**/*") + %w[README.md LICENSE]
