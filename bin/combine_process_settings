@@ -11,6 +11,8 @@ require_relative '../lib/process_settings/targeted_settings'
 PROGRAM_NAME = File.basename($PROGRAM_NAME)
 SETTINGS_FOLDER = 'settings'
 
+Logger::INFO
+
 def end_marker(version)
   {
     'meta' => {

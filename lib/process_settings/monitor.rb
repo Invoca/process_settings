@@ -21,9 +21,8 @@ module ProcessSettings
 
       # to eliminate any race condition:
       # 1. set up file watcher
-      # 2. start it
+      # 2. start it (this should trigger if any changes have been made since (1))
       # 3. load the file
-      # 4. run the watcher (which should trigger if any changes have been made since (2))
 
       path = File.dirname(@file_path)
 
