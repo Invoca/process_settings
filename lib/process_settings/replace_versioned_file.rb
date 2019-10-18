@@ -19,16 +19,15 @@ module ProcessSettings
       private
 
       def source_version_is_newer?(source_file_name, destination_file_name)
-        source_file_exists      = File.exist?(source_file_name)
-        destination_file_exists = File.exist?(destination_file_name)
+        if File.exist?(source_file_name)
+          if File.exist?(destination_file_name)
+            source_version      = ProcessSettings::TargetedSettings.from_file(source_file_name, only_meta: true).version
+            destination_version = ProcessSettings::TargetedSettings.from_file(destination_file_name, only_meta: true).version
 
-        if source_file_exists && destination_file_exists
-          source_version      = ProcessSettings::TargetedSettings.from_file(source_file_name, only_meta: true).version
-          destination_version = ProcessSettings::TargetedSettings.from_file(destination_file_name, only_meta: true).version
-
-          Gem::Version.new(source_version) > Gem::Version.new(destination_version)
-        elsif source_file_exists
-          true
+            Gem::Version.new(source_version) > Gem::Version.new(destination_version)
+          else
+            true
+          end
         end
       end
     end
