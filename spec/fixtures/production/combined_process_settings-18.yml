@@ -8,21 +8,21 @@
       max_recording_seconds: 600
       answer_odds: 100
       status_change_min_days: 10
-- filename: ringswitch/log_level.yml
+- filename: telecom/log_level.yml
   target:
-    app: ringswitch
+    app: telecom
   settings:
     logging:
       level: debug
-- filename: ringswitch/flag_drop.yml
+- filename: telecom/stop_incoming_requests.yml
   target:
-    app: ringswitch
+    app: telecom
     region: west
   settings:
-    reject_incoming_calls: 0
-- filename: ringswitch/debug_sip_private_caller_id.yml
+    incoming_requests: 0
+- filename: telecom/debug_sip_private_caller_id.yml
   target:
-    app: ringswitch
+    app: telecom
     region: west
     caller_id:
     - "+18053334444"

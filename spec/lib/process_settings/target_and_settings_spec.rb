@@ -42,7 +42,7 @@ describe ProcessSettings::TargetAndSettings do
     it "should return self when static context leaves it unchanged" do
       initial_value = sample_target_and_process_settings
 
-      with_static_context = initial_value.with_static_context('service' => 'ringswitch')
+      with_static_context = initial_value.with_static_context('service' => 'telecom')
 
       expect(initial_value.object_id).to eq(with_static_context.object_id)
     end

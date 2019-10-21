@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'process_settings'
+
 require 'pry'
 require 'coveralls'
 Coveralls.wear!

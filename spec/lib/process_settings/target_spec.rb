@@ -18,7 +18,7 @@ describe ProcessSettings::Target do
   describe "#target_key_matches?" do
     it "should always match true" do
       context_hash = {
-        'service' => 'ringswitch',
+        'service' => 'telecom',
         'region' => 'east',
         'cdr' => { 'caller' => '+18056807000' }
       }
@@ -30,7 +30,7 @@ describe ProcessSettings::Target do
 
     it "should never match false" do
       context_hash = {
-        'service' => 'ringswitch',
+        'service' => 'telecom',
         'region' => 'east',
         'cdr' => { 'caller' => '+18056807000' }
       }
@@ -42,12 +42,12 @@ describe ProcessSettings::Target do
 
     it "should match a single value" do
       context_hash = {
-        'service' => 'ringswitch',
+        'service' => 'telecom',
         'region' => 'east',
         'cdr' => { 'caller' => '+18056807000' }
       }
       target_hash = {
-        'service' => 'ringswitch'
+        'service' => 'telecom'
       }
 
       process_target = described_class.new(target_hash)
@@ -58,7 +58,7 @@ describe ProcessSettings::Target do
 
     it "should match a single value on truthiness" do
       context_hash = {
-        'service' => 'ringswitch',
+        'service' => 'telecom',
         'region' => 'east',
         'sip_enabled' => 'yes'
       }
@@ -74,7 +74,7 @@ describe ProcessSettings::Target do
 
     it "should match a single value on falsiness/missing" do
       context_hash = {
-        'service' => 'ringswitch',
+        'service' => 'telecom',
         'region' => 'east',
         'sip_enabled' => 'yes'
       }
@@ -89,12 +89,12 @@ describe ProcessSettings::Target do
 
     it "should match an array of values" do
       context_hash = {
-        'service' => 'ringswitch',
+        'service' => 'telecom',
         'region' => 'east',
         'cdr' => { 'caller' => '+18056807000' }
       }
       target_hash = {
-        'service' => ['ringswitch', 'pnapi']
+        'service' => ['telecom', 'pnapi']
       }
 
       process_target = described_class.new(target_hash)
@@ -105,12 +105,12 @@ describe ProcessSettings::Target do
 
     it "should match an array of values" do
       context_hash = {
-        'service' => 'ringswitch',
+        'service' => 'telecom',
         'region' => 'east',
         'cdr' => { 'caller' => '+18056807000' }
       }
       target_hash = {
-        'service' => ['ringswitch', 'pnapi']
+        'service' => ['telecom', 'pnapi']
       }
 
       process_target = described_class.new(target_hash)
@@ -121,7 +121,7 @@ describe ProcessSettings::Target do
 
     it "should match an array of values on truthiness" do
       context_hash = {
-        'service' => 'ringswitch',
+        'service' => 'telecom',
         'region' => 'east',
         'sip_enabled' => 'yes'
       }
@@ -139,12 +139,12 @@ describe ProcessSettings::Target do
   describe "#with_static_context" do
     it "should remove a truthy hash key" do
       target_hash = {
-        'service' => 'ringswitch',
+        'service' => 'telecom',
         'region' => 'east',
         'cdr' => { 'caller' => '+18056807000' }
       }
       context_hash = {
-        'service' => 'ringswitch'
+        'service' => 'telecom'
       }
 
       process_target = described_class.new(target_hash)
@@ -156,7 +156,7 @@ describe ProcessSettings::Target do
 
     it "should replace a hash with all truthy keys with true" do
       target_hash = {
-        'service' => 'ringswitch',
+        'service' => 'telecom',
         'region' => 'east',
         'cdr' => { 'caller' => '+18056807000' }
       }
@@ -188,12 +188,12 @@ describe ProcessSettings::Target do
 
     it "should remove a truthy hash key in an array" do
       target_hash = {
-        'service' => ['ringswitch', 'pnapi'],
+        'service' => ['telecom', 'pnapi'],
         'region' => 'east',
         'cdr' => { 'caller' => '+18056807000' }
       }
       context_hash = {
-        'service' => 'ringswitch'
+        'service' => 'telecom'
       }
 
       process_target = described_class.new(target_hash)
@@ -224,7 +224,7 @@ describe ProcessSettings::Target do
 
     it "should short-circuit hash as false if falsey hash key" do
       target_hash = {
-        'service' => 'ringswitch',
+        'service' => 'telecom',
         'region' => 'east',
         'cdr' => { 'caller' => '+18056807000' }
       }
@@ -241,7 +241,7 @@ describe ProcessSettings::Target do
 
     it "should short-circuit hash as false if falsey hash key is an array" do
       target_hash = {
-        'service' => ['ringswitch', 'fe'],
+        'service' => ['telecom', 'fe'],
         'region' => 'east',
         'cdr' => { 'caller' => '+18056807000' }
       }

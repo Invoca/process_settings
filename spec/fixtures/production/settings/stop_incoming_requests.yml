@@ -2,4 +2,4 @@
 target:
   region: 'east'
 settings:
-  reject_incoming_calls: 0
+  incoming_requests: 0
