@@ -1,8 +1,12 @@
 # frozen_string_literal: true
 
+lib = File.expand_path("../lib", __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+require "process_settings/version"
+
 Gem::Specification.new do |spec|
   spec.name        = 'process_settings'
-  spec.version     = '0.3.1'
+  spec.version     = ProcessSettings::VERSION
   spec.license     = 'MIT'
   spec.date        = '2019-09-19'
   spec.summary     = 'Dynamic process settings'
