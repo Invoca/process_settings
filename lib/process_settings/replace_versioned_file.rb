@@ -4,23 +4,35 @@ require_relative 'targeted_settings'
 
 module ProcessSettings
   # This class will override a file with a higher version file; it accounts for minor version number use
-  class ReplaceVersionedFile
+  module ReplaceVersionedFile
+    class << self
+      def replace_file_on_newer_file_version(source_file_path, destination_file_path)
+        source_file_path.to_s      == '' and raise ArgumentError, "source_file_path not present"
+        destination_file_path.to_s == '' and raise ArgumentError, "destination_file_path not present"
 
-    def replace_file_on_newer_file_version(source_file_name, destination_file_name)
-      if source_version_is_newer?(source_file_name, destination_file_name)
-        FileUtils.mv(source_file_name, destination_file_name)
-      elsif source_file_name != destination_file_name # make sure we're not deleting destination file
-        FileUtils.remove_file(source_file_name) # clean up, remove left over file
+        if source_version_is_newer?(source_file_path, destination_file_path)
+          FileUtils.mv(source_file_path, destination_file_path)
+        elsif source_file_path != destination_file_path # make sure we're not deleting destination file
+          if File.exist?(source_file_path)
+            FileUtils.remove_file(source_file_path) # clean up, remove left over file
+          end
+        end
       end
-    end
 
-    private
+      private
 
-    def source_version_is_newer?(source_file_name, destination_file_name)
-      source_version      = ProcessSettings::TargetedSettings.from_file(source_file_name, only_meta: true).version
-      destination_version = ProcessSettings::TargetedSettings.from_file(destination_file_name, only_meta: true).version
+      def source_version_is_newer?(source_file_path, destination_file_path)
+        if File.exist?(source_file_path)
+          if File.exist?(destination_file_path)
+            source_version      = ProcessSettings::TargetedSettings.from_file(source_file_path, only_meta: true).version
+            destination_version = ProcessSettings::TargetedSettings.from_file(destination_file_path, only_meta: true).version
 
-      Gem::Version.new(source_version) > Gem::Version.new(destination_version)
+            Gem::Version.new(source_version) > Gem::Version.new(destination_version)
+          else
+            true
+          end
+        end
+      end
     end
   end
 end
