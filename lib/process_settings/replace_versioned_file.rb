@@ -13,7 +13,7 @@ module ProcessSettings
       #   source_file_path must be present
       #   destination_file_path must be present
       #   source_file_path must exist on filesystem
-      #   source file version has to greater than or equal to destination version
+      #   source file version cannot be older destination version
       def replace_file_on_newer_file_version(source_file_path, destination_file_path)
         validate_arguments_are_passed_in(source_file_path, destination_file_path)
         validate_source_file_exists_on_system(source_file_path)
