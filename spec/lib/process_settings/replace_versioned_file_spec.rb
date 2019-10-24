@@ -33,7 +33,7 @@ describe ProcessSettings::ReplaceVersionedFile do
         params = [combined_settings_v18, "spec/fixtures/production/combined_process_settings-xxx.yml"]
 
         expect(FileUtils).to receive(:mv).with(*params)
-        expect(FileUtils).to_not receive(:remove_file)
+        expect(FileUtils).to_not receive(:rm_f)
         described_class.replace_file_on_newer_file_version(*params)
       end
     end
@@ -43,7 +43,7 @@ describe ProcessSettings::ReplaceVersionedFile do
         params = ["spec/fixtures/production/combined_process_settings-xxx.yml", combined_settings_v18]
 
         expect(FileUtils).to_not receive(:mv).with(*params)
-        expect(FileUtils).to_not receive(:remove_file)
+        expect(FileUtils).to_not receive(:rm_f)
 
         expect { described_class.replace_file_on_newer_file_version(*params) }
           .to raise_error(ProcessSettings::ReplaceVersionedFile::FileDoesNotExistError,
@@ -56,7 +56,7 @@ describe ProcessSettings::ReplaceVersionedFile do
         params = [combined_settings_v18, combined_settings_v16]
 
         expect(FileUtils).to receive(:mv).with(*params)
-        expect(FileUtils).to_not receive(:remove_file)
+        expect(FileUtils).to_not receive(:rm_f)
         described_class.replace_file_on_newer_file_version(*params)
       end
 
@@ -65,7 +65,7 @@ describe ProcessSettings::ReplaceVersionedFile do
           params = [combined_settings_v18, combined_settings_v16_50]
 
           expect(FileUtils).to receive(:mv).with(*params)
-          expect(FileUtils).to_not receive(:remove_file)
+          expect(FileUtils).to_not receive(:rm_f)
           described_class.replace_file_on_newer_file_version(*params)
         end
       end
@@ -75,7 +75,7 @@ describe ProcessSettings::ReplaceVersionedFile do
           params = combined_settings_v18_1, combined_settings_v16
 
           expect(FileUtils).to receive(:mv).with(*params)
-          expect(FileUtils).to_not receive(:remove_file)
+          expect(FileUtils).to_not receive(:rm_f)
           described_class.replace_file_on_newer_file_version(*params)
         end
       end
@@ -85,7 +85,7 @@ describe ProcessSettings::ReplaceVersionedFile do
           params = combined_settings_v18_1, combined_settings_v16_50
 
           expect(FileUtils).to receive(:mv).with(*params)
-          expect(FileUtils).to_not receive(:remove_file)
+          expect(FileUtils).to_not receive(:rm_f)
           described_class.replace_file_on_newer_file_version(*params)
         end
       end
@@ -95,7 +95,7 @@ describe ProcessSettings::ReplaceVersionedFile do
           params = combined_settings_v18_1, combined_settings_v16_0
 
           expect(FileUtils).to receive(:mv).with(*params)
-          expect(FileUtils).to_not receive(:remove_file)
+          expect(FileUtils).to_not receive(:rm_f)
           described_class.replace_file_on_newer_file_version(*params)
         end
       end
@@ -107,7 +107,7 @@ describe ProcessSettings::ReplaceVersionedFile do
           params = [combined_settings_v16, combined_settings_v16_0]
 
           expect(FileUtils).to_not receive(:mv).with(*params)
-          expect(FileUtils).to receive(:remove_file)
+          expect(FileUtils).to receive(:rm_f)
           described_class.replace_file_on_newer_file_version(*params)
         end
       end
@@ -117,7 +117,7 @@ describe ProcessSettings::ReplaceVersionedFile do
           params = combined_settings_v16_0, combined_settings_v16
 
           expect(FileUtils).to_not receive(:mv).with(*params)
-          expect(FileUtils).to receive(:remove_file)
+          expect(FileUtils).to receive(:rm_f)
           described_class.replace_file_on_newer_file_version(*params)
         end
       end
@@ -127,7 +127,7 @@ describe ProcessSettings::ReplaceVersionedFile do
           params = [combined_settings_v16, combined_settings_v16_50]
 
           expect(FileUtils).to_not receive(:mv).with(*params)
-          expect(FileUtils).to receive(:remove_file)
+          expect(FileUtils).to receive(:rm_f)
 
           expect { described_class.replace_file_on_newer_file_version(*params) }
             .to raise_error(ProcessSettings::ReplaceVersionedFile::SourceVersionOlderError,
@@ -141,7 +141,7 @@ describe ProcessSettings::ReplaceVersionedFile do
           params = combined_settings_v16_50, combined_settings_v16
 
           expect(FileUtils).to receive(:mv).with(*params)
-          expect(FileUtils).to_not receive(:remove_file)
+          expect(FileUtils).to_not receive(:rm_f)
           described_class.replace_file_on_newer_file_version(*params)
         end
       end
@@ -151,7 +151,7 @@ describe ProcessSettings::ReplaceVersionedFile do
           params = combined_settings_v16_0, combined_settings_v16_50
 
           expect(FileUtils).to_not receive(:mv).with(*params)
-          expect(FileUtils).to receive(:remove_file)
+          expect(FileUtils).to receive(:rm_f)
 
           expect { described_class.replace_file_on_newer_file_version(*params) }
             .to raise_error(ProcessSettings::ReplaceVersionedFile::SourceVersionOlderError,
@@ -165,7 +165,7 @@ describe ProcessSettings::ReplaceVersionedFile do
           params = combined_settings_v16_50, combined_settings_v16_0
 
           expect(FileUtils).to receive(:mv).with(*params)
-          expect(FileUtils).to_not receive(:remove_file)
+          expect(FileUtils).to_not receive(:rm_f)
           described_class.replace_file_on_newer_file_version(*params)
         end
       end
@@ -176,7 +176,7 @@ describe ProcessSettings::ReplaceVersionedFile do
         params = [combined_settings_v16, combined_settings_v18]
 
         expect(FileUtils).to_not receive(:mv).with(*params)
-        expect(FileUtils).to receive(:remove_file)
+        expect(FileUtils).to receive(:rm_f)
 
         expect { described_class.replace_file_on_newer_file_version(*params) }
           .to raise_error(ProcessSettings::ReplaceVersionedFile::SourceVersionOlderError,
@@ -189,7 +189,7 @@ describe ProcessSettings::ReplaceVersionedFile do
           params = [combined_settings_v16, combined_settings_v18_1]
 
           expect(FileUtils).to_not receive(:mv).with(*params)
-          expect(FileUtils).to receive(:remove_file)
+          expect(FileUtils).to receive(:rm_f)
 
           expect { described_class.replace_file_on_newer_file_version(*params) }
             .to raise_error(ProcessSettings::ReplaceVersionedFile::SourceVersionOlderError,
@@ -203,7 +203,7 @@ describe ProcessSettings::ReplaceVersionedFile do
           params = combined_settings_v16_50, combined_settings_v18
 
           expect(FileUtils).to_not receive(:mv).with(*params)
-          expect(FileUtils).to receive(:remove_file)
+          expect(FileUtils).to receive(:rm_f)
 
           expect { described_class.replace_file_on_newer_file_version(*params) }
             .to raise_error(ProcessSettings::ReplaceVersionedFile::SourceVersionOlderError,
@@ -217,7 +217,7 @@ describe ProcessSettings::ReplaceVersionedFile do
           params = combined_settings_v16_0, combined_settings_v18_1
 
           expect(FileUtils).to_not receive(:mv).with(*params)
-          expect(FileUtils).to receive(:remove_file)
+          expect(FileUtils).to receive(:rm_f)
 
           expect { described_class.replace_file_on_newer_file_version(*params) }
             .to raise_error(ProcessSettings::ReplaceVersionedFile::SourceVersionOlderError,
@@ -231,7 +231,7 @@ describe ProcessSettings::ReplaceVersionedFile do
           params = combined_settings_v16_50, combined_settings_v18_1
 
           expect(FileUtils).to_not receive(:mv).with(*params)
-          expect(FileUtils).to receive(:remove_file)
+          expect(FileUtils).to receive(:rm_f)
 
           expect { described_class.replace_file_on_newer_file_version(*params) }
             .to raise_error(ProcessSettings::ReplaceVersionedFile::SourceVersionOlderError,

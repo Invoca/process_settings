@@ -19,35 +19,27 @@ module ProcessSettings
         destination_file_path.to_s == '' and raise ArgumentError, "destination_file_path not present"
         File.exist?(source_file_path) or raise FileDoesNotExistError, "source file '#{source_file_path}' does not exist"
 
-        if source_version_is_newer?(source_file_path, destination_file_path)
+        if !File.exist?(destination_file_path) || source_version_is_newer?(source_file_path, destination_file_path)
           FileUtils.mv(source_file_path, destination_file_path)
         elsif source_file_path != destination_file_path # make sure we're not deleting destination file
-          remove_source_file(source_file_path) # clean up, remove left over file
+          FileUtils.rm_f(source_file_path) # clean up, remove left over file
         end
       end
 
       private
 
       def source_version_is_newer?(source_file_path, destination_file_path)
-        !File.exist?(destination_file_path) and return true
-
         source_version      = ProcessSettings::TargetedSettings.from_file(source_file_path, only_meta: true).version
         destination_version = ProcessSettings::TargetedSettings.from_file(destination_file_path, only_meta: true).version
 
         if Gem::Version.new(source_version) > Gem::Version.new(destination_version)
           true
         elsif Gem::Version.new(source_version) < Gem::Version.new(destination_version)
-          remove_source_file(source_file_path) # clean up, remove left over file
+          FileUtils.rm_f(source_file_path) # clean up, remove left over file
 
           raise SourceVersionOlderError,
                 "source file '#{source_file_path}' is version #{source_version}"\
                 " and destination file '#{destination_file_path}' is version #{destination_version}"
-        end
-      end
-
-      def remove_source_file(source_file_path)
-        if File.exist?(source_file_path)
-          FileUtils.remove_file(source_file_path) # clean up, remove left over file
         end
       end
     end
