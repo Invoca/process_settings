@@ -29,7 +29,6 @@ module ProcessSettings
       private
 
       def source_version_is_newer?(source_file_path, destination_file_path)
-        File.exist?(source_file_path) or raise FileDoesNotExistError, "source file '#{source_file_path}' does not exist"
         !File.exist?(destination_file_path) and return true
 
         source_version      = ProcessSettings::TargetedSettings.from_file(source_file_path, only_meta: true).version
