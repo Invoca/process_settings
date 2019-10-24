@@ -33,7 +33,7 @@ module ProcessSettings
           source_version      = ProcessSettings::TargetedSettings.from_file(source_file_path, only_meta: true).version
           destination_version = ProcessSettings::TargetedSettings.from_file(destination_file_path, only_meta: true).version
 
-          Gem::Version.new(source_version) > Gem::Version.new(destination_version)
+          source_version.to_f > destination_version.to_f
         else
           true
         end
@@ -53,7 +53,7 @@ module ProcessSettings
           source_version      = ProcessSettings::TargetedSettings.from_file(source_file_path, only_meta: true).version
           destination_version = ProcessSettings::TargetedSettings.from_file(destination_file_path, only_meta: true).version
 
-          if Gem::Version.new(source_version) < Gem::Version.new(destination_version)
+          if source_version.to_f < destination_version.to_f
             FileUtils.rm_f(source_file_path) # clean up, remove left over file
 
             raise SourceVersionOlderError,
