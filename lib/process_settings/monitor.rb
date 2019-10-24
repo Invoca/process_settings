@@ -36,6 +36,8 @@ module ProcessSettings
       @listener.start
 
       load_untargeted_settings
+
+      statically_targeted_settings # so that notify_on_change will be called if any changes
     end
 
     # stops listening for changes
