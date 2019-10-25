@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
 module ProcessSettings
-  VERSION = '0.4.0.pre'
+  VERSION = '0.4.0.1'
 end
-
