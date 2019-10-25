@@ -15,8 +15,9 @@ module ProcessSettings
       #   source_file_path must exist on filesystem
       #   source file version cannot be older destination version
       def replace_file_on_newer_file_version(source_file_path, destination_file_path)
-        validate_arguments_are_passed_in(source_file_path, destination_file_path)
-        validate_source_file_exists_on_system(source_file_path)
+        source_file_path.to_s      == '' and raise ArgumentError, "source_file_path not present"
+        destination_file_path.to_s == '' and raise ArgumentError, "destination_file_path not present"
+        File.exist?(source_file_path) or raise FileDoesNotExistError, "source file '#{source_file_path}' does not exist"
         validate_source_version_is_not_older(source_file_path, destination_file_path)
 
         if source_version_is_newer?(source_file_path, destination_file_path)
@@ -37,15 +38,6 @@ module ProcessSettings
         else
           true
         end
-      end
-
-      def validate_source_file_exists_on_system(source_file_path)
-        File.exist?(source_file_path) or raise FileDoesNotExistError, "source file '#{source_file_path}' does not exist"
-      end
-
-      def validate_arguments_are_passed_in(source_file_path, destination_file_path)
-        source_file_path.to_s      == '' and raise ArgumentError, "source_file_path not present"
-        destination_file_path.to_s == '' and raise ArgumentError, "destination_file_path not present"
       end
 
       def validate_source_version_is_not_older(source_file_path, destination_file_path)
