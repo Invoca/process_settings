@@ -116,6 +116,78 @@ describe ProcessSettings::Monitor do
     end
   end
 
+  describe "on_change" do
+    let(:process_monitor) { described_class.new(SETTINGS_PATH, logger: logger) }
+    let(:callbacks) { [] }
+    let(:callback_1) { process_monitor.on_change { callbacks << 1 } }
+    let(:callback_2) { process_monitor.on_change { callbacks << 2 } }
+
+    before do
+      File.write(SETTINGS_PATH, EAST_SETTINGS_YAML)
+    end
+
+    after do
+      FileUtils.rm_f(SETTINGS_PATH)
+    end
+
+    it "runs all the callbacks on static_context change" do
+      process_monitor.static_context = { 'region' => 'east' }
+
+      callback_1
+      callback_2
+
+      process_monitor.static_context = { 'region' => 'west' }
+
+      expect(callbacks).to eq([1, 2])
+    end
+
+    it "runs all the callbacks on disk change" do
+      process_monitor
+
+      process_monitor.static_context = { 'region' => 'east' }
+
+      callback_1
+      callback_2
+
+      sleep(0.15)
+
+      File.write(SETTINGS_PATH, EMPTY_SAMPLE_SETTINGS_YAML)
+
+      sleep(0.3)  # allow enough time for the listen gem to notify us of the changed file
+
+      expect(callbacks).to eq([1, 2])
+    end
+
+    it "doesn't run all the callbacks on no-op disk change" do
+      process_monitor.static_context = { 'region' => 'east' }
+
+      callback_1
+      callback_2
+
+      File.write(SETTINGS_PATH, EAST_SETTINGS_YAML)
+
+      expect(callbacks).to eq([])
+    end
+
+    it "keeps going even if exceptions raised" do
+      process_monitor.static_context = { 'region' => 'east' }
+
+      process_monitor.on_change { raise 'callback_1' }
+      process_monitor.on_change { raise 'callback_2' }
+
+      expect(logger).to receive(:error).with("ProcessSettings::Monitor#notify_on_change rescued exception:\nRuntimeError: callback_1")
+      expect(logger).to receive(:error).with("ProcessSettings::Monitor#notify_on_change rescued exception:\nRuntimeError: callback_2")
+
+      sleep(0.15)
+
+      File.write(SETTINGS_PATH, EMPTY_SAMPLE_SETTINGS_YAML)
+
+      expect(callbacks).to eq([])
+
+      sleep(0.3)  # allow enough time for the listen gem to notify us of the changed file
+    end
+  end
+
   describe "#statically_targeted_settings" do
     let(:process_monitor) { described_class.new(SETTINGS_PATH, logger: logger) }
 

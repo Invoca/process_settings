@@ -8,7 +8,7 @@ require 'active_support'
 
 module ProcessSettings
   class Monitor
-    attr_reader :file_path, :min_polling_seconds
+    attr_reader :file_path, :min_polling_seconds, :logger
     attr_reader :static_context, :untargeted_settings, :statically_targeted_settings
 
     DEFAULT_MIN_POLLING_SECONDS = 5
@@ -30,6 +30,8 @@ module ProcessSettings
         if modified.include?(@file_path)
           @logger.info("ProcessSettings::Monitor file #{@file_path} changed. Reloading.")
           load_untargeted_settings
+
+          load_statically_targeted_settings
         end
       end
 
@@ -37,7 +39,7 @@ module ProcessSettings
 
       load_untargeted_settings
 
-      statically_targeted_settings # so that notify_on_change will be called if any changes
+      load_statically_targeted_settings
     end
 
     # stops listening for changes
@@ -51,30 +53,11 @@ module ProcessSettings
       @on_change_callbacks << callback
     end
 
-    # Loads the most recent settings from disk and returns them.
-    def load_untargeted_settings
-      @untargeted_settings = load_file(file_path)
-    end
-
     # Assigns a new static context. Recomputes statically_targeted_settings.
     def static_context=(context)
       @static_context = context
 
-      statically_targeted_settings(force: true)
-    end
-
-    # Loads the latest untargeted settings from disk. Returns the current process settings as a TargetAndProcessSettings given
-    # by applying the static context to the current untargeted settings from disk.
-    # If these have changed, borrows this thread to call notify_on_change.
-    def statically_targeted_settings(force: false)
-      if force || @last_untargetted_settings != @untargeted_settings
-        @statically_targeted_settings = @untargeted_settings.with_static_context(@static_context)
-        @last_untargetted_settings = @untargeted_settings
-
-        notify_on_change
-      end
-
-      @statically_targeted_settings
+      load_statically_targeted_settings(force_retarget: true)
     end
 
     # Returns the process settings value at the given `path` using the given `dynamic_context`.
@@ -94,6 +77,32 @@ module ProcessSettings
           end
         end
         result
+      end
+    end
+
+    private
+
+    # Loads the most recent settings from disk
+    def load_untargeted_settings
+      new_untargeted_settings = load_file(file_path)
+      old_version = @untargeted_settings&.version
+      new_version = new_untargeted_settings.version
+      @untargeted_settings = new_untargeted_settings
+      logger.info("ProcessSettings::Monitor#load_untargeted_settings loaded version #{new_version}#{" to replace version #{old_version}" if old_version}")
+    end
+
+    # Loads the latest untargeted settings from disk. Returns the current process settings as a TargetAndProcessSettings given
+    # by applying the static context to the current untargeted settings from disk.
+    # If these have changed, borrows this thread to call notify_on_change.
+    def load_statically_targeted_settings(force_retarget: false)
+      if force_retarget || @last_untargetted_settings != @untargeted_settings
+        @last_untargetted_settings = @untargeted_settings
+        @statically_targeted_settings = @untargeted_settings.with_static_context(@static_context)
+        if @last_statically_targetted_settings != @statically_targeted_settings
+          @last_statically_targetted_settings = @statically_targeted_settings
+
+          notify_on_change
+        end
       end
     end
 
@@ -117,8 +126,9 @@ module ProcessSettings
       end
     end
 
-    private
-
+    # Calls all registered on_change callbacks. Rescues any exceptions they may raise.
+    # Note: this method can be re-entrant to the class; the on_change callbacks may call right back into these methods.
+    # Therefore it's critical to finish all transitions and release any resources before calling this method.
     def notify_on_change
       @on_change_callbacks.each do |callback|
         begin
