@@ -2,13 +2,24 @@
 
 module ProcessSettings
   # Module for mixing into `Hash` or other class with `[]` that you want to be able to index
-  # with a hash path like:  hash['app.service_name' => 'frontend']
+  # with a hash path like:  hash.mine('honeypot', 'answer_odds')
   module HashPath
-    def [](key)
-      if key.is_a?(Hash)
-        HashPath.hash_at_path(self, key)
-      else
-        super
+    # returns the value found at the given path
+    # if the path is not found:
+    #   if a block is given, it is called and its value returned (may also raise an exception from the block)
+    #   else, the not_found_value: is returned
+    def mine(*path_array, not_found_value: nil)
+      path_array.is_a?(Enumerable) && path_array.size > 0 or raise ArgumentError, "path must be 1 or more keys; got #{path_array.inspect}"
+      path_array.reduce(self) do |hash, key|
+        if hash.has_key?(key)
+          hash[key]
+        else
+          if block_given?
+            break yield
+          else
+            break not_found_value
+          end
+        end
       end
     end
 
@@ -30,24 +41,6 @@ module ProcessSettings
         else
           hash[path]
         end
-      end
-
-      def set_hash_at_path(hash, path)
-        path.is_a?(Hash) or raise ArgumentError, "got unexpected non-hash value (#{hash[path]}"
-        case path.size
-        when 0
-          hash
-        when 1
-          path_key, path_value = path.first
-          if path_value.is_a?(Hash)
-            set_hash_at_path(remaining_hash, remaining_path)
-          else
-            hash[path_key] = path_value
-          end
-        else
-          raise ArgumentError, "path may have at most 1 key (got #{path.inspect})"
-        end
-        hash
       end
     end
   end
