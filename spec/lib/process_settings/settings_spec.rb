@@ -9,7 +9,7 @@ describe ProcessSettings::Settings do
     it "should take a json doc" do
       process_settings = described_class.new("carrier" => "AT&T")
 
-      expect(process_settings["carrier"]).to eq("AT&T")
+      expect(process_settings.json_doc.mine("carrier")).to eq("AT&T")
     end
 
     it "should reject anything not a hash" do

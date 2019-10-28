@@ -7,6 +7,8 @@ require 'listen'
 require 'active_support'
 
 module ProcessSettings
+  class SettingsPathNotFound < StandardError; end
+
   class Monitor
     attr_reader :file_path, :min_polling_seconds, :logger
     attr_reader :static_context, :untargeted_settings, :statically_targeted_settings
@@ -63,28 +65,32 @@ module ProcessSettings
     # Returns the process settings value at the given `path` using the given `dynamic_context`.
     # (It is assumed that the static context was already set through static_context=.)
     # If nothing set at the given `path`:
-    #   if required, raises SettingsNotFound
+    #   if required, raises SettingsPathNotFound
     #   else returns nil
-    def targeted_value(path, dynamic_context, required: true)
+    def targeted_value(path, dynamic_context:, required: true)
       # Merging the static context in is necessary to make sure that the static context isn't shifting
       # this can be rather costly to do every time if the dynamic context is not changing
       # TODO: Warn in the case where dynamic context was attempting to change a static value
       # TODO: Cache the last used dynamic context as a potential optimization to avoid unnecessary deep merges
       full_context = dynamic_context.deep_merge(static_context)
-      statically_targeted_settings.reduce(:not_found) do |result, target_and_settings|
+      result = statically_targeted_settings.reduce(:not_found) do |latest_result, target_and_settings|
         # find last value from matching targets
         if target_and_settings.target.target_key_matches?(full_context)
-          if (value = HashPath.fetch(target_and_settings.process_settings, path, :not_found)) != :not_found
-            result = value
+          if (value = target_and_settings.process_settings.json_doc.mine(*path, not_found_value: :not_found)) != :not_found
+            latest_result = value
           end
         end
-        if result == :not_found
-          if required
-            raise SettingsNotFound, "no settings found for path #{path.inspect}"
-          end
+        latest_result
+      end
+
+      if result == :not_found
+        if required
+          raise SettingsPathNotFound, "no settings found for path #{path.inspect}"
         else
-          result
+          nil
         end
+      else
+        result
       end
     end
 

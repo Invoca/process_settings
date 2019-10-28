@@ -38,7 +38,7 @@ describe ProcessSettings::TargetedSettings do
     it "allows hash key access to settings" do
       target_and_settings = described_class.from_array(TARGETED_SETTINGS)
 
-      result = target_and_settings.targeted_settings_array.first.process_settings['honeypot' => 'promo_number']
+      result = target_and_settings.targeted_settings_array.first.process_settings.json_doc.mine('honeypot', 'promo_number')
 
       expect(result).to eq('+18005554321')
     end
