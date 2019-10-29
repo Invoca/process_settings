@@ -26,8 +26,8 @@ module ProcessSettings
 
       path = File.dirname(@file_path)
 
-      @listener = file_change_notifier.to(path) do |modified, _added, _removed|
-        if modified.include?(@file_path)
+      @listener = file_change_notifier.to(path) do |modified, added, _removed|
+        if modified.include?(@file_path) || added.include?(@file_path)
           @logger.info("ProcessSettings::Monitor file #{@file_path} changed. Reloading.")
           load_untargeted_settings
 
