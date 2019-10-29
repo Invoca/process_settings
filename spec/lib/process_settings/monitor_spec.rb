@@ -105,11 +105,13 @@ describe ProcessSettings::Monitor do
           def to(path)
           end
         end
+
         listener_stub = Object.new
         class << listener_stub
           def start
           end
         end
+
         block = nil
         expect(file_change_notifier_stub).to receive(:to).with(File.expand_path('.')) { |&blk| block = blk; listener_stub }
         expect_any_instance_of(ProcessSettings::Monitor).to receive(:file_change_notifier) { file_change_notifier_stub }
