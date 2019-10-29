@@ -143,11 +143,8 @@ describe ProcessSettings::Monitor do
     end
   end
 
-  describe "on_change" do
+  describe "with process_settings" do
     let(:process_monitor) { described_class.new(SETTINGS_PATH, logger: logger) }
-    let(:callbacks) { [] }
-    let(:callback_1) { process_monitor.on_change { callbacks << 1 } }
-    let(:callback_2) { process_monitor.on_change { callbacks << 2 } }
 
     before do
       File.write(SETTINGS_PATH, EAST_SETTINGS_YAML)
@@ -157,61 +154,89 @@ describe ProcessSettings::Monitor do
       FileUtils.rm_f(SETTINGS_PATH)
     end
 
-    it "runs all the callbacks on static_context change" do
-      process_monitor.static_context = { 'region' => 'east' }
+    describe "#static_context =" do
+      it "rejects symbol keys" do
+        expect { process_monitor.static_context = { service_name: "frontend" } }.to raise_exception(ArgumentError, /symbol key :service_name found--should be String/)
+      end
 
-      callback_1
-      callback_2
+      it "rejects symbol values" do
+        expect { process_monitor.static_context = { "service_name" => :frontend } }.to raise_exception(ArgumentError, /symbol value :frontend found--should be String/)
+      end
 
-      process_monitor.static_context = { 'region' => 'west' }
+      it "rejects symbol values in arrays" do
+        expect { process_monitor.static_context = { "service_name" => ["database", :frontend] } }.to raise_exception(ArgumentError, /symbol value :frontend found--should be String/)
+      end
 
-      expect(callbacks).to eq([1, 2])
+      it "rejects nested symbol keys" do
+        expect { process_monitor.static_context = { "top" => { service_name: "frontend" } } }.to raise_exception(ArgumentError, /symbol key :service_name found--should be String/)
+      end
+
+      it "rejects nested symbol keys" do
+        expect { process_monitor.static_context = { "top" => { "service_name" => :frontend } } }.to raise_exception(ArgumentError, /symbol value :frontend found--should be String/)
+      end
     end
 
-    it "runs all the callbacks on disk change" do
-      process_monitor
+    describe "#on_change" do
+      let(:callbacks) { [] }
+      let(:callback_1) { process_monitor.on_change { callbacks << 1 } }
+      let(:callback_2) { process_monitor.on_change { callbacks << 2 } }
 
-      process_monitor.static_context = { 'region' => 'east' }
+      it "runs all the callbacks on static_context change" do
+        process_monitor.static_context = { 'region' => 'east' }
 
-      callback_1
-      callback_2
+        callback_1
+        callback_2
 
-      sleep(0.15)
+        process_monitor.static_context = { 'region' => 'west' }
 
-      File.write(SETTINGS_PATH, EMPTY_SAMPLE_SETTINGS_YAML)
+        expect(callbacks).to eq([1, 2])
+      end
 
-      sleep(0.3)  # allow enough time for the listen gem to notify us of the changed file
+      it "runs all the callbacks on disk change" do
+        process_monitor
 
-      expect(callbacks).to eq([1, 2])
-    end
+        process_monitor.static_context = { 'region' => 'east' }
 
-    it "doesn't run all the callbacks on no-op disk change" do
-      process_monitor.static_context = { 'region' => 'east' }
+        callback_1
+        callback_2
 
-      callback_1
-      callback_2
+        sleep(0.15)
 
-      File.write(SETTINGS_PATH, EAST_SETTINGS_YAML)
+        File.write(SETTINGS_PATH, EMPTY_SAMPLE_SETTINGS_YAML)
 
-      expect(callbacks).to eq([])
-    end
+        sleep(0.3)  # allow enough time for the listen gem to notify us of the changed file
 
-    it "keeps going even if exceptions raised" do
-      process_monitor.static_context = { 'region' => 'east' }
+        expect(callbacks).to eq([1, 2])
+      end
 
-      process_monitor.on_change { raise 'callback_1' }
-      process_monitor.on_change { raise 'callback_2' }
+      it "doesn't run all the callbacks on no-op disk change" do
+        process_monitor.static_context = { 'region' => 'east' }
 
-      expect(logger).to receive(:error).with("ProcessSettings::Monitor#notify_on_change rescued exception:\nRuntimeError: callback_1")
-      expect(logger).to receive(:error).with("ProcessSettings::Monitor#notify_on_change rescued exception:\nRuntimeError: callback_2")
+        callback_1
+        callback_2
 
-      sleep(0.15)
+        File.write(SETTINGS_PATH, EAST_SETTINGS_YAML)
 
-      File.write(SETTINGS_PATH, EMPTY_SAMPLE_SETTINGS_YAML)
+        expect(callbacks).to eq([])
+      end
 
-      expect(callbacks).to eq([])
+      it "keeps going even if exceptions raised" do
+        process_monitor.static_context = { 'region' => 'east' }
 
-      sleep(0.3)  # allow enough time for the listen gem to notify us of the changed file
+        process_monitor.on_change { raise 'callback_1' }
+        process_monitor.on_change { raise 'callback_2' }
+
+        expect(logger).to receive(:error).with("ProcessSettings::Monitor#notify_on_change rescued exception:\nRuntimeError: callback_1")
+        expect(logger).to receive(:error).with("ProcessSettings::Monitor#notify_on_change rescued exception:\nRuntimeError: callback_2")
+
+        sleep(0.15)
+
+        File.write(SETTINGS_PATH, EMPTY_SAMPLE_SETTINGS_YAML)
+
+        expect(callbacks).to eq([])
+
+        sleep(0.3)  # allow enough time for the listen gem to notify us of the changed file
+      end
     end
   end
 

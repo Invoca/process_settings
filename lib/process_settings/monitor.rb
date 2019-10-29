@@ -56,7 +56,10 @@ module ProcessSettings
     end
 
     # Assigns a new static context. Recomputes statically_targeted_settings.
+    # Keys must be strings or integers. No symbols.
     def static_context=(context)
+      self.class.ensure_no_symbols(context)
+
       @static_context = context
 
       load_statically_targeted_settings(force_retarget: true)
@@ -137,6 +140,20 @@ module ProcessSettings
       def logger=(new_logger)
         @logger = new_logger
         Listen.logger = new_logger
+      end
+
+      def ensure_no_symbols(value)
+        case value
+        when Symbol
+          raise ArgumentError, "symbol value #{value.inspect} found--should be String"
+        when Hash
+          value.each do |k, v|
+            k.is_a?(Symbol) and raise ArgumentError, "symbol key #{k.inspect} found--should be String"
+            ensure_no_symbols(v)
+          end
+        when Array
+          value.each { |v| ensure_no_symbols(v) }
+        end
       end
     end
 
