@@ -98,6 +98,33 @@ describe ProcessSettings::Monitor do
       expect(matching_settings.first.process_settings.instance_variable_get(:@json_doc)).to eq(SAMPLE_SETTINGS.first['settings'])
     end
 
+    { modified: [File.expand_path(SETTINGS_PATH), [], []], added: [[], File.expand_path(SETTINGS_PATH), []] }.each do |type, args|
+      it "should re-read from disk when callback triggered with #{type}" do
+        file_change_notifier_stub = Object.new
+        class << file_change_notifier_stub
+          def to(path)
+          end
+        end
+
+        listener_stub = Object.new
+        class << listener_stub
+          def start
+          end
+        end
+
+        block = nil
+        expect(file_change_notifier_stub).to receive(:to).with(File.expand_path('.')) { |&blk| block = blk; listener_stub }
+        expect_any_instance_of(ProcessSettings::Monitor).to receive(:file_change_notifier) { file_change_notifier_stub }
+
+        process_monitor = described_class.new(SETTINGS_PATH, logger: logger)
+
+        expect(process_monitor).to receive(:load_untargeted_settings) { }
+
+        block.call(*args)
+      end
+    end
+
+
     it "should re-read from disk when watcher triggered" do
       process_monitor = described_class.new(SETTINGS_PATH, logger: logger)
 
