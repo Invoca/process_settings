@@ -67,7 +67,7 @@ module ProcessSettings
     # If nothing set at the given `path`:
     #   if required, raises SettingsPathNotFound
     #   else returns nil
-    def targeted_value(path, dynamic_context:, required: true)
+    def targeted_value(*path, dynamic_context:, required: true)
       # Merging the static context in is necessary to make sure that the static context isn't shifting
       # this can be rather costly to do every time if the dynamic context is not changing
       # TODO: Warn in the case where dynamic context was attempting to change a static value

@@ -5,9 +5,9 @@ require 'logger'
 
 describe ProcessSettings::Monitor do
   SETTINGS_PATH = "./settings.yml"
-  SAMPLE_SETTINGS = [{ 'target' => true, 'settings' => { 'sip' => true } }, { 'meta' => { 'version' => 19, 'END' => true } }].freeze
+  SAMPLE_SETTINGS = [{ 'target' => true, 'settings' => { 'sip' => { 'enabled' => true } } }, { 'meta' => { 'version' => 19, 'END' => true } }].freeze
   EAST_SETTINGS = [{ 'target' => { 'region' => 'east' }, 'settings' => { 'reject_call' => true } },
-                   { 'target' => true, 'settings' => { 'sip' => true } },
+                   { 'target' => true, 'settings' => { 'sip' => { 'enabled' => true } } },
                    { 'target' => { 'caller_id' => ['+18003334444', '+18887776666']}, 'settings' => { 'reject_call' => false }},
                    { 'target' => { 'region' => 'east', 'caller_id' => ['+18003334444', '+18887776666'] }, 'settings' => { 'collective' => true }},
                    { 'meta' => { 'version' => 19, 'END' => true }}].freeze
@@ -130,7 +130,7 @@ describe ProcessSettings::Monitor do
 
       matching_settings = process_monitor.untargeted_settings.matching_settings({})
       expect(matching_settings.size).to eq(1)
-      expect(matching_settings.first.process_settings.json_doc).to eq('sip' => true)
+      expect(matching_settings.first.process_settings.json_doc).to eq('sip' => { 'enabled' => true })
 
       sleep(0.15)
 
@@ -232,7 +232,7 @@ describe ProcessSettings::Monitor do
       result = process_monitor.statically_targeted_settings
       settings = result.map { |s| s.process_settings.json_doc }
 
-      expect(settings).to eq([{ 'reject_call' => true }, { 'sip' => true }, { 'reject_call' => false }, { 'collective' => true }])
+      expect(settings).to eq([{ 'reject_call' => true }, { 'sip' => { 'enabled' => true } }, { 'reject_call' => false }, { 'collective' => true }])
     end
 
     it "keeps subset of targeted entries" do
@@ -241,7 +241,7 @@ describe ProcessSettings::Monitor do
       result = process_monitor.statically_targeted_settings
       settings = result.map { |s| s.process_settings.json_doc }
 
-      expect(settings).to eq([{ 'sip' => true }, {"reject_call" => false}])
+      expect(settings).to eq([{ 'sip' => { 'enabled' => true } }, {"reject_call" => false}])
     end
 
     it "recomputes targeting if static_context changes" do
@@ -257,7 +257,7 @@ describe ProcessSettings::Monitor do
       expect(result3.object_id).to_not eq(result.object_id)
 
       settings = result3.map { |s| s.process_settings.json_doc }
-      expect(settings).to eq([{ 'sip' => true }, {"reject_call" => false}])
+      expect(settings).to eq([{ 'sip' => { 'enabled' => true } }, {"reject_call" => false}])
     end
   end
 
@@ -275,7 +275,7 @@ describe ProcessSettings::Monitor do
     it "should respect static targeting with dynamic overrides" do
       process_monitor.static_context = { 'region' => 'east' }
 
-      expect(process_monitor.targeted_value('sip', dynamic_context: {})).to eq(true)
+      expect(process_monitor.targeted_value('sip', 'enabled', dynamic_context: {})).to eq(true)
 
       expect(process_monitor.targeted_value('reject_call', dynamic_context: {})).to eq(true)
       expect(process_monitor.targeted_value('reject_call', dynamic_context: { 'caller_id' => '+18003334444' })).to eq(false)
