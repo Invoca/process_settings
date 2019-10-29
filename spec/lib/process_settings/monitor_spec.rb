@@ -275,18 +275,18 @@ describe ProcessSettings::Monitor do
     it "should respect static targeting with dynamic overrides" do
       process_monitor.static_context = { 'region' => 'east' }
 
-      expect(process_monitor.targeted_value('sip', {})).to eq(true)
+      expect(process_monitor.targeted_value('sip', dynamic_context: {})).to eq(true)
 
-      expect(process_monitor.targeted_value('reject_call', {})).to eq(true)
-      expect(process_monitor.targeted_value('reject_call', { 'caller_id' => '+18003334444' })).to eq(false)
-      expect(process_monitor.targeted_value('reject_call', { 'caller_id' => '+18887776666' })).to eq(false)
-      expect(process_monitor.targeted_value('reject_call', { 'caller_id' => '+12223334444' })).to eq(true)
+      expect(process_monitor.targeted_value('reject_call', dynamic_context: {})).to eq(true)
+      expect(process_monitor.targeted_value('reject_call', dynamic_context: { 'caller_id' => '+18003334444' })).to eq(false)
+      expect(process_monitor.targeted_value('reject_call', dynamic_context: { 'caller_id' => '+18887776666' })).to eq(false)
+      expect(process_monitor.targeted_value('reject_call', dynamic_context: { 'caller_id' => '+12223334444' })).to eq(true)
 
-      expect(process_monitor.targeted_value('collective', {})).to eq(nil)
-      expect(process_monitor.targeted_value('collective', { 'caller_id' => '+18880006666' })).to eq(nil)
-      expect(process_monitor.targeted_value('collective', { 'caller_id' => '+18887776666' })).to eq(true)
-      expect(process_monitor.targeted_value('collective', { 'region' => 'west', 'caller_id' => '+18880006666' })).to eq(nil)
-      expect(process_monitor.targeted_value('collective', { 'region' => 'west', 'caller_id' => '+18887776666' })).to eq(true)
+      expect(process_monitor.targeted_value('collective', dynamic_context: {}, required: false)).to eq(nil)
+      expect(process_monitor.targeted_value('collective', dynamic_context: { 'caller_id' => '+18880006666' }, required: false)).to eq(nil)
+      expect(process_monitor.targeted_value('collective', dynamic_context: { 'caller_id' => '+18887776666' }, required: false)).to eq(true)
+      expect(process_monitor.targeted_value('collective', dynamic_context: { 'region' => 'west', 'caller_id' => '+18880006666' }, required: false)).to eq(nil)
+      expect(process_monitor.targeted_value('collective', dynamic_context: { 'region' => 'west', 'caller_id' => '+18887776666' }, required: false)).to eq(true)
     end
   end
 end

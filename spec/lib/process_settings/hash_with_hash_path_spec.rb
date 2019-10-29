@@ -27,11 +27,11 @@ describe ProcessSettings::HashWithHashPath do
     end
   end
 
-  describe "#[]" do
+  describe "#mine" do
     it "should support hash keys" do
       hash = described_class[address: { city: "Santa Barbara" }]
 
-      result = hash[address: :city]
+      result = hash.mine(:address, :city)
       expect(result).to eq("Santa Barbara")
     end
   end

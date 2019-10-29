@@ -21,9 +21,5 @@ module ProcessSettings
     def eql?(rhs)
       self == rhs
     end
-
-    def [](key)
-      @json_doc[key]
-    end
   end
 end
