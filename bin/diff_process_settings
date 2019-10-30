@@ -34,6 +34,6 @@ system("rm -f tmp/combined_process_settings-A.yml tmp/combined_process_settings-
 system("sed '/^- meta:$/,$d' #{input_files[0]} > tmp/combined_process_settings-A.yml")
 system("sed '/^- meta:$/,$d' #{input_files[1]} > tmp/combined_process_settings-B.yml")
 
-system("diff tmp/combined_process_settings-A.yml tmp/combined_process_settings-B.yml")
+system("diff -c tmp/combined_process_settings-A.yml tmp/combined_process_settings-B.yml | sed '1,3d'")
 
 system("rm -f tmp/combined_process_settings-A.yml tmp/combined_process_settings-B.yml")
