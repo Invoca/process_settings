@@ -6,10 +6,22 @@ describe 'diff_process_settings' do
   it "ignores version number but sees other diffs" do
     output = `bin/diff_process_settings spec/fixtures/production/combined_process_settings-16.yml spec/fixtures/production/combined_process_settings.yml`
     expect(output).to eq(<<~EOS)
-      8c8
-      <       max_recording_seconds: 300
-      ---
-      >       max_recording_seconds: 600
+*** 5,11 ****
+  - filename: honeypot.yml
+    settings:
+      honeypot:
+!       max_recording_seconds: 300
+        answer_odds: 100
+        status_change_min_days: 10
+  - filename: telecom/log_level.yml
+--- 5,11 ----
+  - filename: honeypot.yml
+    settings:
+      honeypot:
+!       max_recording_seconds: 600
+        answer_odds: 100
+        status_change_min_days: 10
+  - filename: telecom/log_level.yml
     EOS
   end
 
@@ -26,10 +38,22 @@ describe 'diff_process_settings' do
   it "allows - meaning stdin" do
     output = `cat spec/fixtures/production/combined_process_settings-16.yml | bin/diff_process_settings - spec/fixtures/production/combined_process_settings.yml`
     expect(output).to eq(<<~EOS)
-      8c8
-      <       max_recording_seconds: 300
-      ---
-      >       max_recording_seconds: 600
+      *** 5,11 ****
+        - filename: honeypot.yml
+          settings:
+            honeypot:
+      !       max_recording_seconds: 300
+              answer_odds: 100
+              status_change_min_days: 10
+        - filename: telecom/log_level.yml
+      --- 5,11 ----
+        - filename: honeypot.yml
+          settings:
+            honeypot:
+      !       max_recording_seconds: 600
+              answer_odds: 100
+              status_change_min_days: 10
+        - filename: telecom/log_level.yml
     EOS
   end
 end

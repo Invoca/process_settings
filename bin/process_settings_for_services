@@ -107,7 +107,7 @@ if correlation_scorecard.any? { |_correllation_key, scorecard| scorecard[true].a
     system("rm -f tmp/old.yml tmp/new.yml")
     File.write("tmp/old.yml", ProcessSettings.plain_hash(best_correlation.last['__changes__']['old']).to_yaml)
     File.write("tmp/new.yml", ProcessSettings.plain_hash(best_correlation.last['__changes__']['new']).to_yaml)
-    STDOUT << `diff tmp/old.yml tmp/new.yml`
+    STDOUT << `diff -c tmp/old.yml tmp/new.yml | sed '1,3d'`
   else
     puts "No best correlation found?"
   end
