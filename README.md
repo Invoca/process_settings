@@ -1,5 +1,5 @@
 # ProcessSettings
-This gem provides dynamic settings for Linux processes. The settings are stored in JSON.
+This gem provides dynamic settings for Ruby processes. The settings are stored in YAML.
 Settings are managed in a git repo, in separate YAML files for each concern (for example, each micro-service). Each YAML file can be targeted based on matching context values (for example, `service_name`).
 
 
