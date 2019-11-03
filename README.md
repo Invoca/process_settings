@@ -43,7 +43,7 @@ For example, a setting that is targeted to `service_name: frontend` will match t
 be simplified to `true`. In other processes with a different `service_name`, such a targeted setting will be
 simplified to `false` and removed from memory.
 
-Note that the `static_context` must use strings, not symbols, for its keys and values.
+Note that the `static_context` must use strings, not symbols, for both keys and values.
 
 ### Reading Settings
 For the following section, consider this `combined_process_settings.yml` file:
@@ -82,7 +82,7 @@ The `ProcessSettings[]` method delegates to `ProcessSettings::Monitor#[]` on the
 |argument|description|
 |--------|-------------|
 |_path_    |A series of 1 or more comma-separated strings forming a path to navigate the `settings` hash, starting at the top.|
-|`dynamic_context:` |An optional hash of dynamic settings, used to target the settings. This will automatically be merged with the static context. It may not contradict the static context. |
+|`dynamic_context:` |An optional hash of dynamic settings, used to target the settings. This will automatically be deep-merged with the static context. It may not contradict the static context. |
 |`required:` |A boolean indicating if the setting is required to be present. If a setting is missing, then if `required` is truthy, a `ProcesssSettings::SettingsPathNotFound` exception will be raised. Otherwise, `nil` will be returned. Default: `true`.
 
 Example with `dynamic_context`:
@@ -96,26 +96,47 @@ log_level = ProcessSettings['frontend', 'log_level', dynamic_context: dynamic_co
 
 Example with `required: true` (default) that was not found:
 ```
-http2_version = ProcessSettings['frontend', 'http_version']
+http_version = ProcessSettings['frontend', 'http_version']
 
 exception raised!
 
 ProcessSettings::SettingsPathNotFound: No settings found for path ["frontend", "http_version"]
 ```
 
-Same example with `required: false` that applies a default value of `2` if not found:
+Here is the same example with `required: false`. It then uses `||` to apply a default value of `2` if not found:
 ```
 http_version = ProcessSettings['frontend', 'http_version', required: false] || 2
 ```
 
 ### Dynamic Settings
 
-In order to detect changes dynamically, `ProcessSettings::Monitor` relies on the `listen` gem using INotify module of the Linux kernel, or `FSEvents` on MacOS.
+The `ProcessSettings::Monitor` loads settings changes dynamically whenever the file changes,
+by using the [listen](https://github.com/guard/listen) gem which in turn uses the `INotify` module of the Linux kernel, or `FSEvents` on MacOS. There is no need to restart the process or send it a signal to tell it to reload changes.
+
+There are two ways to get access the latest settings from inside the process:
+
+#### Read Latest Setting Through `ProcessSettings[]`
+
+The simplest approach is to read the latest settings at any time through `ProcessSettings[]` (which delegates to `ProcessSettings::Monitor.instance`):
+```
+http_version = ProcessSettings['frontend', 'http_version']
+```
+
+#### Register an `on_change` Callback
+Alternatively, if you need to execute some code when there is a change, register a callback with `ProcessSettings::Monitor#on_change`:
+```
+ProcessSettings::Monitor.instance.on_change do
+  logger.level = ProcessSettings['frontend', 'log_level']
+end
+```
+Note that all callbacks run sequentially on the shared change monitoring thread, so please be considerate!
+
+There is no provision for unregistering callbacks. Instead, replace the `instance` of the monitor with a new one.
 
 ## Targeting
 Each settings YAML file has an optional `target` key at the top level, next to `settings`.
 
-If there is no `target` key, the target defaults to `true` meaning all processes are targeted for these settings. (However, the settings may be overridden by other YAML files. See "Precedence" below.)
+If there is no `target` key, the target defaults to `true`, meaning all processes are targeted for these settings. (However, the settings may be overridden by other YAML files. See "Precedence" below.)
 
 ### Hash Key-Values Are AND'd
 To `target` on context values, provide a hash of key-value pairs. All keys must be truthy for the target to be met. For example, consider this target hash:
@@ -124,7 +145,7 @@ target:
   service_name: frontend
   data_center: AWS-US-EAST-1
 ```
-This will be applied in any process that has `service_name` == "frontend" AND is running in `data_center` == "AWS-US-EAST-1".
+This will be applied in any process that has `service_name == "frontend"` AND is running in `data_center == "AWS-US-EAST-1"`.
 
 ### Multiple Values Are OR'd
 Values may be set to an array. In this case, that key matches if any of the values matches. For example, consider this target hash:
