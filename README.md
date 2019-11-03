@@ -3,7 +3,7 @@ This gem provides dynamic settings for Ruby processes. The settings are stored i
 Settings are managed in a git repo, in separate YAML files for each concern (for example, each micro-service). Each YAML file can be targeted based on matching context values (for example, `service_name`).
 
 
-The context can be either static to the process (for example, service_name or data_center) or dynamic (for example, the current web request `domain`).
+The context can be either static to the process (for example, `service_name` or `data_center`) or dynamic (for example, the current web request `domain`).
 
 ## Installation
 To install this gem directly on your machine from rubygems, run the following:
@@ -17,9 +17,11 @@ gem 'process_settings', '~> 0.4'
 ```
 
 ## Usage
-`ProcessSettings` must be configured before use.
+The `ProcessSettings::Monitor` and related classes can be freely created and used at any time.
+But typical usage is through the `ProcessSettings::Monitor.instance`.
+That should be configured at process startup before use.
 ### Configuration
-To use `process_settings`, you must first configure the path to the combined process settings file on disk,
+Before using `ProcessSettings::Monitor.instance`, you must first configure the path to the combined process settings file on disk,
 and provide a logger.
 ```ruby
 require 'process_settings'
@@ -28,7 +30,7 @@ ProcessSettings::Monitor.file_path = "/etc/process_settings/combined_process_set
 ProcessSettings::Monitor.logger = logger
 ```
 ### Monitor Initialization
-The `ProcessSettings::Monitor` is a modified singleton. There is a class method `instance` that returns
+The `ProcessSettings::Monitor` is a hybrid singleton. The class attribute `instance` returns
 the current instance. If not already set, this is lazy-created based on the above configuration.
 
 The monitor should be initialized with static (unchanging) context for your process:
@@ -43,7 +45,7 @@ For example, a setting that is targeted to `service_name: frontend` will match t
 be simplified to `true`. In other processes with a different `service_name`, such a targeted setting will be
 simplified to `false` and removed from memory.
 
-Note that the `static_context` must use strings, not symbols, for both keys and values.
+Note that the `static_context` as well as `dynamic_context` must use strings, not symbols, for both keys and values.
 
 ### Reading Settings
 For the following section, consider this `combined_process_settings.yml` file:
@@ -75,8 +77,7 @@ The `ProcessSettings[]` method delegates to `ProcessSettings::Monitor#[]` on the
 `[]` interface:
 
 ```
-
-[](*path, dyanmic_context: {}, required: true)
+[](*path, dynamic_context: {}, required: true)
 ```
 
 |argument|description|
@@ -87,10 +88,9 @@ The `ProcessSettings[]` method delegates to `ProcessSettings::Monitor#[]` on the
 
 Example with `dynamic_context`:
 ```
-dynamic_context = {
-  "domain" => "microsite.example.com"
-}
-log_level = ProcessSettings['frontend', 'log_level', dynamic_context: dynamic_context]
+log_level = ProcessSettings['frontend', 'log_level',
+                            dynamic_context: { "domain" => "microsite.example.com" }
+                           ]
 => "debug"
 ```
 
@@ -103,7 +103,7 @@ exception raised!
 ProcessSettings::SettingsPathNotFound: No settings found for path ["frontend", "http_version"]
 ```
 
-Here is the same example with `required: false`. It then uses `||` to apply a default value of `2` if not found:
+Here is the same example with `required: false`, applying a default value of `2`:
 ```
 http_version = ProcessSettings['frontend', 'http_version', required: false] || 2
 ```
@@ -117,7 +117,7 @@ There are two ways to get access the latest settings from inside the process:
 
 #### Read Latest Setting Through `ProcessSettings[]`
 
-The simplest approach is to read the latest settings at any time through `ProcessSettings[]` (which delegates to `ProcessSettings::Monitor.instance`):
+The simplest approach--as shown above--is to read the latest settings at any time through `ProcessSettings[]` (which delegates to `ProcessSettings::Monitor.instance`):
 ```
 http_version = ProcessSettings['frontend', 'http_version']
 ```
@@ -139,7 +139,7 @@ Each settings YAML file has an optional `target` key at the top level, next to `
 If there is no `target` key, the target defaults to `true`, meaning all processes are targeted for these settings. (However, the settings may be overridden by other YAML files. See "Precedence" below.)
 
 ### Hash Key-Values Are AND'd
-To `target` on context values, provide a hash of key-value pairs. All keys must be truthy for the target to be met. For example, consider this target hash:
+To `target` on context values, provide a hash of key-value pairs. All keys must match for the target to be met. For example, consider this target hash:
 ```
 target:
   service_name: frontend
@@ -148,13 +148,13 @@ target:
 This will be applied in any process that has `service_name == "frontend"` AND is running in `data_center == "AWS-US-EAST-1"`.
 
 ### Multiple Values Are OR'd
-Values may be set to an array. In this case, that key matches if any of the values matches. For example, consider this target hash:
+Values may be set to an array, in which case the key matches if _any_ of the values matches. For example, consider this target hash:
 ```
 target:
   service_name: [frontend, auth]
   data_center: AWS-US-EAST-1
 ```
-This will be applied in any process that has (`service_name` == "frontend" OR `service_name` == "auth") AND `data_center` == "AWS-US-EAST-1".
+This will be applied in any process that has (`service_name == "frontend"` OR `service_name == "auth"`) AND `data_center == "AWS-US-EAST-1"`.
 
 ### Precedence
 The settings YAML files are always combined in alphabetical order by file path. Later settings take precedence over the earlier ones.
