@@ -21,9 +21,7 @@ module ProcessSettings
         validate_source_version_is_not_older(source_file_path, destination_file_path)
 
         if source_version_is_newer?(source_file_path, destination_file_path)
-          FileUtils.mv(source_file_path, destination_file_path)
-        elsif source_file_path != destination_file_path # make sure we're not deleting destination file
-          FileUtils.rm_f(source_file_path) # clean up, remove left over file
+          FileUtils.cp(source_file_path, destination_file_path)
         end
       end
 
@@ -46,8 +44,6 @@ module ProcessSettings
           destination_version = ProcessSettings::TargetedSettings.from_file(destination_file_path, only_meta: true).version
 
           if source_version.to_f < destination_version.to_f
-            FileUtils.rm_f(source_file_path) # clean up, remove left over file
-
             raise SourceVersionOlderError,
                   "source file '#{source_file_path}' is version #{source_version}"\
                   " and destination file '#{destination_file_path}' is version #{destination_version}"
