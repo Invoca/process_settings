@@ -32,7 +32,7 @@ def parse_options(argv)
   options.verbose = false
   option_parser = OptionParser.new(argv) do |opt|
     opt.on('-v', '--verbose', 'Verbose mode.') { options.verbose = true }
-    opt.on('-n', '--version=VERSION', 'Set version number.') { |value| options.version = value.to_i }
+    opt.on('-n', '--version=VERSION', 'Set version number.') { |value| options.version = value.to_i unless value.empty? }
     opt.on('-r', '--root_folder=ROOT') { |o| options.root_folder = o }
     opt.on('-o', '--output=FILENAME', 'Output file.') { |o| options.output_filename = o }
     opt.on('-i', '--initial=FILENAME', 'Initial settings file for version inference.') { |o| options.initial_filename = o }
