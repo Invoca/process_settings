@@ -93,6 +93,17 @@ describe 'combine_process_settings' do
       expect(version).to eq(43)
     end
 
+    it "prefers --version=VERSION over -i + 1" do
+      output = `bin/combine_process_settings -r spec/fixtures/production -o tmp/combined_process_settings.yml --version=98 -i tmp/combined_process_settings.yml && cat tmp/combined_process_settings.yml`
+      expect($?.exitstatus).to eq(0), output
+
+      output_json_doc = YAML.load(output)
+
+      version = output_json_doc.last['meta']&.[]('version')
+
+      expect(version).to eq(98)
+    end
+
     it "ignores --version= with no version" do
       output = `bin/combine_process_settings -r spec/fixtures/production -o tmp/combined_process_settings.yml --version= -i tmp/combined_process_settings.yml && cat tmp/combined_process_settings.yml`
       expect($?.exitstatus).to eq(0), output
