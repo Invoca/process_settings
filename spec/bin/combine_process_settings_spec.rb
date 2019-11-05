@@ -8,8 +8,9 @@ describe 'combine_process_settings' do
     output = `bin/combine_process_settings 2>&1`
 
     expect(output).to eq(<<~EOS)
-      usage: combine_process_settings -r staging|production -o combined_process_settings.yml [-i initial_combined_process_settings.yml] (required if BUILD_NUMBER not set)
+      usage: combine_process_settings -r staging|production -o combined_process_settings.yml [--version=VERSION] [-i initial_combined_process_settings.yml] (-i required if --version= not set)
           -v, --verbose                    Verbose mode.
+          -n, --version=VERSION            Set version number.
           -r, --root_folder=ROOT
           -o, --output=FILENAME            Output file.
           -i, --initial=FILENAME           Initial settings file for version inference.
@@ -17,12 +18,13 @@ describe 'combine_process_settings' do
     expect($?.exitstatus).to eq(1)
   end
 
-  it "should print usage and exit 1 if no -i and no BUILD_NUMBER set" do
+  it "should print usage and exit 1 if no -i and no --version" do
     output = `bin/combine_process_settings -r spec/fixtures/production -o tmp/combined_process_settings.yml 2>&1`
 
     expect(output).to eq(<<~EOS)
-      usage: combine_process_settings -r staging|production -o combined_process_settings.yml [-i initial_combined_process_settings.yml] (required if BUILD_NUMBER not set)
+      usage: combine_process_settings -r staging|production -o combined_process_settings.yml [--version=VERSION] [-i initial_combined_process_settings.yml] (-i required if --version= not set)
           -v, --verbose                    Verbose mode.
+          -n, --version=VERSION            Set version number.
           -r, --root_folder=ROOT
           -o, --output=FILENAME            Output file.
           -i, --initial=FILENAME           Initial settings file for version inference.
@@ -31,7 +33,7 @@ describe 'combine_process_settings' do
   end
 
   it "should combine all settings files alphabetically, with a magic comment at the top and meta: at the end" do
-    output = `BUILD_NUMBER=42 bin/combine_process_settings -r spec/fixtures/production -o tmp/combined_process_settings.yml && cat tmp/combined_process_settings.yml && rm -f tmp/combined_process_settings.yml`
+    output = `bin/combine_process_settings --version=42 -r spec/fixtures/production -o tmp/combined_process_settings.yml && cat tmp/combined_process_settings.yml && rm -f tmp/combined_process_settings.yml`
 
     expect(output).to eq(<<~EOS)
       ---

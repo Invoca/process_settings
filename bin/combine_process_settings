@@ -32,15 +32,16 @@ def parse_options(argv)
   options.verbose = false
   option_parser = OptionParser.new(argv) do |opt|
     opt.on('-v', '--verbose', 'Verbose mode.') { options.verbose = true }
+    opt.on('-n', '--version=VERSION', 'Set version number.') { |value| options.version = value.to_i }
     opt.on('-r', '--root_folder=ROOT') { |o| options.root_folder = o }
     opt.on('-o', '--output=FILENAME', 'Output file.') { |o| options.output_filename = o }
     opt.on('-i', '--initial=FILENAME', 'Initial settings file for version inference.') { |o| options.initial_filename = o }
   end
 
-  if option_parser.parse! && options.root_folder && options.output_filename && (ENV['BUILD_NUMBER'] || options.initial_filename)
+  if option_parser.parse! && options.root_folder && options.output_filename && (options.version || options.initial_filename)
     options
   else
-    warn "usage: #{PROGRAM_NAME} -r staging|production -o combined_process_settings.yml [-i initial_combined_process_settings.yml] (required if BUILD_NUMBER not set)"
+    warn "usage: #{PROGRAM_NAME} -r staging|production -o combined_process_settings.yml [--version=VERSION] [-i initial_combined_process_settings.yml] (-i required if --version= not set)"
     option_parser.summarize(STDERR)
     exit(1)
   end
@@ -82,7 +83,7 @@ options = parse_options(ARGV.dup)
 
 combined_settings = read_and_combine_settings(Pathname.new(options.root_folder) + SETTINGS_FOLDER)
 
-version_number = ENV['BUILD_NUMBER']&.to_i || default_version_number(options.initial_filename)
+version_number = options.version || default_version_number(options.initial_filename)
 combined_settings << end_marker(version_number)
 
 yaml = combined_settings.to_yaml
