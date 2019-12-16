@@ -78,6 +78,19 @@ describe ProcessSettings::Monitor do
         expect(instance_1).to be_kind_of(described_class)
         expect(instance_1.object_id).to eq(instance_2.object_id)
       end
+
+      it "should start listener depending on DISABLE_LISTEN_CHANGE_MONITORING variable" do
+        described_class.file_path = "./spec/fixtures/production/combined_process_settings.yml"
+        described_class.logger = logger
+
+        allow(ENV).to receive(:[]).with("DISABLE_LISTEN_CHANGE_MONITORING").and_return("1")
+        instance = described_class.instance
+        expect(instance.instance_variable_get(:@listener).state).to eq(:initializing)
+        described_class.clear_instance
+        allow(ENV).to receive(:[]).with("DISABLE_LISTEN_CHANGE_MONITORING").and_return(nil)
+        instance = described_class.instance
+        expect(instance.instance_variable_get(:@listener).state).to eq(:processing_events)
+      end
     end
   end
 
