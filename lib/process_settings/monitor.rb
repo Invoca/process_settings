@@ -37,7 +37,7 @@ module ProcessSettings
         end
       end
 
-      if ENV['DISABLE_LISTEN_CHANGE_MONITORING']
+      unless ENV['DISABLE_LISTEN_CHANGE_MONITORING']
         @listener.start
       end
 
