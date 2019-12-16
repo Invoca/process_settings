@@ -37,7 +37,9 @@ module ProcessSettings
         end
       end
 
-      @listener.start
+      if ENV['DISABLE_LISTEN_CHANGE_MONITORING']
+        @listener.start
+      end
 
       load_untargeted_settings
 
