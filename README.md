@@ -3,7 +3,7 @@ This gem provides dynamic settings for Ruby processes. The settings are stored i
 Settings are managed in a git repo, in separate YAML files for each concern (for example, each micro-service). Each YAML file can be targeted based on matching context values (for example, `service_name`).
 
 
-The context can be either static to the process (for example, `service_name` or `data_center`) or dynamic (for example, the current web request `domain`).
+The context can be either static to the process (for example, `service_name` or `datacenter`) or dynamic (for example, the current web request `domain`).
 
 ## Installation
 To install this gem directly on your machine from rubygems, run the following:
@@ -37,7 +37,7 @@ The monitor should be initialized with static (unchanging) context for your proc
 ```
 ProcessSettings::Monitor.static_context = {
   "service_name" => "frontend",
-  "data_center" => "AWS-US-EAST-1"
+  "datacenter" => "AWS-US-EAST-1"
 }
 ```
 The `static_context` is important because it is used to pre-filter settings for the process.
@@ -143,18 +143,18 @@ To `target` on context values, provide a hash of key-value pairs. All keys must 
 ```
 target:
   service_name: frontend
-  data_center: AWS-US-EAST-1
+  datacenter: AWS-US-EAST-1
 ```
-This will be applied in any process that has `service_name == "frontend"` AND is running in `data_center == "AWS-US-EAST-1"`.
+This will be applied in any process that has `service_name == "frontend"` AND is running in `datacenter == "AWS-US-EAST-1"`.
 
 ### Multiple Values Are OR'd
 Values may be set to an array, in which case the key matches if _any_ of the values matches. For example, consider this target hash:
 ```
 target:
   service_name: [frontend, auth]
-  data_center: AWS-US-EAST-1
+  datacenter: AWS-US-EAST-1
 ```
-This will be applied in any process that has (`service_name == "frontend"` OR `service_name == "auth"`) AND `data_center == "AWS-US-EAST-1"`.
+This will be applied in any process that has (`service_name == "frontend"` OR `service_name == "auth"`) AND `datacenter == "AWS-US-EAST-1"`.
 
 ### Precedence
 The settings YAML files are always combined in alphabetical order by file path. Later settings take precedence over the earlier ones.
