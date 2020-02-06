@@ -159,6 +159,22 @@ This will be applied in any process that has (`service_name == "frontend"` OR `s
 ### Precedence
 The settings YAML files are always combined in alphabetical order by file path. Later settings take precedence over the earlier ones.
 
+### Testing
+For testing, it is often necessary to set a specific hash for the process_settings values to use in that test case.
+The `ProcessSettings::Testing::MonitorStub` class is provided for this purpose. It can be initialized with a hash and assigned to `ProcessSettings::Monitor.instance`. After the test runs, make sure to call `clear_instance`.
+Note that it has no `targeting` or `settings` keys; it is stubbing the resulting settings hash _after_ targeting has been applied.
+Here is an example using `rspec` conventions:
+```
+before do
+  settings = { "honeypot" => { "answer_odds" => 100 } }
+  ProcessSettings::Monitor.instance = ProcessSettings::Testing::MonitorStub.new(settings)
+end
+
+after do
+  ProcessSettings::Monitor.clear_instance
+end
+```
+
 ## Contributions
 
 Contributions to this project are always welcome.  Please thoroughly read our [Contribution Guidelines](https://github.com/Invoca/process_settings/blob/master/CONTRIBUTING.md) before starting any work.
