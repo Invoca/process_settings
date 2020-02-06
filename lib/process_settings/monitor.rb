@@ -128,6 +128,7 @@ module ProcessSettings
     class << self
       attr_accessor :file_path
       attr_reader :logger
+      attr_writer :instance
 
       def clear_instance
         @instance = nil

@@ -92,6 +92,31 @@ describe ProcessSettings::Monitor do
         expect(instance.instance_variable_get(:@listener).state).to eq(:processing_events)
       end
     end
+
+    describe "clear_instance" do
+      after do
+        described_class.clear_instance
+      end
+
+      it "stores nil into instance" do
+        described_class.instance
+        expect(described_class.instance_variable_get(:@instance)).to be
+        described_class.instance = nil
+        expect(described_class.instance_variable_get(:@instance)).to_not be
+      end
+    end
+
+    describe "instance=" do
+      after do
+        described_class.clear_instance
+      end
+
+      it "stores value into instance" do
+        new_instance = Object.new
+        described_class.instance = new_instance
+        expect(described_class.instance).to be(new_instance)
+      end
+    end
   end
 
   describe "#untargeted_settings" do
