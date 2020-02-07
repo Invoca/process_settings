@@ -81,7 +81,7 @@ module ProcessSettings
       result = statically_targeted_settings.reduce(:not_found) do |latest_result, target_and_settings|
         # find last value from matching targets
         if target_and_settings.target.target_key_matches?(full_context)
-          if (value = target_and_settings.process_settings.json_doc.mine(*path, not_found_value: :not_found)) != :not_found
+          if (value = target_and_settings.settings.json_doc.mine(*path, not_found_value: :not_found)) != :not_found
             latest_result = value
           end
         end

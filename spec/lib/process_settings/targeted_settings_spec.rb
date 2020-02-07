@@ -38,7 +38,7 @@ describe ProcessSettings::TargetedSettings do
     it "allows hash key access to settings" do
       target_and_settings = described_class.from_array(TARGETED_SETTINGS)
 
-      result = target_and_settings.targeted_settings_array.first.process_settings.json_doc.mine('honeypot', 'promo_number')
+      result = target_and_settings.targeted_settings_array.first.settings.json_doc.mine('honeypot', 'promo_number')
 
       expect(result).to eq('+18005554321')
     end
@@ -60,7 +60,7 @@ describe ProcessSettings::TargetedSettings do
         targeted_settings = described_class.from_file(TMP_FILE_PATH)
 
         expect(targeted_settings.targeted_settings_array.size).to eq(1)
-        expect(targeted_settings.targeted_settings_array.first.process_settings.json_doc.keys.first).to eq('honeypot')
+        expect(targeted_settings.targeted_settings_array.first.settings.json_doc.keys.first).to eq('honeypot')
         expect(targeted_settings.version).to eq(17)
       end
 
@@ -86,9 +86,9 @@ describe ProcessSettings::TargetedSettings do
       expect(target.json_doc).to eq(true)
       expect(target).to be_kind_of(ProcessSettings::Target)
 
-      process_settings = target_and_settings.targeted_settings_array.first.process_settings
-      expect(process_settings.json_doc).to eq('honeypot' => { 'promo_number' => '+18005554321' })
-      expect(process_settings).to be_kind_of(ProcessSettings::Settings)
+      settings = target_and_settings.targeted_settings_array.first.settings
+      expect(settings.json_doc).to eq('honeypot' => { 'promo_number' => '+18005554321' })
+      expect(settings).to be_kind_of(ProcessSettings::Settings)
     end
 
     it "confirms meta: is at end" do

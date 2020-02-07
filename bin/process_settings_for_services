@@ -62,14 +62,14 @@ flat_services_yml_json_doc.each do |service, nodes|
       if (changed = node_targeted_process_settings_old != node_targeted_process_settings_new)
         node_old =  node_targeted_process_settings_old.map do |node_targeted_process_setting|
                       {
-                        'target'            => node_targeted_process_setting.target,
-                        "process_settings"  => node_targeted_process_setting.process_settings
+                        'target'    => node_targeted_process_setting.target,
+                        "settings"  => node_targeted_process_setting.settings
                       }
                     end
         node_new =  node_targeted_process_settings_new.map do |node_targeted_process_setting|
                       {
-                        'target'            => node_targeted_process_setting.target,
-                        "process_settings"  => node_targeted_process_setting.process_settings
+                        'target'    => node_targeted_process_setting.target,
+                        "settings"  => node_targeted_process_setting.settings
                       }
                     end
 
