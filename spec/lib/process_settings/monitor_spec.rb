@@ -108,7 +108,7 @@ describe ProcessSettings::Monitor do
       matching_settings = process_monitor.untargeted_settings.matching_settings({})
       expect(matching_settings.size).to eq(1)
       expect(matching_settings.first.target.json_doc).to eq(SAMPLE_SETTINGS.first['target'])
-      expect(matching_settings.first.process_settings.instance_variable_get(:@json_doc)).to eq(SAMPLE_SETTINGS.first['settings'])
+      expect(matching_settings.first.settings.instance_variable_get(:@json_doc)).to eq(SAMPLE_SETTINGS.first['settings'])
     end
 
     { modified: [File.expand_path(SETTINGS_PATH), [], []], added: [[], File.expand_path(SETTINGS_PATH), []] }.each do |type, args|
@@ -143,7 +143,7 @@ describe ProcessSettings::Monitor do
 
       matching_settings = process_monitor.untargeted_settings.matching_settings({})
       expect(matching_settings.size).to eq(1)
-      expect(matching_settings.first.process_settings.json_doc).to eq('sip' => { 'enabled' => true })
+      expect(matching_settings.first.settings.json_doc).to eq('sip' => { 'enabled' => true })
 
       sleep(0.15)
 
@@ -152,7 +152,7 @@ describe ProcessSettings::Monitor do
       sleep(0.3)  # allow enough time for the listen gem to notify us of the changed file
 
       matching_settings = process_monitor.untargeted_settings.matching_settings({})
-      expect(matching_settings.first.process_settings.json_doc).to eq({})
+      expect(matching_settings.first.settings.json_doc).to eq({})
     end
   end
 
@@ -268,7 +268,7 @@ describe ProcessSettings::Monitor do
       process_monitor.static_context = { 'region' => 'east' }
 
       result = process_monitor.statically_targeted_settings
-      settings = result.map { |s| s.process_settings.json_doc }
+      settings = result.map { |s| s.settings.json_doc }
 
       expect(settings).to eq([{ 'reject_call' => true }, { 'sip' => { 'enabled' => true } }, { 'reject_call' => false }, { 'collective' => true }])
     end
@@ -277,7 +277,7 @@ describe ProcessSettings::Monitor do
       process_monitor.static_context = { 'region' => 'west' }
 
       result = process_monitor.statically_targeted_settings
-      settings = result.map { |s| s.process_settings.json_doc }
+      settings = result.map { |s| s.settings.json_doc }
 
       expect(settings).to eq([{ 'sip' => { 'enabled' => true } }, {"reject_call" => false}])
     end
@@ -294,7 +294,7 @@ describe ProcessSettings::Monitor do
       result3 = process_monitor.statically_targeted_settings
       expect(result3.object_id).to_not eq(result.object_id)
 
-      settings = result3.map { |s| s.process_settings.json_doc }
+      settings = result3.map { |s| s.settings.json_doc }
       expect(settings).to eq([{ 'sip' => { 'enabled' => true } }, {"reject_call" => false}])
     end
   end

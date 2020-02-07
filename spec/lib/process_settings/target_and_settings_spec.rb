@@ -9,13 +9,13 @@ describe ProcessSettings::TargetAndSettings do
       sample = sample_target_and_process_settings
       expect(sample.filename).to eq("settings.yml")
       expect(sample.target).to eq(sample_target)
-      expect(sample.process_settings).to eq(sample_process_settings)
+      expect(sample.settings).to eq(sample_process_settings)
     end
   end
 
-  describe "#process_settings" do
-    it "should return process_settings passed to #initialize" do
-      expect(sample_target_and_process_settings.process_settings).to eq(sample_process_settings)
+  describe "#settings" do
+    it "should return settings passed to #initialize" do
+      expect(sample_target_and_process_settings.settings).to eq(sample_process_settings)
     end
   end
 
@@ -26,7 +26,7 @@ describe ProcessSettings::TargetAndSettings do
       target_and_settings = described_class.from_json_docs("sip.yml", target_json_doc, target_settings_json_doc)
 
       expect(target_and_settings.target.json_doc).to eq(target_json_doc)
-      expect(target_and_settings.process_settings.json_doc).to eq(target_settings_json_doc)
+      expect(target_and_settings.settings.json_doc).to eq(target_settings_json_doc)
     end
   end
 
@@ -59,7 +59,7 @@ describe ProcessSettings::TargetAndSettings do
 
     it "is equal even if filename is different" do
       initial_value = sample_target_and_process_settings
-      dup_value = described_class.new("different_filename.yml", initial_value.target, initial_value.process_settings)
+      dup_value = described_class.new("different_filename.yml", initial_value.target, initial_value.settings)
 
       expect(initial_value).to eq(dup_value)
       expect(initial_value.eql?(dup_value)).to be_truthy
@@ -67,7 +67,7 @@ describe ProcessSettings::TargetAndSettings do
 
     it "is unequal if target is different" do
       initial_value = sample_target_and_process_settings
-      new_value = described_class.new(initial_value.filename, ProcessSettings::Target.new('region' => 'west'), initial_value.process_settings)
+      new_value = described_class.new(initial_value.filename, ProcessSettings::Target.new('region' => 'west'), initial_value.settings)
 
       expect(initial_value).to_not eq(new_value)
       expect(initial_value.eql?(new_value)).to be_falsey
