@@ -20,6 +20,8 @@ module ProcessSettings
       @logger = logger
       @on_change_callbacks = []
       @static_context = {}
+      @last_statically_targetted_settings = nil
+      @last_untargetted_settings = nil
 
       # to eliminate any race condition:
       # 1. set up file watcher
