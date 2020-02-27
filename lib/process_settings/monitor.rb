@@ -150,7 +150,7 @@ module ProcessSettings
 
       def logger=(new_logger)
         @logger = new_logger
-        Listen.logger = new_logger
+        Listen.logger ||= new_logger
       end
 
       def ensure_no_symbols(value)

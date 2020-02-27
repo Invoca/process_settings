@@ -64,8 +64,17 @@ describe ProcessSettings::Monitor do
       end
 
       it "logger = should set the Listen logger" do
+        Listen.logger = nil
         described_class.logger = logger
         expect(Listen.logger).to be(logger)
+      end
+
+      it "logger = should leave the Listen logger alone if already set" do
+        existing_logger = Logger.new(STDOUT)
+        Listen.logger = existing_logger
+        described_class.logger = logger
+        expect(Listen.logger).to be(existing_logger)
+        Listen.logger = nil
       end
 
       it "should return a global instance" do
