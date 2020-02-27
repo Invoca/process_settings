@@ -21,6 +21,8 @@ module ProcessSettings
       @on_change_callbacks = []
       @static_context = {}
       @last_statically_targetted_settings = nil
+      @untargeted_settings = nil
+      @last_untargetted_settings = nil
       @last_untargetted_settings = nil
 
       # to eliminate any race condition:
