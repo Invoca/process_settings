@@ -171,7 +171,6 @@ describe ProcessSettings::Monitor do
       end
     end
 
-
     it "should re-read from disk when watcher triggered" do
       process_monitor = described_class.new(SETTINGS_PATH, logger: logger)
 
