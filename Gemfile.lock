@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    process_settings (0.5.3)
+    process_settings (0.5.4.pre.1)
       activesupport
       json
       listen (~> 3.0)
@@ -18,7 +18,7 @@ GEM
     ast (2.4.0)
     bump (0.6.1)
     coderay (1.1.2)
-    concurrent-ruby (1.1.5)
+    concurrent-ruby (1.1.6)
     coveralls (0.8.22)
       json (>= 1.8, < 3)
       simplecov (~> 0.16.1)
@@ -89,7 +89,7 @@ GEM
     tzinfo (1.2.6)
       thread_safe (~> 0.1)
     unicode-display_width (1.4.0)
-    zeitwerk (2.2.2)
+    zeitwerk (2.3.0)
 
 PLATFORMS
   ruby
