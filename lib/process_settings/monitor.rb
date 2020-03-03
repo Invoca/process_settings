@@ -21,12 +21,21 @@ module ProcessSettings
       @on_change_callbacks = []
       @static_context = {}
 
+      start
+    end
+
+    # starts listening for changes
+    # Note: This method creates a new thread that will be monitoring for changes
+    #       do to the nature of how the Listen gem works, there is no record of
+    #       existing threads, calling this mutliple times will result in spinning off
+    #       multiple listen threads and will have unknow effects
+    def start
+      path = File.dirname(@file_path)
+
       # to eliminate any race condition:
       # 1. set up file watcher
       # 2. start it (this should trigger if any changes have been made since (1))
       # 3. load the file
-
-      path = File.dirname(@file_path)
 
       @listener = file_change_notifier.to(path) do |modified, added, _removed|
         if modified.include?(@file_path) || added.include?(@file_path)
@@ -42,13 +51,12 @@ module ProcessSettings
       end
 
       load_untargeted_settings
-
       load_statically_targeted_settings
     end
 
     # stops listening for changes
     def stop
-      @listener.stop
+      @listener&.stop
     end
 
     # Registers the given callback block to be called when settings change.
@@ -100,6 +108,10 @@ module ProcessSettings
     end
 
     private
+
+    def listener
+
+    end
 
     # Loads the most recent settings from disk
     def load_untargeted_settings
