@@ -117,10 +117,6 @@ module ProcessSettings
 
     private
 
-    def listener
-
-    end
-
     # Loads the most recent settings from disk
     def load_untargeted_settings
       new_untargeted_settings = load_file(file_path)
