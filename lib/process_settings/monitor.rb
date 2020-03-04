@@ -20,6 +20,10 @@ module ProcessSettings
       @logger = logger
       @on_change_callbacks = []
       @static_context = {}
+      @last_statically_targetted_settings = nil
+      @untargeted_settings = nil
+      @last_untargetted_settings = nil
+      @last_untargetted_settings = nil
 
       start
     end
@@ -58,6 +62,10 @@ module ProcessSettings
     def stop
       @listener&.stop
     end
+
+    # TODO:
+    # 1. rename this to `when_updated` and clone that interface from InvocaCluster
+    # 2. since the callback yields self, support Instance#[]; have ProcessSettings.[] delegate there.
 
     # Registers the given callback block to be called when settings change.
     # These are run using the shared thread that monitors for changes so be courteous and don't monopolize it!
@@ -154,7 +162,7 @@ module ProcessSettings
 
       def logger=(new_logger)
         @logger = new_logger
-        Listen.logger = new_logger
+        Listen.logger ||= new_logger
       end
 
       def ensure_no_symbols(value)
