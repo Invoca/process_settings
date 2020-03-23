@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    process_settings (0.6.0)
+    process_settings (0.6.1)
       activesupport
       json
       listen (~> 3.0)
@@ -9,7 +9,7 @@ PATH
 GEM
   remote: http://rubygems.org/
   specs:
-    activesupport (6.0.2.1)
+    activesupport (6.0.2.2)
       concurrent-ruby (~> 1.0, >= 1.0.2)
       i18n (>= 0.7, < 2)
       minitest (~> 5.1)
@@ -109,4 +109,4 @@ DEPENDENCIES
   ruby-prof-flamegraph
 
 BUNDLED WITH
-   1.17.3
+   1.17.2
