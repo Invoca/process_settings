@@ -151,9 +151,11 @@ module ProcessSettings
       end
 
       def instance
-        file_path or raise ArgumentError, "#{self}::file_path must be set before calling instance method"
-        logger or raise ArgumentError, "#{self}::logger must be set before calling instance method"
-        @instance ||= new(file_path, logger: logger)
+        @instance ||= begin
+                        file_path or raise ArgumentError, "#{self}::file_path must be set before calling instance method"
+                        logger or raise ArgumentError, "#{self}::logger must be set before calling instance method"
+                        new(file_path, logger: logger)
+                      end
       end
 
       def logger=(new_logger)

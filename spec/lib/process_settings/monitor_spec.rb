@@ -63,6 +63,15 @@ describe ProcessSettings::Monitor do
         end.to raise_exception(ArgumentError, /::logger must be set before calling instance method/)
       end
 
+      it "should not raise an exception about file_path or logger if configured" do
+        described_class.file_path = nil
+        described_class.logger = nil
+        instance_stub = Object.new
+        described_class.instance = instance_stub
+
+        expect(described_class.instance).to eq(instance_stub)
+      end
+
       it "logger = should set the Listen logger" do
         Listen.logger = nil
         described_class.logger = logger
