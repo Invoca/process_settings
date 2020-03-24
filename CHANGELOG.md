@@ -6,7 +6,7 @@ Note: this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0
 
 ## [0.6.1] (Unreleased)
 
-### Added
+### Modified
 
 - Don't check for file_path or logger config if `instance =` has already been called;
   it's not necessary.
