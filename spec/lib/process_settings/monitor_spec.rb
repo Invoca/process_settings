@@ -236,6 +236,10 @@ describe ProcessSettings::Monitor do
       let(:callback_1) { process_monitor.on_change { callbacks << 1 } }
       let(:callback_2) { process_monitor.on_change { callbacks << 2 } }
 
+      before(:each) do
+        expect(ProcessSettings::OnChangeDeprecation).to receive(:deprecation_warning).with(:on_change, :when_updated).at_least(1)
+      end
+
       it "runs all the callbacks on static_context change" do
         process_monitor.static_context = { 'region' => 'east' }
 

@@ -9,6 +9,8 @@ require 'active_support'
 module ProcessSettings
   class SettingsPathNotFound < StandardError; end
 
+  OnChangeDeprecation = ActiveSupport::Deprecation.new('1.0', 'ProcessSettings::Monitor')
+
   class Monitor
     attr_reader :file_path, :min_polling_seconds, :logger
     attr_reader :static_context, :untargeted_settings, :statically_targeted_settings
@@ -69,9 +71,11 @@ module ProcessSettings
 
     # Registers the given callback block to be called when settings change.
     # These are run using the shared thread that monitors for changes so be courteous and don't monopolize it!
+    # @deprecated
     def on_change(&callback)
       @on_change_callbacks << callback
     end
+    deprecate on_change: :when_updated, deprecator: OnChangeDeprecation
 
     # Assigns a new static context. Recomputes statically_targeted_settings.
     # Keys must be strings or integers. No symbols.
