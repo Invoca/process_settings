@@ -4,7 +4,7 @@ Inspired by [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 Note: this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.7.0] (Unreleased)
+## [0.7.0] - 2020-03-31
 
 ### Added
 
@@ -22,4 +22,4 @@ Note: this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0
 - `ProcessSettings::Monitor.on_change` has been deprecated. `ProcessSettings::Monitor.when_updated` should be used instead.
   This will be removed in version `1.0.0`
 
-[0.6.1]: https://github.com/Invoca/process_settings/compare/v0.6.0...v0.6.1
+[0.7.0]: https://github.com/Invoca/process_settings/compare/v0.6.0...v0.7.0
