@@ -217,9 +217,11 @@ module ProcessSettings
 
     def call_when_updated_blocks
       @when_updated_blocks.each do |block|
-        block.call(self)
-      rescue => ex
-        logger.error("ProcessSettings::Monitor#call_when_updated_blocks rescued exception:\n#{ex.class}: #{ex.message}")
+        begin
+          block.call(self)
+        rescue => ex
+          logger.error("ProcessSettings::Monitor#call_when_updated_blocks rescued exception:\n#{ex.class}: #{ex.message}")
+        end
       end
     end
 
