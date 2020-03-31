@@ -9,6 +9,8 @@ require 'active_support'
 module ProcessSettings
   class SettingsPathNotFound < StandardError; end
 
+  OnChangeDeprecation = ActiveSupport::Deprecation.new('1.0', 'ProcessSettings::Monitor')
+
   class Monitor
     attr_reader :file_path, :min_polling_seconds, :logger
     attr_reader :static_context, :untargeted_settings, :statically_targeted_settings
@@ -19,6 +21,7 @@ module ProcessSettings
       @file_path = File.expand_path(file_path)
       @logger = logger
       @on_change_callbacks = []
+      @when_updated_blocks = Set.new
       @static_context = {}
       @last_statically_targetted_settings = nil
       @untargeted_settings = nil
@@ -63,15 +66,35 @@ module ProcessSettings
       @listener&.stop
     end
 
-    # TODO:
-    # 1. rename this to `when_updated` and clone that interface from InvocaCluster
-    # 2. since the callback yields self, support Instance#[]; have ProcessSettings.[] delegate there.
+    # Idempotently adds the given block to the when_updated collection
+    # calls the block first unless initial_update: false is passed
+    # returns a handle (the block itself) which can later be passed into cancel_when_updated
+    def when_updated(initial_update: true, &block)
+      if @when_updated_blocks.add?(block)
+        if initial_update
+          begin
+            block.call(self)
+          rescue => ex
+            logger.error("ProcessSettings::Monitor#when_updated rescued exception during initialization:\n#{ex.class}: #{ex.message}")
+          end
+        end
+      end
+
+      block
+    end
+
+    # removes the given when_updated block identified by the handle returned from when_updated
+    def cancel_when_updated(handle)
+      @when_updated_blocks.delete_if { |callback| callback.eql?(handle) }
+    end
 
     # Registers the given callback block to be called when settings change.
     # These are run using the shared thread that monitors for changes so be courteous and don't monopolize it!
+    # @deprecated
     def on_change(&callback)
       @on_change_callbacks << callback
     end
+    deprecate on_change: :when_updated, deprecator: OnChangeDeprecation
 
     # Assigns a new static context. Recomputes statically_targeted_settings.
     # Keys must be strings or integers. No symbols.
@@ -128,7 +151,7 @@ module ProcessSettings
 
     # Loads the latest untargeted settings from disk. Returns the current process settings as a TargetAndProcessSettings given
     # by applying the static context to the current untargeted settings from disk.
-    # If these have changed, borrows this thread to call notify_on_change.
+    # If these have changed, borrows this thread to call notify_on_change and call_when_updated_blocks.
     def load_statically_targeted_settings(force_retarget: false)
       if force_retarget || @last_untargetted_settings != @untargeted_settings
         @last_untargetted_settings = @untargeted_settings
@@ -137,6 +160,7 @@ module ProcessSettings
           @last_statically_targetted_settings = @statically_targeted_settings
 
           notify_on_change
+          call_when_updated_blocks
         end
       end
     end
@@ -188,6 +212,14 @@ module ProcessSettings
         rescue => ex
           logger.error("ProcessSettings::Monitor#notify_on_change rescued exception:\n#{ex.class}: #{ex.message}")
         end
+      end
+    end
+
+    def call_when_updated_blocks
+      @when_updated_blocks.each do |block|
+        block.call(self)
+      rescue => ex
+        logger.error("ProcessSettings::Monitor#call_when_updated_blocks rescued exception:\n#{ex.class}: #{ex.message}")
       end
     end
 

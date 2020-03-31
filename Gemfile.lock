@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    process_settings (0.6.1)
+    process_settings (0.7.0.pre.1)
       activesupport
       json
       listen (~> 3.0)
