@@ -20,6 +20,6 @@ Note: this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0
 ### Deprecated
 
 - `ProcessSettings::Monitor.on_change` has been deprecated. `ProcessSettings::Monitor.when_updated` should be used instead.
-  This will be removed starting in version `1.0.0`
+  This will be removed in version `1.0.0`
 
 [0.6.1]: https://github.com/Invoca/process_settings/compare/v0.6.0...v0.6.1
