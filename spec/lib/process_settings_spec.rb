@@ -3,30 +3,23 @@
 require 'spec_helper'
 
 describe ProcessSettings do
-  describe 'Array Operator' do
-    before do
-      ProcessSettings::Monitor.file_path = "./spec/fixtures/production/combined_process_settings.yml"
-      ProcessSettings::Monitor.logger = Logger.new(STDERR)
+  describe '[] operator' do
+    let(:instance) { double("instance", '[]': nil)}
+
+    it 'delegates to Monitor.instance with defaults' do
+      expect(instance).to receive(:[]).with('gem', 'listen', 'log_level', dynamic_context: {}, required: true).and_return('info')
+      described_class::Monitor.instance = instance
+
+      result = described_class['gem', 'listen', 'log_level']
+      expect(result).to eq('info')
     end
 
-    after do
-      ProcessSettings::Monitor.file_path = nil
-      ProcessSettings::Monitor.logger = nil
-    end
+    it 'delegates to Monitor.instance with pass-through' do
+      expect(instance).to receive(:[]).with('gem', 'listen', 'log_level', dynamic_context: { cuid: '1234'}, required: false).and_return(nil)
+      described_class::Monitor.instance = instance
 
-    it 'delegates to the current monitor instance' do
-      expect(ProcessSettings::Monitor.instance).to receive(:targeted_value).with('setting1', 'sub', 'enabled', dynamic_context: { "hello" => "world" }, required: true).and_return(true)
-      expect(ProcessSettings['setting1', 'sub', 'enabled', dynamic_context: { "hello" => "world" }]).to eq(true)
-    end
-
-    it 'passes required: keyword arg' do
-      expect(ProcessSettings::Monitor.instance).to receive(:targeted_value).with('setting1', dynamic_context: { "hello" => "world" }, required: false).and_return(true)
-      expect(ProcessSettings['setting1', dynamic_context: { "hello" => "world" }, required: false]).to eq(true)
-    end
-
-    it 'defaults dynamic context to an empty hash' do
-      expect(ProcessSettings::Monitor.instance).to receive(:targeted_value).with('setting1', 'enabled', dynamic_context: {}, required: true).and_return(true)
-      expect(ProcessSettings['setting1', 'enabled']).to eq(true)
+      result = described_class['gem', 'listen', 'log_level', dynamic_context: { cuid: '1234' }, required: false]
+      expect(result).to be_nil
     end
   end
 end
