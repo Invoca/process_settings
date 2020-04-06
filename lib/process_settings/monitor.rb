@@ -31,6 +31,33 @@ module ProcessSettings
       start
     end
 
+    # []
+    #
+    # This is the main entry point for looking up settings.
+    #
+    # @example
+    #
+    # ['path', 'to', 'setting']
+    #
+    # will return 42 in this example YAML:
+    # +code+
+    #   path:
+    #     to:
+    #       setting:
+    #         42
+    # +code+
+    #
+    # @param [Array(String)] path The path of one or more strings.
+    #
+    # @param [Hash] dynamic_context Optional dynamic context hash. It will be merged with the static context.
+    #
+    # @param [boolean] required If true (default) will raise `SettingsPathNotFound` if not found; otherwise returns `nil` if not found.
+    #
+    # @return setting value
+    def [](*path, dynamic_context: {}, required: true)
+      targeted_value(*path, dynamic_context: dynamic_context, required: required)
+    end
+
     # starts listening for changes
     # Note: This method creates a new thread that will be monitoring for changes
     #       do to the nature of how the Listen gem works, there is no record of

@@ -42,6 +42,33 @@ describe ProcessSettings::Monitor do
   end
 
   describe "class methods" do
+    describe '[] operator' do
+      subject(:process_monitor) { described_class.new(SETTINGS_PATH, logger: logger) }
+
+      before do
+        File.write(SETTINGS_PATH, EAST_SETTINGS_YAML)
+      end
+
+      after do
+        FileUtils.rm_f(SETTINGS_PATH)
+      end
+
+      it 'delegates to the current monitor instance' do
+        expect(subject).to receive(:targeted_value).with('setting1', 'sub', 'enabled', dynamic_context: { "hello" => "world" }, required: true).and_return(true)
+        expect(subject['setting1', 'sub', 'enabled', dynamic_context: { "hello" => "world" }]).to eq(true)
+      end
+
+      it 'passes required: keyword arg' do
+        expect(subject).to receive(:targeted_value).with('setting1', dynamic_context: { "hello" => "world" }, required: false).and_return(true)
+        expect(subject['setting1', dynamic_context: { "hello" => "world" }, required: false]).to eq(true)
+      end
+
+      it 'defaults dynamic context to an empty hash' do
+        expect(subject).to receive(:targeted_value).with('setting1', 'enabled', dynamic_context: {}, required: true).and_return(true)
+        expect(subject['setting1', 'enabled']).to eq(true)
+      end
+    end
+
     describe ".instance method" do
       before do
         described_class.clear_instance
@@ -198,8 +225,8 @@ describe ProcessSettings::Monitor do
     end
   end
 
-  describe "with process_settings" do
-    let(:process_monitor) { described_class.new(SETTINGS_PATH, logger: logger) }
+  context "with process_settings" do
+    subject(:process_monitor) { described_class.new(SETTINGS_PATH, logger: logger) }
 
     before do
       File.write(SETTINGS_PATH, EAST_SETTINGS_YAML)
