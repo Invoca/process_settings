@@ -33,13 +33,13 @@ module ProcessSettings
 
     # []
     #
-    # This is the main entry point for looking up settings.
+    # This is the main entry point for looking up settings on the Monitor instance.
     #
     # @example
     #
     # ['path', 'to', 'setting']
     #
-    # will return 42 in this example YAML:
+    # will return 42 in this example settings YAML:
     # +code+
     #   path:
     #     to:
