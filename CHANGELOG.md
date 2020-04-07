@@ -4,7 +4,7 @@ Inspired by [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 Note: this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.7.2] - Unreleased
+## [0.7.2] - 2020-04-07
 ### Changed
 - `Monitor` instance now implements `#[]` and `ProcessSettings[]` delegates to it.
   This enables the preferred usage of `when_updated`, where the `settings` block argument is used to read the settings:
