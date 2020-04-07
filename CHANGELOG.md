@@ -4,8 +4,8 @@ Inspired by [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 Note: this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.7.2] - 2020-04-07
-### Changed
+## [0.8.0] - 2020-04-07
+### Added
 - `Monitor` instance now implements `#[]` and `ProcessSettings[]` delegates to it.
   This enables the preferred usage of `when_updated`, where the `settings` block argument is used to read the settings:
   ```ruby
@@ -32,6 +32,6 @@ Note: this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0
 - `ProcessSettings::Monitor.on_change` has been deprecated; it will be removed in version `1.0.0`.
   `ProcessSettings::Monitor.when_updated` should be used instead.
 
-[0.7.2]: https://github.com/Invoca/process_settings/compare/v0.7.1...v0.7.2
+[0.8.0]: https://github.com/Invoca/process_settings/compare/v0.7.1...v0.8.0
 [0.7.1]: https://github.com/Invoca/process_settings/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/Invoca/process_settings/compare/v0.6.0...v0.7.0
