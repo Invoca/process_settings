@@ -11,6 +11,10 @@ module ProcessSettings
         @settings_hash = HashWithHashPath[settings_hash]
       end
 
+      def [](*path, dynamic_context: {}, required: true)
+        targeted_value(*path, dynamic_context: dynamic_context, required: required)
+      end
+
       def targeted_value(*path, dynamic_context:, required: true)
         result = @settings_hash.mine(*path, not_found_value: :not_found)
 

@@ -4,6 +4,10 @@ Inspired by [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 Note: this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.1] - Unreleased
+### Fixed
+- Fixed bug where `MonitorStub` was not responding to `#[]`
+
 ## [0.8.0] - 2020-04-07
 ### Added
 - `Monitor` instance now implements `#[]` and `ProcessSettings[]` delegates to it.
