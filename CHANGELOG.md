@@ -4,7 +4,7 @@ Inspired by [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 Note: this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.8.1] - Unreleased
+## [0.8.1] - 2020-04-21
 ### Fixed
 - Fixed bug where `MonitorStub` was not responding to `#[]`
 
