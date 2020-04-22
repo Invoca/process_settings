@@ -58,8 +58,8 @@ module ProcessSettings
             when true   # this hash entry is true, so omit it
             when false  # this hash entry is false, so hash is false
               return false
-            else
-              raise ArgumentError, "Got #{sub_value.inspect}???"
+            else        # sub-key does not exist, so hash is false
+              return false
             end
           else
             hash[key] = value

@@ -310,7 +310,6 @@ describe ProcessSettings::Target do
           }
         end
 
-        # TODO: this is currently failing with a raised error "ArgumentError: Got {"something_else"=>"blue"}"
         it { should eq(false)}
       end
 
