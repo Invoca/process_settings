@@ -255,5 +255,84 @@ describe ProcessSettings::Target do
 
       expect(result.json_doc).to eq(false)
     end
+
+    describe "when target hash has nested values" do
+      subject { described_class.new(target_hash).with_static_context(context_hash).json_doc }
+
+      describe "when the context contains the nested structure of the target hash" do
+        let(:target_hash) do
+          {
+            'services' => {
+              'region' => 'west'
+            }
+          }
+        end
+
+        describe "when the target matches the context" do
+          let(:context_hash) do
+            {
+              'services' => {
+                'region' => 'west'
+              }
+            }
+          end
+
+          it { should eq(true) }
+        end
+
+        describe "when the target does not match the context" do
+          let(:context_hash) {
+            {
+              'services' => {
+                'region' => 'east'
+              }
+            }
+          }
+
+          it { should eq(false)}
+        end
+      end
+
+      describe "when the context contains only the first level of the target hash" do
+        let(:target_hash) do
+          {
+            'services' => {
+              'something_else' => 'blue'
+            }
+          }
+        end
+
+        let(:context_hash) do
+          {
+            'services' => {
+              'region' => 'west'
+            }
+          }
+        end
+
+        # TODO: this is currently failing with a raised error "ArgumentError: Got {"something_else"=>"blue"}"
+        it { should eq(false)}
+      end
+
+      describe "when the context contains non of the target hash" do
+        let(:target_hash) do
+          {
+            'something_else' => {
+              'region' => 'west'
+            }
+          }
+        end
+
+        let(:context_hash) do
+          {
+            'services' => {
+              'region' => 'west'
+            }
+          }
+        end
+
+        it { should eq(target_hash) }
+      end
+    end
   end
 end
