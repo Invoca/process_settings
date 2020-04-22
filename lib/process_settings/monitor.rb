@@ -143,6 +143,7 @@ module ProcessSettings
       # this can be rather costly to do every time if the dynamic context is not changing
       # TODO: Warn in the case where dynamic context was attempting to change a static value
       # TODO: Cache the last used dynamic context as a potential optimization to avoid unnecessary deep merges
+      # TECH-4402 was created to address these todos
       full_context = dynamic_context.deep_merge(static_context)
       result = statically_targeted_settings.reduce(:not_found) do |latest_result, target_and_settings|
         # find last value from matching targets

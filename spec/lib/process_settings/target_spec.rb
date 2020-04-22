@@ -313,7 +313,7 @@ describe ProcessSettings::Target do
         it { should eq(false)}
       end
 
-      describe "when the context contains non of the target hash" do
+      describe "when the context contains none of the target hash" do
         let(:target_hash) do
           {
             'something_else' => {

@@ -6,7 +6,7 @@ Note: this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0
 
 ## [0.8.2] - 2020-04-22
 ### Fixed
-- Fixed bug where `Target` was raising an error when encountering a nested hash key that didn't exist in the static context
+- Fixed bug where an `ArgumentError` would raise out of `Target#with_static_context` when a target hash uses a nested key that doesn't exist in the static context
 
 ## [0.8.1] - 2020-04-21
 ### Fixed
