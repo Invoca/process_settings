@@ -4,6 +4,10 @@ Inspired by [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 Note: this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.2] - 2020-04-22
+### Fixed
+- Fixed bug where `Target` was raising an error when encountering a nested hash key that didn't exist in the static context
+
 ## [0.8.1] - 2020-04-21
 ### Fixed
 - Fixed bug where `MonitorStub` was not responding to `#[]`
