@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'active_support/core_ext'
+
 require_relative '../monitor'
 require_relative '../hash_with_hash_path'
 
@@ -8,6 +10,7 @@ module ProcessSettings
     # This class implements the Monitor#targeted_value interface but is stubbed to use a simple hash in tests
     class MonitorStub
       def initialize(settings_hash)
+        ActiveSupport::Deprecation.warn("ProcessSettings::Testing::MonitorStub is deprecated and will be removed in future versions. Use ProcessSettings::Testing::Monitor instead.", caller)
         @settings_hash = HashWithHashPath[settings_hash]
       end
 
