@@ -160,18 +160,38 @@ This will be applied in any process that has (`service_name == "frontend"` OR `s
 The settings YAML files are always combined in alphabetical order by file path. Later settings take precedence over the earlier ones.
 
 ### Testing
-For testing, it is often necessary to set a specific hash for the process_settings values to use in that test case.
-The `ProcessSettings::Testing::MonitorStub` class is provided for this purpose. It can be initialized with a hash and assigned to `ProcessSettings::Monitor.instance`. After the test runs, make sure to call `clear_instance`.
-Note that it has no `targeting` or `settings` keys; it is stubbing the resulting settings hash _after_ targeting has been applied.
-Here is an example using `rspec` conventions:
-```
-before do
-  settings = { "honeypot" => { "answer_odds" => 100 } }
-  ProcessSettings::Monitor.instance = ProcessSettings::Testing::MonitorStub.new(settings)
-end
+For testing, it is often necessary to set a specific override hash for the process_settings values to use in
+that use case.  The `ProcessSettings::Testing::Helpers` module is provided for this purpose.  It can be used to
+override a specific hash of process settings, while leving the rest in tact, and resetting back to the defaults
+after the test case is over.  Her is an example using `rspec` conventions:
 
-after do
-  ProcessSettings::Monitor.clear_instance
+#### `spec_helper.rb`
+```ruby
+require 'process_settings/testing/helpers'
+
+RSpec.configure do |config|
+  # ...
+
+  include ProcessSettings::Testing::Helpers
+
+  after do
+   reset_process_settings
+   end
+
+  # ...
+end
+```
+
+#### `process_settings_spec.rb`
+```ruby
+require 'spec_helper'
+
+RSpec.describe SomeClass do
+  before do
+    stub_process_settings(honeypot: { answer_odds: 100 })
+  end
+
+  # ...
 end
 ```
 
