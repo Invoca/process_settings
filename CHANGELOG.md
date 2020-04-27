@@ -4,6 +4,14 @@ Inspired by [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 Note: this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.0] - Unreleased
+### Added
+- Added a new `ProcessSettings::Testing::Monitor` class for testing with process settings
+- Added a new `ProcessSettings::Testing::Helpers` module for testing with process settings
+
+### Deprecated
+- Deprecated the `ProcessSettings::Testing::MonitorStub` to be replaced by the new `ProcessSettings::Testing::Monitor`
+
 ## [0.8.2] - 2020-04-22
 ### Fixed
 - Fixed bug where an `ArgumentError` would raise out of `Target#with_static_context` when a target hash uses a nested key that doesn't exist in the static context
@@ -40,6 +48,7 @@ Note: this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0
 - `ProcessSettings::Monitor.on_change` has been deprecated; it will be removed in version `1.0.0`.
   `ProcessSettings::Monitor.when_updated` should be used instead.
 
+[0.9.0]: https://github.com/Invoca/process_settings/compare/v0.8.2...v0.9.0
 [0.8.2]: https://github.com/Invoca/process_settings/compare/v0.8.1...v0.8.2
 [0.8.1]: https://github.com/Invoca/process_settings/compare/v0.8.0...v0.8.1
 [0.8.0]: https://github.com/Invoca/process_settings/compare/v0.7.1...v0.8.0
