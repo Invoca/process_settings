@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'active_support/core_ext'
-require 'process_settings/monitor'
+require 'process_settings/abstract_monitor'
 
 module ProcessSettings
   module Testing
@@ -12,16 +12,13 @@ module ProcessSettings
     #
     # @param Array settings_array
     # @param Logger logger
-    class Monitor < ::ProcessSettings::Monitor
+    class Monitor < ::ProcessSettings::AbstractMonitor
       def initialize(settings_array, logger:)
+        super(logger: logger)
         @statically_targeted_settings = settings_array
-        @logger                       = logger
-
-        @file_path           = "<override>"
-        @on_change_callbacks = []
-        @when_updated_blocks = Set.new
-        @static_context      = {}
       end
+
+      private
 
       def load_statically_targetted_settings(force_retarget: false)
         @statically_targeted_settings

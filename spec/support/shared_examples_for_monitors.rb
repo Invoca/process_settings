@@ -10,7 +10,7 @@ RSpec.shared_examples "Monitor" do |settings_file, logger, settings|
   describe "#initialize" do
     subject { monitor }
 
-    it { should be_a(ProcessSettings::Monitor) }
+    it { should be_a(ProcessSettings::AbstractMonitor) }
 
     it "defaults to empty static context" do
       expect(monitor.static_context).to eq({})
@@ -29,11 +29,5 @@ RSpec.shared_examples "Monitor" do |settings_file, logger, settings|
     subject { monitor.logger }
 
     it { should eq(logger) }
-  end
-
-  describe "#file_path" do
-    subject { monitor.file_path }
-
-    it { should eq(settings_file) }
   end
 end

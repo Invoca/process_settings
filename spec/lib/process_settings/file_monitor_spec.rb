@@ -34,6 +34,18 @@ describe ProcessSettings::Monitor do
     SAMPLE_SETTINGS
   )
 
+  describe "#file_path" do
+    before { File.write(settings_file, EAST_SETTINGS_YAML) }
+    after  { FileUtils.rm_f(settings_file) }
+
+    let(:settings_file) { File.expand_path(SETTINGS_PATH, __dir__) }
+    let(:monitor) { described_class.new(settings_file, logger: logger) }
+
+    subject { monitor.file_path }
+
+    it { should eq(settings_file) }
+  end
+
   describe "class methods" do
     describe '[] operator' do
       subject(:process_monitor) { described_class.new(SETTINGS_PATH, logger: logger) }
