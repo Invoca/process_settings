@@ -17,6 +17,18 @@ describe ProcessSettings::Settings do
         described_class.new("{}")
       end.to raise_exception(ArgumentError, /Settings must be a Hash/)
     end
+
+    it "should reject symbol keys" do
+      expect do
+        described_class.new("gem" => { log_level: "debug" })
+      end.to raise_exception(ArgumentError, /symbol key :log_level found/)
+    end
+
+    it "should reject symbol values" do
+      expect do
+        described_class.new("gem" => { "log_level" => :debug })
+      end.to raise_exception(ArgumentError, /symbol value :debug found/)
+    end
   end
 
   describe "#json_doc" do
