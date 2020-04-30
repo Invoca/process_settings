@@ -2,6 +2,7 @@
 
 require 'spec_helper'
 require 'logger'
+require 'support/shared_examples_for_monitors'
 
 describe ProcessSettings::Monitor do
   SETTINGS_PATH = "./settings.yml"
@@ -26,20 +27,12 @@ describe ProcessSettings::Monitor do
     Listen.stop
   end
 
-  describe "#initialize" do
-    before do
-      File.write(SETTINGS_PATH, SAMPLE_SETTINGS_YAML)
-    end
-
-    after do
-      FileUtils.rm_f(SETTINGS_PATH)
-    end
-
-    it "defaults to empty static_context" do
-      process_monitor = described_class.new(SETTINGS_PATH, logger: logger)
-      expect(process_monitor.static_context).to eq({})
-    end
-  end
+  it_should_behave_like(
+    "Monitor",
+    File.expand_path(SETTINGS_PATH, __dir__),
+    Logger.new(STDERR).tap { |logger| logger.level = ::Logger::ERROR },
+    SAMPLE_SETTINGS
+  )
 
   describe "class methods" do
     describe '[] operator' do
