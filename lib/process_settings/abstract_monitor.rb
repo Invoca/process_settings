@@ -21,8 +21,6 @@ module ProcessSettings
       @static_context = {}
     end
 
-    # []
-    #
     # This is the main entry point for looking up settings on the Monitor instance.
     #
     # @example
