@@ -8,7 +8,9 @@ Note: this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0
 ### Added
 - Added a new `ProcessSettings::Testing::Monitor` class for testing with process settings
 - Added a new `ProcessSettings::Testing::Helpers` module for testing with process settings
-- Add a new `ProcessSettings::FileMonitor` for better naming and encapsulation of responsibilities
+
+### Changed
+- Renamed `ProcessSettings::Monitor` to `ProcessSettings:FileMonitor`, with `Monitor` left as a (deprecated) alias.
 
 ### Deprecated
 - Deprecated the `ProcessSettings::Testing::MonitorStub` to be replaced by the new `ProcessSettings::Testing::Monitor`
