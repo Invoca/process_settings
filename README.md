@@ -163,9 +163,10 @@ The settings YAML files are always combined in alphabetical order by file path. 
 For testing, it is often necessary to set a specific override hash for the process_settings values to use in
 that use case.  The `ProcessSettings::Testing::Helpers` module is provided for this purpose.  It can be used to
 override a specific hash of process settings, while leving the rest in tact, and resetting back to the defaults
-after the test case is over.  Her is an example using `rspec` conventions:
+after the test case is over.  Here are some examples using various testing frameworks:
 
-#### `spec_helper.rb`
+#### RSpec
+##### `spec_helper.rb`
 ```ruby
 require 'process_settings/testing/helpers'
 
@@ -176,19 +177,36 @@ RSpec.configure do |config|
 
   after do
    reset_process_settings
-   end
+  end
 
   # ...
 end
 ```
 
-#### `process_settings_spec.rb`
+##### `process_settings_spec.rb`
 ```ruby
 require 'spec_helper'
 
 RSpec.describe SomeClass do
   before do
     stub_process_settings(honeypot: { answer_odds: 100 })
+  end
+
+  # ...
+end
+```
+
+#### Test::Unit / Minitest
+```ruby
+require 'process_settings/testing/helpers'
+
+context SomeClass do
+  setup do
+    stub_process_settings(honeypot: { answer_odds: 100 })
+  end
+
+  teardown do
+    reset_process_settings
   end
 
   # ...
