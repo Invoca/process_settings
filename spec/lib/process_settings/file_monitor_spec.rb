@@ -27,23 +27,25 @@ describe ProcessSettings::Monitor do
     Listen.stop
   end
 
-  it_should_behave_like(
-    "Monitor",
-    File.expand_path(SETTINGS_PATH, __dir__),
-    Logger.new(STDERR).tap { |logger| logger.level = ::Logger::ERROR },
-    SAMPLE_SETTINGS
-  )
-
-  describe "#file_path" do
+  describe "default behavior" do
     before { File.write(settings_file, EAST_SETTINGS_YAML) }
     after  { FileUtils.rm_f(settings_file) }
 
     let(:settings_file) { File.expand_path(SETTINGS_PATH, __dir__) }
     let(:monitor) { described_class.new(settings_file, logger: logger) }
 
-    subject { monitor.file_path }
+    it_should_behave_like(
+      "AbstractMonitor",
+      File.expand_path(SETTINGS_PATH, __dir__),
+      Logger.new(STDERR).tap { |logger| logger.level = ::Logger::ERROR },
+      ['sip', 'enabled']
+    )
 
-    it { should eq(settings_file) }
+    describe "#file_path" do
+      subject { monitor.file_path }
+
+      it { should eq(settings_file) }
+    end
   end
 
   describe "class methods" do

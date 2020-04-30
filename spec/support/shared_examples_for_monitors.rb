@@ -1,11 +1,8 @@
 # frozen_string_literal: true
 
 # RSpec shared examples for ProcessSettings::Monitor
-RSpec.shared_examples "Monitor" do |settings_file, logger, settings|
-  let(:monitor) { described_class.new(settings_file, logger: logger) }
-
-  before { File.write(settings_file, settings.to_yaml) }
-  after  { FileUtils.rm_f(settings_file) }
+RSpec.shared_examples "AbstractMonitor" do |settings, logger, scoped_setting|
+  let(:monitor) { described_class.new(settings, logger: logger) }
 
   describe "#initialize" do
     subject { monitor }
@@ -29,5 +26,11 @@ RSpec.shared_examples "Monitor" do |settings_file, logger, settings|
     subject { monitor.logger }
 
     it { should eq(logger) }
+  end
+
+  describe "#[]" do
+    subject { monitor[*scoped_setting] }
+
+    it { should_not be_nil }
   end
 end
