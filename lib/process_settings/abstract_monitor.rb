@@ -12,19 +12,13 @@ module ProcessSettings
 
   class AbstractMonitor
     attr_reader :min_polling_seconds, :logger
-    attr_reader :static_context, :untargeted_settings, :statically_targeted_settings
-
-    DEFAULT_MIN_POLLING_SECONDS = 5
+    attr_reader :static_context, :statically_targeted_settings
 
     def initialize(logger:)
       @logger = logger
       @on_change_callbacks = []
       @when_updated_blocks = Set.new
       @static_context = {}
-      @last_statically_targetted_settings = nil
-      @untargeted_settings = nil
-      @last_untargetted_settings = nil
-      @last_untargetted_settings = nil
     end
 
     # []

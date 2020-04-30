@@ -20,11 +20,15 @@ module ProcessSettings
       end
     end
 
-    attr_reader :file_path
+    attr_reader :file_path, :untargeted_settings
 
     def initialize(file_path, logger:)
       super(logger: logger)
+
       @file_path = File.expand_path(file_path)
+      @last_statically_targetted_settings = nil
+      @untargeted_settings = nil
+      @last_untargetted_settings = nil
 
       start
     end
