@@ -11,8 +11,6 @@ module ProcessSettings
     module Helpers
       extend self
 
-      TRUE_TARGET = ProcessSettings::Target.new({})
-
       # Adds the given settings_hash as an override at the end of the process_settings array, with default targeting (true).
       # Therefore this will override these settings while leaving others alone.
       #
@@ -22,7 +20,7 @@ module ProcessSettings
       def stub_process_settings(settings_hash)
         new_target_and_settings = ProcessSettings::TargetAndSettings.new(
           '<test_override>',
-          TRUE_TARGET,
+          Target::true_target,
           ProcessSettings::Settings.new(settings_hash.deep_stringify_keys)
         )
 

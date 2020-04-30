@@ -334,4 +334,12 @@ describe ProcessSettings::Target do
       end
     end
   end
+
+  describe "class methods" do
+    describe "true_target" do
+      it "uses the TRUE_JSON_DOC" do
+        expect(described_class.true_target.json_doc).to eq(described_class::TRUE_JSON_DOC)
+      end
+    end
+  end
 end

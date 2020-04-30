@@ -4,6 +4,8 @@ module ProcessSettings
   class Target
     include Comparable
 
+    TRUE_JSON_DOC = {}.freeze
+
     attr_reader :json_doc
 
     def initialize(json_doc)
@@ -11,7 +13,7 @@ module ProcessSettings
     end
 
     def target_key_matches?(context_hash)
-      @json_doc == {} || self.class.target_key_matches?(@json_doc, context_hash)
+      @json_doc == TRUE_JSON_DOC || self.class.target_key_matches?(@json_doc, context_hash)
     end
 
     def with_static_context(static_context_hash)
@@ -91,6 +93,12 @@ module ProcessSettings
         else
           target_value == context_hash
         end
+      end
+    end
+
+    class << self
+      def true_target
+        @true_target || new(TRUE_JSON_DOC)
       end
     end
   end
