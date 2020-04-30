@@ -9,7 +9,6 @@ require 'process_settings/testing/monitor'
 module ProcessSettings
   module Testing
     module Helpers
-      extend self
 
       # Adds the given settings_hash as an override at the end of the process_settings array, with default targeting (true).
       # Therefore this will override these settings while leaving others alone.
