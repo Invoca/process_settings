@@ -25,7 +25,7 @@ describe ProcessSettings::Settings do
       end
     end
 
-    context "with a symbol key" do
+    context "with a symbol value" do
       let(:settings_json_doc) { { "log_level" => :debug } }
 
       it "raises" do
