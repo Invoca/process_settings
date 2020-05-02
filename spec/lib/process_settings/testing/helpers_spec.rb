@@ -24,8 +24,9 @@ describe ProcessSettings::Testing::Helpers do
     describe 'when a settings hash is provided' do
       let(:settings_hash) { { 'test' => { 'settings' => { 'id' => 12 } } } }
 
-      it 'is targetted first' do
-        expect(ProcessSettings['test', 'settings', 'id']).to eq(12)
+      describe 'when accessing an override'
+        subject { ProcessSettings['test', 'settings', 'id'] }
+        it { should eq(12) }
       end
 
       describe 'when accessing a default settings' do
