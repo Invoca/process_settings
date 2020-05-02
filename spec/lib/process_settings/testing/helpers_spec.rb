@@ -28,8 +28,9 @@ describe ProcessSettings::Testing::Helpers do
         expect(ProcessSettings['test', 'settings', 'id']).to eq(12)
       end
 
-      it 'falls back to defaults' do
-        expect(ProcessSettings['honeypot', 'answer_odds']).to eq(100)
+      describe 'when accessing a default settings' do
+        subject { ProcessSettings['honeypot', 'answer_odds'] }
+        it { should eq(100) }
       end
     end
   end
