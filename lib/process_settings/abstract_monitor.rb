@@ -21,8 +21,6 @@ module ProcessSettings
       @static_context = {}
     end
 
-    # []
-    #
     # This is the main entry point for looking up settings on the Monitor instance.
     #
     # @example
@@ -129,10 +127,15 @@ module ProcessSettings
 
       def clear_instance
         @instance = nil
+        @default_instance = nil
       end
 
       def instance
         @instance ||= default_instance
+      end
+
+      def default_instance
+        @default_instance ||= new_from_settings
       end
 
       def logger=(new_logger)

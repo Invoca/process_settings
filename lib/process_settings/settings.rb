@@ -11,6 +11,8 @@ module ProcessSettings
     def initialize(json_doc)
       json_doc.is_a?(Hash) or raise ArgumentError, "ProcessSettings must be a Hash; got #{json_doc.inspect}"
 
+      AbstractMonitor.ensure_no_symbols(json_doc)
+
       @json_doc = HashWithHashPath[json_doc]
     end
 

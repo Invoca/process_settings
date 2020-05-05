@@ -11,10 +11,10 @@ module ProcessSettings
     def initialize(filename, target, settings)
       @filename = filename
 
-      target.is_a?(Target) or raise ArgumentError, "target must be a ProcessTarget; got #{target.inspect}"
+      target.is_a?(Target) or raise ArgumentError, "target must be a Target; got #{target.inspect}"
       @target = target
 
-      settings.is_a?(Settings) or raise ArgumentError, "settings must be a ProcessSettings; got #{settings.inspect}"
+      settings.is_a?(Settings) or raise ArgumentError, "settings must be a Settings; got #{settings.inspect}"
       @settings = settings
     end
 

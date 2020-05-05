@@ -4,38 +4,35 @@ require 'spec_helper'
 require 'process_settings/testing/helpers'
 
 describe ProcessSettings::Testing::Helpers do
+  class TestClass
+    include ProcessSettings::Testing::Helpers
+  end
+
+  let(:logger) { Logger.new(STDERR) }
+  let(:test_instance) { TestClass.new }
+  let(:combined_process_settings_fixture_path) { File.expand_path("../../../fixtures/production/combined_process_settings.yml", __dir__) }
+  let(:default_process_settings) do
+    ProcessSettings::FileMonitor.new(combined_process_settings_fixture_path, logger: logger)
+  end
+
   describe '#stub_process_settings' do
-    before { described_class.stub_process_settings(settings_hash) }
+    before do
+      expect(ProcessSettings::FileMonitor).to receive(:default_instance).and_return(default_process_settings).at_least(1).times
+      test_instance.stub_process_settings(settings_hash)
+    end
 
     describe 'when a settings hash is provided' do
-      let(:settings_hash) { { test: { settings: { enabled: true } } } }
+      let(:settings_hash) { { 'test' => { 'settings' => { 'id' => 12 } } } }
 
-      it 'sets the setting with targetting true' do
-        expect(ProcessSettings['test', 'settings', 'enabled']).to eq(true)
+      describe 'when accessing an override'
+        subject { ProcessSettings['test', 'settings', 'id'] }
+        it { should eq(12) }
       end
-    end
-  end
 
-  describe '#default_process_settings' do
-    subject { described_class.default_process_settings }
-
-    it { should be_a(ProcessSettings::Monitor) }
-    it { should_not be_a(ProcessSettings::Testing::Monitor) }
-  end
-
-  describe '#reset_process_settings' do
-    let(:default_process_settings) { ProcessSettings::Monitor.instance }
-
-    before { allow(described_class).to receive(:default_process_settings).and_return(default_process_settings) }
-
-    it 'resets the ProcessSettings::Monitor instance back to the default' do
-      expect(ProcessSettings::Monitor.instance).to eq(default_process_settings)
-
-      ProcessSettings::Monitor.instance = "hello world"
-      expect(ProcessSettings::Monitor.instance).to_not eq(default_process_settings)
-
-      described_class.reset_process_settings
-      expect(ProcessSettings::Monitor.instance).to eq(default_process_settings)
+      describe 'when accessing a default settings' do
+        subject { ProcessSettings['honeypot', 'answer_odds'] }
+        it { should eq(100) }
+      end
     end
   end
 end
