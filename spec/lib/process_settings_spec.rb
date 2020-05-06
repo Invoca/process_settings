@@ -3,23 +3,77 @@
 require 'spec_helper'
 
 describe ProcessSettings do
-  describe '[] operator' do
-    let(:instance) { double("instance", '[]': nil)}
+  before { described_class.instance = nil }
 
-    it 'delegates to Monitor.instance with defaults' do
-      expect(instance).to receive(:[]).with('gem', 'listen', 'log_level', dynamic_context: {}, required: true).and_return('info')
-      described_class::Monitor.instance = instance
+  describe '#instance' do
+    let(:instance) { ProcessSettings::Testing::Monitor.new([], logger: Logger.new('/dev/null')) }
 
-      result = described_class['gem', 'listen', 'log_level']
-      expect(result).to eq('info')
+    subject { described_class.instance }
+
+    describe 'when lazy loading' do
+      before do
+        expect(ActiveSupport::Deprecation).to receive(:warn).with("Lazy creation of FileMonitor instance is deprecated and will be removed in v1.0.0")
+        expect(ProcessSettings::Monitor).to receive(:instance).and_return(instance)
+      end
+
+      it { should eq(instance) }
     end
 
-    it 'delegates to Monitor.instance with pass-through' do
-      expect(instance).to receive(:[]).with('gem', 'listen', 'log_level', dynamic_context: { cuid: '1234'}, required: false).and_return(nil)
-      described_class::Monitor.instance = instance
+    describe 'when set directly' do
+      before { described_class.instance = instance }
 
-      result = described_class['gem', 'listen', 'log_level', dynamic_context: { cuid: '1234' }, required: false]
-      expect(result).to be_nil
+      it { should eq(instance) }
+    end
+  end
+
+  describe '#instance=' do
+    subject { described_class.instance_variable_get(:@instance) }
+
+    describe 'when an AbstractMonitor object is provided' do
+      let(:instance) { ProcessSettings::Testing::Monitor.new([], logger: Logger.new('/dev/null')) }
+      before { described_class.instance = instance }
+      it { should eq(instance) }
+    end
+
+    describe 'when nil is provided' do
+      before { described_class.instance = nil }
+      it { should be_nil }
+    end
+
+    describe 'when a non AbstractMonitor object is provided' do
+      let(:expected_message) { "Invalid monitor of type String provided. Must be of type ProcessSettings::AbstractMonitor" }
+
+      it 'raises an ArgumentError' do
+        expect { described_class.instance = "notAbstract" }.to raise_error(ArgumentError, expected_message)
+      end
+    end
+  end
+
+  describe '#[]' do
+    let(:instance) { ProcessSettings::Testing::Monitor.new([], logger: Logger.new('/dev/null')) }
+
+    before do
+      described_class.instance = instance
+    end
+
+    describe 'when called with defaults' do
+      subject { described_class['gem', 'listen', 'log_level'] }
+
+      before do
+        expect(instance).to receive(:[]).with('gem', 'listen', 'log_level', dynamic_context: {}, required: true).and_return('info')
+      end
+
+      it { should eq('info') }
+    end
+
+    describe 'when called with keyword arguments' do
+      subject { described_class['gem', 'listen', 'log_level', dynamic_context: { cuid: '1234' }, required: false] }
+
+      before do
+        expect(instance).to receive(:[]).with('gem', 'listen', 'log_level', dynamic_context: { cuid: '1234' }, required: false).and_return(nil)
+      end
+
+      it { should be_nil }
     end
   end
 end
