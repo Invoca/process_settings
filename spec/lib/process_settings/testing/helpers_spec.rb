@@ -24,7 +24,7 @@ describe ProcessSettings::Testing::Helpers do
     describe 'when a settings hash is provided' do
       let(:settings_hash) { { 'test' => { 'settings' => { 'id' => 12 } } } }
 
-      describe 'when accessing an override'
+      describe 'when accessing an override' do
         subject { ProcessSettings['test', 'settings', 'id'] }
         it { should eq(12) }
       end
