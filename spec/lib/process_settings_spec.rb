@@ -12,7 +12,7 @@ describe ProcessSettings do
 
     describe 'when lazy loading' do
       before do
-        expect(ActiveSupport::Deprecation).to receive(:warn).with("Lazy creation of FileMonitor instance is deprecated and will be removed in v1.0.0")
+        expect(ActiveSupport::Deprecation).to receive(:warn).with("lazy creation of Monitor instance is deprecated and will be removed from ProcessSettings 1.0")
         expect(ProcessSettings::Monitor).to receive(:instance).and_return(instance)
       end
 

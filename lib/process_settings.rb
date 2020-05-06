@@ -60,7 +60,7 @@ module ProcessSettings
     private
 
     def lazy_create_instance
-      ActiveSupport::Deprecation.warn("Lazy creation of FileMonitor instance is deprecated and will be removed in v1.0.0")
+      ActiveSupport::Deprecation.warn("lazy creation of Monitor instance is deprecated and will be removed from ProcessSettings 1.0")
       Monitor.instance
     end
   end
