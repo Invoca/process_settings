@@ -24,14 +24,20 @@ module ProcessSettings
         )
 
         new_process_settings = [
-          *ProcessSettings::FileMonitor.default_instance.statically_targeted_settings,
+          *initial_instance.statically_targeted_settings,
           new_target_and_settings
         ]
 
-        ProcessSettings::Monitor.instance = ProcessSettings::Testing::Monitor.new(
+        ProcessSettings.instance = ProcessSettings::Testing::Monitor.new(
           new_process_settings,
-          logger: ProcessSettings::FileMonitor.default_instance.logger
+          logger: initial_instance.logger
         )
+      end
+
+      private
+
+      def initial_instance
+        @initial_instance ||= ProcessSettings.instance
       end
     end
   end

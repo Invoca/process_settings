@@ -10,22 +10,6 @@ require 'process_settings/hash_path'
 
 module ProcessSettings
   class FileMonitor < AbstractMonitor
-    class << self
-      attr_reader :file_path
-
-      def file_path=(new_file_path)
-        clear_instance
-
-        @file_path = new_file_path
-      end
-
-      def new_from_settings
-        file_path or raise ArgumentError, "#{self}::file_path must be set before calling instance method"
-        logger or raise ArgumentError, "#{self}::logger must be set before calling instance method"
-        new(file_path, logger: logger)
-      end
-    end
-
     attr_reader :file_path, :untargeted_settings
 
     def initialize(file_path, logger:)

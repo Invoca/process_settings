@@ -11,13 +11,13 @@ describe ProcessSettings::Testing::Helpers do
   let(:logger) { Logger.new(STDERR) }
   let(:test_instance) { TestClass.new }
   let(:combined_process_settings_fixture_path) { File.expand_path("../../../fixtures/production/combined_process_settings.yml", __dir__) }
-  let(:default_process_settings) do
+  let(:initial_process_settings) do
     ProcessSettings::FileMonitor.new(combined_process_settings_fixture_path, logger: logger)
   end
 
   describe '#stub_process_settings' do
     before do
-      expect(ProcessSettings::FileMonitor).to receive(:default_instance).and_return(default_process_settings).at_least(1).times
+      ProcessSettings.instance = initial_process_settings
       test_instance.stub_process_settings(settings_hash)
     end
 

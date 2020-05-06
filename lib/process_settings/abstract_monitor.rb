@@ -122,27 +122,6 @@ module ProcessSettings
     private
 
     class << self
-      attr_reader :logger
-      attr_writer :instance
-
-      def clear_instance
-        @instance = nil
-        @default_instance = nil
-      end
-
-      def instance
-        @instance ||= default_instance
-      end
-
-      def default_instance
-        @default_instance ||= new_from_settings
-      end
-
-      def logger=(new_logger)
-        @logger = new_logger
-        Listen.logger ||= new_logger
-      end
-
       def ensure_no_symbols(value)
         case value
         when Symbol

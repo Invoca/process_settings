@@ -4,7 +4,7 @@ require 'spec_helper'
 require 'logger'
 require 'support/shared_examples_for_monitors'
 
-describe ProcessSettings::Monitor do
+describe ProcessSettings::FileMonitor do
   SETTINGS_PATH = "./settings.yml"
   SAMPLE_SETTINGS = [{ 'target' => true, 'settings' => { 'sip' => { 'enabled' => true } } }, { 'meta' => { 'version' => 19, 'END' => true } }].freeze
   EAST_SETTINGS = [{ 'target' => { 'region' => 'east' }, 'settings' => { 'reject_call' => true } },
@@ -48,129 +48,6 @@ describe ProcessSettings::Monitor do
     end
   end
 
-  describe "class methods" do
-    describe '[] operator' do
-      subject(:process_monitor) { described_class.new(SETTINGS_PATH, logger: logger) }
-
-      before do
-        File.write(SETTINGS_PATH, EAST_SETTINGS_YAML)
-      end
-
-      after do
-        FileUtils.rm_f(SETTINGS_PATH)
-      end
-
-      it 'delegates to the current monitor instance' do
-        expect(subject).to receive(:targeted_value).with('setting1', 'sub', 'enabled', dynamic_context: { "hello" => "world" }, required: true).and_return(true)
-        expect(subject['setting1', 'sub', 'enabled', dynamic_context: { "hello" => "world" }]).to eq(true)
-      end
-
-      it 'passes required: keyword arg' do
-        expect(subject).to receive(:targeted_value).with('setting1', dynamic_context: { "hello" => "world" }, required: false).and_return(true)
-        expect(subject['setting1', dynamic_context: { "hello" => "world" }, required: false]).to eq(true)
-      end
-
-      it 'defaults dynamic context to an empty hash' do
-        expect(subject).to receive(:targeted_value).with('setting1', 'enabled', dynamic_context: {}, required: true).and_return(true)
-        expect(subject['setting1', 'enabled']).to eq(true)
-      end
-    end
-
-    describe ".instance method" do
-      before do
-        described_class.clear_instance
-      end
-
-      it "should raise an exception if not configured" do
-        described_class.file_path = nil
-
-        expect do
-          described_class.instance
-        end.to raise_exception(ArgumentError, /::file_path must be set before calling instance method/)
-      end
-
-      it "should raise an exception if logger not set" do
-        described_class.file_path = "./spec/fixtures/production/combined_process_settings.yml"
-
-        expect do
-          described_class.instance
-        end.to raise_exception(ArgumentError, /::logger must be set before calling instance method/)
-      end
-
-      it "should not raise an exception about file_path or logger if configured" do
-        described_class.file_path = nil
-        described_class.logger = nil
-        instance_stub = Object.new
-        described_class.instance = instance_stub
-
-        expect(described_class.instance).to eq(instance_stub)
-      end
-
-      it "logger = should set the Listen logger" do
-        Listen.logger = nil
-        described_class.logger = logger
-        expect(Listen.logger).to be(logger)
-      end
-
-      it "logger = should leave the Listen logger alone if already set" do
-        existing_logger = Logger.new(STDOUT)
-        Listen.logger = existing_logger
-        described_class.logger = logger
-        expect(Listen.logger).to be(existing_logger)
-        Listen.logger = nil
-      end
-
-      it "should return a global instance" do
-        described_class.file_path = "./spec/fixtures/production/combined_process_settings.yml"
-        described_class.logger = logger
-
-        instance_1 = described_class.instance
-        instance_2 = described_class.instance
-
-        expect(instance_1).to be_kind_of(described_class)
-        expect(instance_1.object_id).to eq(instance_2.object_id)
-      end
-
-      it "should start listener depending on DISABLE_LISTEN_CHANGE_MONITORING variable" do
-        described_class.file_path = "./spec/fixtures/production/combined_process_settings.yml"
-        described_class.logger = logger
-
-        allow(ENV).to receive(:[]).with("DISABLE_LISTEN_CHANGE_MONITORING").and_return("1")
-        instance = described_class.instance
-        expect(instance.instance_variable_get(:@listener).state).to eq(:initializing)
-        described_class.clear_instance
-        allow(ENV).to receive(:[]).with("DISABLE_LISTEN_CHANGE_MONITORING").and_return(nil)
-        instance = described_class.instance
-        expect(instance.instance_variable_get(:@listener).state).to eq(:processing_events)
-      end
-    end
-
-    describe "clear_instance" do
-      after do
-        described_class.clear_instance
-      end
-
-      it "stores nil into instance" do
-        described_class.instance
-        expect(described_class.instance_variable_get(:@instance)).to be
-        described_class.instance = nil
-        expect(described_class.instance_variable_get(:@instance)).to_not be
-      end
-    end
-
-    describe "instance=" do
-      after do
-        described_class.clear_instance
-      end
-
-      it "stores value into instance" do
-        new_instance = Object.new
-        described_class.instance = new_instance
-        expect(described_class.instance).to be(new_instance)
-      end
-    end
-  end
-
   describe "#untargeted_settings" do
     before do
       File.write(SETTINGS_PATH, SAMPLE_SETTINGS_YAML)
@@ -204,7 +81,7 @@ describe ProcessSettings::Monitor do
 
         block = nil
         expect(file_change_notifier_stub).to receive(:to).with(File.expand_path('.')) { |&blk| block = blk; listener_stub }
-        expect_any_instance_of(ProcessSettings::Monitor).to receive(:file_change_notifier) { file_change_notifier_stub }
+        expect_any_instance_of(described_class).to receive(:file_change_notifier) { file_change_notifier_stub }
 
         process_monitor = described_class.new(SETTINGS_PATH, logger: logger)
 
