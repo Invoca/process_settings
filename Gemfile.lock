@@ -15,6 +15,10 @@ GEM
       minitest (~> 5.1)
       tzinfo (~> 1.1)
       zeitwerk (~> 2.2)
+    appraisal (2.2.0)
+      bundler
+      rake
+      thor (>= 0.14.0)
     ast (2.4.0)
     bump (0.6.1)
     coderay (1.1.2)
@@ -95,6 +99,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  appraisal
   bump (~> 0.6.1)
   coveralls
   process_settings!
