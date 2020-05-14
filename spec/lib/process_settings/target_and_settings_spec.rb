@@ -4,10 +4,12 @@ require 'spec_helper'
 require 'process_settings/target_and_settings'
 
 describe ProcessSettings::TargetAndSettings do
+  let(:settings_file) { Tempfile.new(['combined_process_settings', '.yml'], 'tmp').path }
+
   describe "#initialize" do
     it "should store args passed in" do
       sample = sample_target_and_process_settings
-      expect(sample.filename).to eq("settings.yml")
+      expect(sample.filename).to eq(settings_file)
       expect(sample.target).to eq(sample_target)
       expect(sample.settings).to eq(sample_process_settings)
     end
@@ -94,7 +96,7 @@ describe ProcessSettings::TargetAndSettings do
 
   def sample_target_and_process_settings
     @sample_target_and_process_settings ||= begin
-      described_class.new("settings.yml", sample_target, sample_process_settings)
+      described_class.new(settings_file, sample_target, sample_process_settings)
     end
   end
 end

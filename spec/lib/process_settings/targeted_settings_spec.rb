@@ -44,20 +44,20 @@ describe ProcessSettings::TargetedSettings do
     end
   end
 
-  TMP_FILE_PATH = "tmp/test_process_settings.yml"
-
   context "with file in tmp" do
+    let(:tmp_file_path) { Tempfile.new(['combined_process_settings', '.yml'], File.expand_path('../../../tmp', __dir__)).path }
+
     before do
-      File.write(TMP_FILE_PATH, TARGETED_SETTINGS.to_yaml)
+      File.write(tmp_file_path, TARGETED_SETTINGS.to_yaml)
     end
 
     after do
-      FileUtils.rm_f(TMP_FILE_PATH)
+      FileUtils.rm_f(tmp_file_path)
     end
 
     describe ".from_file" do
       it "reads from yaml file" do
-        targeted_settings = described_class.from_file(TMP_FILE_PATH)
+        targeted_settings = described_class.from_file(tmp_file_path)
 
         expect(targeted_settings.targeted_settings_array.size).to eq(1)
         expect(targeted_settings.targeted_settings_array.first.settings.json_doc.keys.first).to eq('honeypot')
@@ -65,13 +65,13 @@ describe ProcessSettings::TargetedSettings do
       end
 
       it "infers version from END" do
-        targeted_settings = described_class.from_file(TMP_FILE_PATH)
+        targeted_settings = described_class.from_file(tmp_file_path)
         expect(targeted_settings.targeted_settings_array.size).to eq(1)
         expect(targeted_settings.version).to eq(17)
       end
 
       it "infers version from END faster with only_meta: true" do
-        targeted_settings = described_class.from_file(TMP_FILE_PATH, only_meta: true)
+        targeted_settings = described_class.from_file(tmp_file_path, only_meta: true)
         expect(targeted_settings.targeted_settings_array.size).to eq(0)
         expect(targeted_settings.version).to eq(17)
       end

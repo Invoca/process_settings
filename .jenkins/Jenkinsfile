@@ -20,6 +20,7 @@ pipeline {
         updateGitHubStatus('clean-build', 'pending', 'Unit tests.')
         sh 'bundle install'
         sh 'bundle exec appraisal install'
+        sh 'mkdir tmp'
       }
     }
 
