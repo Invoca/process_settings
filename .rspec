@@ -1,5 +1,5 @@
 --require spec_helper
 --color
 --format RspecJunitFormatter
---out spec/reports/rspec.xml
+--out <%= ENV['JUNIT_OUTPUT'] || 'spec/reports/rspec.xml' %>
 -fd
