@@ -334,4 +334,11 @@ describe ProcessSettings::Target do
       end
     end
   end
+
+  describe "class methods" do
+    describe "true_target" do
+      subject { described_class.true_target.json_doc }
+      it { should eq({}) }
+    end
+  end
 end
