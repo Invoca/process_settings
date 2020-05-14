@@ -8,6 +8,8 @@ Note: this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0
 ### Added
 - Added a new `ProcessSettings::Testing::Monitor` class for testing with process settings
 - Added a new `ProcessSettings::Testing::Helpers` module for testing with process settings
+- Added support for rails 5 and 6.
+- Added appraisal tests for all supported rails version: 4/5/6
 
 ### Changed
 - Renamed `ProcessSettings::Monitor` to `ProcessSettings:FileMonitor`, with `Monitor` left as a (deprecated) alias.
