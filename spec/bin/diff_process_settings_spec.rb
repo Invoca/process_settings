@@ -56,4 +56,48 @@ describe 'diff_process_settings' do
         - filename: telecom/log_level.yml
     EOS
   end
+
+  TRUTHY_EXIT_STATUS = 0
+
+  describe "with --silent" do
+    let(:file_1) { "spec/fixtures/production/combined_process_settings.yml" }
+    let(:file_2) { "spec/fixtures/production/combined_process_settings.yml" }
+    subject { `bin/diff_process_settings --silent #{file_1} #{file_2}` }
+    let(:child_status) { $? }
+    let(:child_exitstatus) { child_status.exitstatus }
+
+    context "when same settings/same version" do
+      it "has no output and is truthy" do
+        expect(subject).to eq('')
+        expect(child_exitstatus).to eq(TRUTHY_EXIT_STATUS)
+      end
+    end
+
+    context "when same settings/different version" do
+      let(:file_2) { "spec/fixtures/production/combined_process_settings-19.yml" }
+
+      it "has no output and is truthy" do
+        expect(subject).to eq('')
+        expect(child_exitstatus).to eq(TRUTHY_EXIT_STATUS)
+      end
+    end
+
+    context "when different content/same version" do
+      let(:file_2) { "spec/fixtures/production/combined_process_settings-18b.yml" }
+
+      it "has no output but is falsey" do
+        expect(subject).to eq('')
+        expect(child_exitstatus).to_not eq(TRUTHY_EXIT_STATUS)
+      end
+    end
+
+    context "when different content/different version" do
+      let(:file_2) { "spec/fixtures/production/combined_process_settings-16.yml" }
+
+      it "has no output and is falsey" do
+        expect(subject).to eq('')
+        expect(child_exitstatus).to_not eq(TRUTHY_EXIT_STATUS)
+      end
+    end
+  end
 end

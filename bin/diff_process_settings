@@ -5,18 +5,31 @@
 # A filename of - means STDIN.
 
 require 'fileutils'
+require 'optparse'
+require 'ostruct'
 
 PROGRAM_NAME = File.basename($PROGRAM_NAME)
 
-unless ARGV.size == 2
-  puts "usage: #{PROGRAM_NAME} <path-to-combined_process_settings-A.yml> <path-to-combined_process_settings-B.yml>"
-  exit 1
+def parse_options(argv)
+  options = OpenStruct.new
+  options.silent = false
+  option_parser = OptionParser.new(argv) do |opt|
+    opt.on('-s', '--silent', 'Silent mode.') { options.silent = true }
+  end
+
+  if option_parser.parse! && argv.size == 2
+    [options, argv]
+  else
+    warn "usage: #{PROGRAM_NAME} [--silent] <path-to-combined_process_settings-A.yml> <path-to-combined_process_settings-B.yml>"
+    option_parser.summarize(STDERR)
+    exit(1)
+  end
 end
 
-path_to_combine_process_settings = ARGV[0]
+options, file_args = parse_options(ARGV)
 
 input_files =
-    ARGV.map do |path|
+    file_args.map do |path|
       if path == '-'
         ''
       else
@@ -34,6 +47,13 @@ system("rm -f tmp/combined_process_settings-A.yml tmp/combined_process_settings-
 system("sed '/^- meta:$/,$d' #{input_files[0]} > tmp/combined_process_settings-A.yml")
 system("sed '/^- meta:$/,$d' #{input_files[1]} > tmp/combined_process_settings-B.yml")
 
-system("diff -c tmp/combined_process_settings-A.yml tmp/combined_process_settings-B.yml | sed '1,3d'")
+if options.silent
+  system("cmp --silent tmp/combined_process_settings-A.yml tmp/combined_process_settings-B.yml")
+else
+  system("diff -c tmp/combined_process_settings-A.yml tmp/combined_process_settings-B.yml | sed '1,3d'")
+end
+exit_code = $?.exitstatus
 
 system("rm -f tmp/combined_process_settings-A.yml tmp/combined_process_settings-B.yml")
+
+exit(exit_code)
