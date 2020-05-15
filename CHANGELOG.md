@@ -4,6 +4,15 @@ Inspired by [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 Note: this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.10.0] - Unreleased
+### Added
+- `bin/diff_process_settings` now supports a `--silent` option (like `cmp --silent`) while still
+   ignoring the meta-data in the file including the version number.
+
+### Changed
+- `bin/combine_process_settings` now uses the above when deciding whether to overwrite `combined_process_settings.yml`
+   or leave it. Therefore if no settings change--just the version number--the output file will be left untouched.
+
 ## [0.9.0] - 2020-05-15
 ### Added
 - Added a new `ProcessSettings::Testing::Monitor` class for testing with process settings
@@ -54,6 +63,7 @@ Note: this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0
 - `ProcessSettings::Monitor.on_change` has been deprecated; it will be removed in version `1.0.0`.
   `ProcessSettings::Monitor.when_updated` should be used instead.
 
+[0.10.0]: https://github.com/Invoca/process_settings/compare/v0.9.0...v0.10.0
 [0.9.0]: https://github.com/Invoca/process_settings/compare/v0.8.2...v0.9.0
 [0.8.2]: https://github.com/Invoca/process_settings/compare/v0.8.1...v0.8.2
 [0.8.1]: https://github.com/Invoca/process_settings/compare/v0.8.0...v0.8.1
