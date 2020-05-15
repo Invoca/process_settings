@@ -5,7 +5,7 @@ require 'support/shared_examples_for_monitors'
 require 'process_settings/abstract_monitor'
 
 class TestMonitor < ProcessSettings::AbstractMonitor
-  def initialize(settings, logger: logger)
+  def initialize(settings, logger:)
     super(logger: logger)
     @statically_targeted_settings = settings
   end
