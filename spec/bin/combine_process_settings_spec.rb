@@ -78,7 +78,7 @@ describe 'combine_process_settings' do
           END: true
     EOS
 
-    it 'exists with code 0' do
+    it 'exits with code 0' do
       subject
       expect($?.exitstatus).to eq(0)
     end
@@ -100,7 +100,7 @@ describe 'combine_process_settings' do
         it { should eq(initial_file_version + 1)}
       end
 
-      it 'exists with code 0' do
+      it 'exits with code 0' do
         subject
         expect($?.exitstatus).to eq(0)
       end
@@ -118,7 +118,7 @@ describe 'combine_process_settings' do
           it { should eq(command_line_version)}
         end
 
-        it 'exists with code 0' do
+        it 'exits with code 0' do
           subject
           expect($?.exitstatus).to eq(0)
         end
@@ -133,9 +133,29 @@ describe 'combine_process_settings' do
           it { should eq(initial_file_version + 1)}
         end
 
-        it 'exists with code 0' do
+        it 'exits with code 0' do
           subject
           expect($?.exitstatus).to eq(0)
+        end
+      end
+
+      describe "when version bumps" do
+        describe "but no settings change" do
+          let(:command_line_version) { "1000" }
+
+          before do
+            @combined_before = `#{command.sub("1000", "999")}`
+          end
+
+          it 'leaves the output file unchanged' do
+            subject
+            expect(File.read(tmp_file)).to eq(@combined_before)
+          end
+
+          it 'exits with code 0' do
+            subject
+            expect($?.exitstatus).to eq(0)
+          end
         end
       end
     end

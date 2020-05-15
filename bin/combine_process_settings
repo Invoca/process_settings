@@ -96,7 +96,7 @@ system("rm -f #{tmp_output_filename}")
 File.write(tmp_output_filename, yaml_with_warning_comment)
 
 system(<<~EOS)
-  if cmp #{tmp_output_filename} #{output_filename} --silent; then
+  if bundle exec diff_process_settings --silent #{tmp_output_filename} #{output_filename} ; then
     #{"echo #{options.root_folder}: unchanged;" if options.verbose}
     rm -f #{tmp_output_filename};
   else
