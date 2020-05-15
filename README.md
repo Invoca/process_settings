@@ -5,6 +5,10 @@ Settings are managed in a git repo, in separate YAML files for each concern (for
 
 The context can be either static to the process (for example, `service_name` or `datacenter`) or dynamic (for example, the current web request `domain`).
 
+## Dependencies
+* Ruby >= 2.6
+* ActiveSupport >= 4.2, < 7
+
 ## Installation
 To install this gem directly on your machine from rubygems, run the following:
 ```ruby

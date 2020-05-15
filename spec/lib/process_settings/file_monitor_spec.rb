@@ -5,7 +5,7 @@ require 'logger'
 require 'support/shared_examples_for_monitors'
 
 describe ProcessSettings::FileMonitor do
-  SETTINGS_PATH = "./settings.yml"
+  SETTINGS_PATH = "./settings#{Process.pid}.yml"
   SAMPLE_SETTINGS = [{ 'target' => true, 'settings' => { 'sip' => { 'enabled' => true } } }, { 'meta' => { 'version' => 19, 'END' => true } }].freeze
   EAST_SETTINGS = [{ 'target' => { 'region' => 'east' }, 'settings' => { 'reject_call' => true } },
                    { 'target' => true, 'settings' => { 'sip' => { 'enabled' => true } } },
