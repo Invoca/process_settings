@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative 'abstract_monitor'
 require_relative 'hash_with_hash_path'
 
 module ProcessSettings
