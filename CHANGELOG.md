@@ -4,7 +4,7 @@ Inspired by [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 Note: this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.10.0] - Unreleased
+## [0.10.0] - 2020-05-16
 ### Added
 - `bin/diff_process_settings` now supports a `--silent` option (like `cmp --silent`) while still
    ignoring the meta-data in the file including the version number.
