@@ -4,7 +4,12 @@ Inspired by [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 Note: this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.10.0] - 2020-05-16
+## [0.10.2] - Unreleased
+### Fixed
+- Fixed bug where running `bin/diff_process_settings` multiple times would cause errors by
+switching the script to use `Tempdir` for generating temporary file name
+
+## [0.10.1] - 2020-05-16
 ### Fixed
 - Added missing `require_relative 'abstract_monitor'`.
 
@@ -67,6 +72,7 @@ Note: this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0
 - `ProcessSettings::Monitor.on_change` has been deprecated; it will be removed in version `1.0.0`.
   `ProcessSettings::Monitor.when_updated` should be used instead.
 
+[0.10.2]: https://github.com/Invoca/process_settings/compare/v0.10.1...v0.10.2
 [0.10.1]: https://github.com/Invoca/process_settings/compare/v0.10.0...v0.10.1
 [0.10.0]: https://github.com/Invoca/process_settings/compare/v0.9.0...v0.10.0
 [0.9.0]: https://github.com/Invoca/process_settings/compare/v0.8.2...v0.9.0
