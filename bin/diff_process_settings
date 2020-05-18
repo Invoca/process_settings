@@ -7,6 +7,7 @@
 require 'fileutils'
 require 'optparse'
 require 'ostruct'
+require 'tempfile'
 
 PROGRAM_NAME = File.basename($PROGRAM_NAME)
 
@@ -41,19 +42,22 @@ input_files =
       end
     end
 
-system("rm -f tmp/combined_process_settings-A.yml tmp/combined_process_settings-B.yml")
+tempfile_a = Tempfile.new(['combined_process_settings', '.yml'], 'tmp').path
+tempfile_b = Tempfile.new(['combined_process_settings', '.yml'], 'tmp').path
+
+system("rm -f #{tempfile_a} #{tempfile_b}")
 
 # remove the meta-data from the end
-system("sed '/^- meta:$/,$d' #{input_files[0]} > tmp/combined_process_settings-A.yml")
-system("sed '/^- meta:$/,$d' #{input_files[1]} > tmp/combined_process_settings-B.yml")
+system("sed '/^- meta:$/,$d' #{input_files[0]} > #{tempfile_a}")
+system("sed '/^- meta:$/,$d' #{input_files[1]} > #{tempfile_b}")
 
 if options.silent
-  system("cmp --silent tmp/combined_process_settings-A.yml tmp/combined_process_settings-B.yml")
+  system("cmp --silent #{tempfile_a} #{tempfile_b}")
 else
-  system("diff -c tmp/combined_process_settings-A.yml tmp/combined_process_settings-B.yml | sed '1,3d'")
+  system("diff -c #{tempfile_a} #{tempfile_b} | sed '1,3d'")
 end
 exit_code = $?.exitstatus
 
-system("rm -f tmp/combined_process_settings-A.yml tmp/combined_process_settings-B.yml")
+system("rm -f #{tempfile_a} #{tempfile_b}")
 
 exit(exit_code)
