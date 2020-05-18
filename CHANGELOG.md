@@ -4,7 +4,7 @@ Inspired by [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 Note: this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.10.2] - Unreleased
+## [0.10.2] - 2020-05-18
 ### Fixed
 - Fixed bug where running `bin/diff_process_settings` multiple times would cause errors by
 switching the script to use `Tempdir` for generating temporary file name
