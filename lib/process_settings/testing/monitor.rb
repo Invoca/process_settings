@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'active_support'
 require 'active_support/core_ext'
 require 'process_settings/abstract_monitor'
 
