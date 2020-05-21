@@ -22,14 +22,14 @@ module ProcessSettings
         raise ArgumentError, "Invalid monitor of type #{monitor.class.name} provided. Must be of type ProcessSettings::AbstractMonitor"
       end
 
-      @instance = monitor
+      Monitor.instance = monitor
     end
 
     # Getter method for retrieving the current monitor instance being used by ProcessSettings
     #
     # @return [ProcessSettings::AbstractMonitor]
     def instance
-      @instance ||= lazy_create_instance
+      Monitor.instance
     end
 
     # This is the main entry point for looking up settings in the process.
@@ -55,13 +55,6 @@ module ProcessSettings
     # @return setting value
     def [](*path, dynamic_context: {}, required: true)
       instance[*path, dynamic_context: dynamic_context, required: required]
-    end
-
-    private
-
-    def lazy_create_instance
-      ActiveSupport::Deprecation.warn("lazy creation of Monitor instance is deprecated and will be removed from ProcessSettings 1.0")
-      Monitor.instance
     end
   end
 end
