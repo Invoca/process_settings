@@ -12,7 +12,8 @@ describe ProcessSettings do
 
     describe 'when lazy loading' do
       before do
-        expect(ProcessSettings::Monitor).to receive(:instance).and_return(instance)
+        expect(ActiveSupport::Deprecation).to receive(:warn).with("ProcessSettings::Monitor.default_instance is deprecated and will be removed in v1.0. Use ProcessSettings.instance instead.")
+        expect(ProcessSettings::Monitor).to receive(:new_from_settings).and_return(instance)
       end
 
       it { should eq(instance) }
