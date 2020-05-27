@@ -12,8 +12,8 @@ describe ProcessSettings do
 
     describe 'when lazy loading' do
       before do
-        expect(ActiveSupport::Deprecation).to receive(:warn).with("lazy creation of Monitor instance is deprecated and will be removed from ProcessSettings 1.0")
-        expect(ProcessSettings::Monitor).to receive(:instance).and_return(instance)
+        expect(ActiveSupport::Deprecation).to receive(:warn).with("`ProcessSettings::Monitor.instance` is deprecated and will be removed in v1.0. Assign a `FileMonitor` object to `ProcessSettings.instance` instead.")
+        expect(ProcessSettings::Monitor).to receive(:new_from_settings).and_return(instance)
       end
 
       it { should eq(instance) }
@@ -27,7 +27,7 @@ describe ProcessSettings do
   end
 
   describe '#instance=' do
-    subject { described_class.instance_variable_get(:@instance) }
+    subject { ProcessSettings::Monitor.instance_variable_get(:@instance) }
 
     describe 'when an AbstractMonitor object is provided' do
       let(:instance) { ProcessSettings::Testing::Monitor.new([], logger: Logger.new('/dev/null')) }
