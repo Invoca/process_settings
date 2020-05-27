@@ -35,7 +35,7 @@ module ProcessSettings
       end
 
       def default_instance
-        ActiveSupport::Deprecation.warn("ProcessSettings::Monitor.default_instance is deprecated and will be removed in v1.0. Use ProcessSettings.instance instead.")
+        ActiveSupport::Deprecation.warn("`ProcessSettings::Monitor.instance` is deprecated and will be removed in v1.0. Assign a `FileMonitor` object to `ProcessSettings.instance` instead.")
         @default_instance ||= new_from_settings
       end
 
