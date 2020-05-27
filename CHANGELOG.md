@@ -4,7 +4,7 @@ Inspired by [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 Note: this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.10.5] - Unreleased
+## [0.10.5] - 2020-05-27
 ### Fixed
 - Fixed bug where setting a monitor instance at the `ProcessSettings` and the `ProcessSettings::Monitor`
 can cause unexpected errors due to two monitors being configured.
