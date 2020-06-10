@@ -5,17 +5,17 @@ require 'logger'
 require 'support/shared_examples_for_monitors'
 
 describe ProcessSettings::Monitor do
-  SETTINGS_PATH = "./settings#{Process.pid}.yml"
-  SAMPLE_SETTINGS = [{ 'target' => true, 'settings' => { 'sip' => { 'enabled' => true } } }, { 'meta' => { 'version' => 19, 'END' => true } }].freeze
-  EAST_SETTINGS = [{ 'target' => { 'region' => 'east' }, 'settings' => { 'reject_call' => true } },
-                   { 'target' => true, 'settings' => { 'sip' => { 'enabled' => true } } },
-                   { 'target' => { 'caller_id' => ['+18003334444', '+18887776666']}, 'settings' => { 'reject_call' => false }},
-                   { 'target' => { 'region' => 'east', 'caller_id' => ['+18003334444', '+18887776666'] }, 'settings' => { 'collective' => true }},
-                   { 'meta' => { 'version' => 19, 'END' => true }}].freeze
-  EMPTY_SAMPLE_SETTINGS = [{ 'target' => true, 'settings' => {} }, { 'meta' => { 'version' => 19, 'END' => true }}].freeze
-  SAMPLE_SETTINGS_YAML = SAMPLE_SETTINGS.to_yaml
-  EAST_SETTINGS_YAML = EAST_SETTINGS.to_yaml
-  EMPTY_SAMPLE_SETTINGS_YAML = EMPTY_SAMPLE_SETTINGS.to_yaml
+  MONITOR_SETTINGS_PATH = "./settings#{Process.pid}.yml"
+  MONITOR_SAMPLE_SETTINGS = [{ 'target' => true, 'settings' => { 'sip' => { 'enabled' => true } } }, { 'meta' => { 'version' => 19, 'END' => true } }].freeze
+  MONITOR_EAST_SETTINGS = [{ 'target' => { 'region' => 'east' }, 'settings' => { 'reject_call' => true } },
+                           { 'target' => true, 'settings' => { 'sip' => { 'enabled' => true } } },
+                           { 'target' => { 'caller_id' => ['+18003334444', '+18887776666']}, 'settings' => { 'reject_call' => false }},
+                           { 'target' => { 'region' => 'east', 'caller_id' => ['+18003334444', '+18887776666'] }, 'settings' => { 'collective' => true }},
+                           { 'meta' => { 'version' => 19, 'END' => true }}].freeze
+  MONITOR_EMPTY_MONITOR_SAMPLE_SETTINGS = [{ 'target' => true, 'settings' => {} }, { 'meta' => { 'version' => 19, 'END' => true }}].freeze
+  MONITOR_SAMPLE_SETTINGS_YAML = MONITOR_SAMPLE_SETTINGS.to_yaml
+  MONITOR_EAST_SETTINGS_YAML = MONITOR_EAST_SETTINGS.to_yaml
+  MONITOR_EMPTY_MONITOR_SAMPLE_SETTINGS_YAML = MONITOR_EMPTY_MONITOR_SAMPLE_SETTINGS.to_yaml
 
   let(:logger) { Logger.new(STDERR).tap { |logger| logger.level = ::Logger::ERROR } }
 
@@ -28,15 +28,15 @@ describe ProcessSettings::Monitor do
   end
 
   describe "default behavior" do
-    before { File.write(settings_file, EAST_SETTINGS_YAML) }
+    before { File.write(settings_file, MONITOR_EAST_SETTINGS_YAML) }
     after  { FileUtils.rm_f(settings_file) }
 
-    let(:settings_file) { File.expand_path(SETTINGS_PATH, __dir__) }
+    let(:settings_file) { File.expand_path(MONITOR_SETTINGS_PATH, __dir__) }
     let(:monitor) { described_class.new(settings_file, logger: logger) }
 
     it_should_behave_like(
       "AbstractMonitor",
-      File.expand_path(SETTINGS_PATH, __dir__),
+      File.expand_path(MONITOR_SETTINGS_PATH, __dir__),
       Logger.new(STDERR).tap { |logger| logger.level = ::Logger::ERROR },
       ['sip', 'enabled']
     )
@@ -50,14 +50,14 @@ describe ProcessSettings::Monitor do
 
   describe "class methods" do
     describe '[] operator' do
-      subject(:process_monitor) { described_class.new(SETTINGS_PATH, logger: logger) }
+      subject(:process_monitor) { described_class.new(MONITOR_SETTINGS_PATH, logger: logger) }
 
       before do
-        File.write(SETTINGS_PATH, EAST_SETTINGS_YAML)
+        File.write(MONITOR_SETTINGS_PATH, MONITOR_EAST_SETTINGS_YAML)
       end
 
       after do
-        FileUtils.rm_f(SETTINGS_PATH)
+        FileUtils.rm_f(MONITOR_SETTINGS_PATH)
       end
 
       it 'delegates to the current monitor instance' do
@@ -173,22 +173,22 @@ describe ProcessSettings::Monitor do
 
   describe "#untargeted_settings" do
     before do
-      File.write(SETTINGS_PATH, SAMPLE_SETTINGS_YAML)
+      File.write(MONITOR_SETTINGS_PATH, MONITOR_SAMPLE_SETTINGS_YAML)
     end
 
     after do
-      FileUtils.rm_f(SETTINGS_PATH)
+      FileUtils.rm_f(MONITOR_SETTINGS_PATH)
     end
 
     it "should read from disk the first time" do
-      process_monitor = described_class.new(SETTINGS_PATH, logger: logger)
+      process_monitor = described_class.new(MONITOR_SETTINGS_PATH, logger: logger)
       matching_settings = process_monitor.untargeted_settings.matching_settings({})
       expect(matching_settings.size).to eq(1)
-      expect(matching_settings.first.target.json_doc).to eq(SAMPLE_SETTINGS.first['target'])
-      expect(matching_settings.first.settings.instance_variable_get(:@json_doc)).to eq(SAMPLE_SETTINGS.first['settings'])
+      expect(matching_settings.first.target.json_doc).to eq(MONITOR_SAMPLE_SETTINGS.first['target'])
+      expect(matching_settings.first.settings.instance_variable_get(:@json_doc)).to eq(MONITOR_SAMPLE_SETTINGS.first['settings'])
     end
 
-    { modified: [File.expand_path(SETTINGS_PATH), [], []], added: [[], File.expand_path(SETTINGS_PATH), []] }.each do |type, args|
+    { modified: [File.expand_path(MONITOR_SETTINGS_PATH), [], []], added: [[], File.expand_path(MONITOR_SETTINGS_PATH), []] }.each do |type, args|
       it "should re-read from disk when callback triggered with #{type}" do
         file_change_notifier_stub = Object.new
         class << file_change_notifier_stub
@@ -206,7 +206,7 @@ describe ProcessSettings::Monitor do
         expect(file_change_notifier_stub).to receive(:to).with(File.expand_path('.')) { |&blk| block = blk; listener_stub }
         expect_any_instance_of(ProcessSettings::Monitor).to receive(:file_change_notifier) { file_change_notifier_stub }
 
-        process_monitor = described_class.new(SETTINGS_PATH, logger: logger)
+        process_monitor = described_class.new(MONITOR_SETTINGS_PATH, logger: logger)
 
         expect(process_monitor).to receive(:load_untargeted_settings) { }
 
@@ -215,7 +215,7 @@ describe ProcessSettings::Monitor do
     end
 
     it "should re-read from disk when watcher triggered" do
-      process_monitor = described_class.new(SETTINGS_PATH, logger: logger)
+      process_monitor = described_class.new(MONITOR_SETTINGS_PATH, logger: logger)
 
       matching_settings = process_monitor.untargeted_settings.matching_settings({})
       expect(matching_settings.size).to eq(1)
@@ -223,7 +223,7 @@ describe ProcessSettings::Monitor do
 
       sleep(0.15)
 
-      File.write(SETTINGS_PATH, EMPTY_SAMPLE_SETTINGS_YAML)
+      File.write(MONITOR_SETTINGS_PATH, MONITOR_EMPTY_MONITOR_SAMPLE_SETTINGS_YAML)
 
       sleep(0.3)  # allow enough time for the listen gem to notify us of the changed file
 
@@ -233,14 +233,14 @@ describe ProcessSettings::Monitor do
   end
 
   context "with process_settings" do
-    subject(:process_monitor) { described_class.new(SETTINGS_PATH, logger: logger) }
+    subject(:process_monitor) { described_class.new(MONITOR_SETTINGS_PATH, logger: logger) }
 
     before do
-      File.write(SETTINGS_PATH, EAST_SETTINGS_YAML)
+      File.write(MONITOR_SETTINGS_PATH, MONITOR_EAST_SETTINGS_YAML)
     end
 
     after do
-      FileUtils.rm_f(SETTINGS_PATH)
+      FileUtils.rm_f(MONITOR_SETTINGS_PATH)
     end
 
     describe "#static_context =" do
@@ -336,7 +336,7 @@ describe ProcessSettings::Monitor do
         process_monitor.when_updated(&when_updated_proc_2)
 
         sleep(0.15)
-        File.write(SETTINGS_PATH, EMPTY_SAMPLE_SETTINGS_YAML)
+        File.write(MONITOR_SETTINGS_PATH, MONITOR_EMPTY_MONITOR_SAMPLE_SETTINGS_YAML)
         sleep(0.3)  # allow enough time for the listen gem to notify us of the changed file
       end
 
@@ -351,13 +351,13 @@ describe ProcessSettings::Monitor do
         process_monitor.when_updated(&when_updated_proc_2)
 
         sleep(0.15)
-        File.write(SETTINGS_PATH, EAST_SETTINGS_YAML)
+        File.write(MONITOR_SETTINGS_PATH, MONITOR_EAST_SETTINGS_YAML)
         sleep(0.3)  # allow enough time for the listen gem to notify us of the changed file
       end
 
       it "keeps going even if exceptions raised" do
-        when_updated_proc_1 = Proc.new { true }
-        when_updated_proc_2 = Proc.new { true }
+        when_updated_proc_1 = -> { true }
+        when_updated_proc_2 = -> { true }
 
         expect(when_updated_proc_1).to receive(:call).with(process_monitor).and_raise(StandardError, 'oops 1').exactly(2)
         expect(when_updated_proc_2).to receive(:call).with(process_monitor).and_raise(StandardError, 'oops 2').exactly(2)
@@ -369,7 +369,7 @@ describe ProcessSettings::Monitor do
         expect(logger).to receive(:error).with("ProcessSettings::Monitor#call_when_updated_blocks rescued exception:\nStandardError: oops 2")
 
         sleep(0.15)
-        File.write(SETTINGS_PATH, EMPTY_SAMPLE_SETTINGS_YAML)
+        File.write(MONITOR_SETTINGS_PATH, MONITOR_EMPTY_MONITOR_SAMPLE_SETTINGS_YAML)
         sleep(0.3)  # allow enough time for the listen gem to notify us of the changed file
       end
     end
@@ -404,7 +404,7 @@ describe ProcessSettings::Monitor do
 
         sleep(0.15)
 
-        File.write(SETTINGS_PATH, EMPTY_SAMPLE_SETTINGS_YAML)
+        File.write(MONITOR_SETTINGS_PATH, MONITOR_EMPTY_MONITOR_SAMPLE_SETTINGS_YAML)
 
         sleep(0.3)  # allow enough time for the listen gem to notify us of the changed file
 
@@ -417,7 +417,7 @@ describe ProcessSettings::Monitor do
         callback_1
         callback_2
 
-        File.write(SETTINGS_PATH, EAST_SETTINGS_YAML)
+        File.write(MONITOR_SETTINGS_PATH, MONITOR_EAST_SETTINGS_YAML)
 
         expect(callbacks).to eq([])
       end
@@ -433,7 +433,7 @@ describe ProcessSettings::Monitor do
 
         sleep(0.15)
 
-        File.write(SETTINGS_PATH, EMPTY_SAMPLE_SETTINGS_YAML)
+        File.write(MONITOR_SETTINGS_PATH, MONITOR_EMPTY_MONITOR_SAMPLE_SETTINGS_YAML)
 
         expect(callbacks).to eq([])
 
@@ -443,14 +443,14 @@ describe ProcessSettings::Monitor do
   end
 
   describe "#statically_targeted_settings" do
-    let(:process_monitor) { described_class.new(SETTINGS_PATH, logger: logger) }
+    let(:process_monitor) { described_class.new(MONITOR_SETTINGS_PATH, logger: logger) }
 
     before do
-      File.write(SETTINGS_PATH, EAST_SETTINGS_YAML)
+      File.write(MONITOR_SETTINGS_PATH, MONITOR_EAST_SETTINGS_YAML)
     end
 
     after do
-      FileUtils.rm_f(SETTINGS_PATH)
+      FileUtils.rm_f(MONITOR_SETTINGS_PATH)
     end
 
     it "keeps all entries when targeted" do
@@ -489,14 +489,14 @@ describe ProcessSettings::Monitor do
   end
 
   describe "#targeted_value" do
-    let(:process_monitor) { described_class.new(SETTINGS_PATH, logger: logger) }
+    let(:process_monitor) { described_class.new(MONITOR_SETTINGS_PATH, logger: logger) }
 
     before do
-      File.write(SETTINGS_PATH, EAST_SETTINGS_YAML)
+      File.write(MONITOR_SETTINGS_PATH, MONITOR_EAST_SETTINGS_YAML)
     end
 
     after do
-      FileUtils.rm_f(SETTINGS_PATH)
+      FileUtils.rm_f(MONITOR_SETTINGS_PATH)
     end
 
     it "should respect static targeting with dynamic overrides" do
