@@ -17,7 +17,7 @@ describe ProcessSettings::Monitor do
   MONITOR_EAST_SETTINGS_YAML = MONITOR_EAST_SETTINGS.to_yaml
   MONITOR_EMPTY_MONITOR_SAMPLE_SETTINGS_YAML = MONITOR_EMPTY_MONITOR_SAMPLE_SETTINGS.to_yaml
 
-  let(:logger) { Logger.new(STDERR).tap { |logger| logger.level = ::Logger::ERROR } }
+  let(:logger) { Logger.new('/dev/null').tap { |logger| logger.level = ::Logger::ERROR } }
 
   RSpec.configuration.before(:each) do
     Listen.stop
@@ -31,8 +31,15 @@ describe ProcessSettings::Monitor do
     before { File.write(settings_file, MONITOR_EAST_SETTINGS_YAML) }
     after  { FileUtils.rm_f(settings_file) }
 
+    before do
+      allow(ActiveSupport::Deprecation).to receive(:warn).with(anything, :initialize)
+      allow_any_instance_of(ActiveSupport::Deprecation).to receive(:warn).with("initialize is deprecated and will be removed from ProcessSettings 1.0", anything)
+    end
+
     let(:settings_file) { File.expand_path(MONITOR_SETTINGS_PATH, __dir__) }
-    let(:monitor) { described_class.new(settings_file, logger: logger) }
+    let(:monitor) do
+      described_class.new(settings_file, logger: logger)
+    end
 
     it_should_behave_like(
       "AbstractMonitor",
@@ -50,7 +57,11 @@ describe ProcessSettings::Monitor do
 
   describe "class methods" do
     describe '[] operator' do
-      subject(:process_monitor) { described_class.new(MONITOR_SETTINGS_PATH, logger: logger) }
+      subject(:process_monitor) do
+        allow(ActiveSupport::Deprecation).to receive(:warn).with(anything, :initialize)
+        allow_any_instance_of(ActiveSupport::Deprecation).to receive(:warn).with("initialize is deprecated and will be removed from ProcessSettings 1.0", anything)
+        described_class.new(MONITOR_SETTINGS_PATH, logger: logger)
+      end
 
       before do
         File.write(MONITOR_SETTINGS_PATH, MONITOR_EAST_SETTINGS_YAML)
@@ -82,6 +93,7 @@ describe ProcessSettings::Monitor do
       end
 
       it "should raise an exception if not configured" do
+        allow_any_instance_of(ActiveSupport::Deprecation).to receive(:warn).with(any_args)
         described_class.file_path = nil
 
         expect do
@@ -90,6 +102,7 @@ describe ProcessSettings::Monitor do
       end
 
       it "should raise an exception if logger not set" do
+        allow_any_instance_of(ActiveSupport::Deprecation).to receive(:warn).with(any_args)
         described_class.file_path = "./spec/fixtures/production/combined_process_settings.yml"
 
         expect do
@@ -98,6 +111,7 @@ describe ProcessSettings::Monitor do
       end
 
       it "should not raise an exception about file_path or logger if configured" do
+        allow_any_instance_of(ActiveSupport::Deprecation).to receive(:warn).with(any_args)
         described_class.file_path = nil
         described_class.logger = nil
         instance_stub = Object.new
@@ -107,12 +121,14 @@ describe ProcessSettings::Monitor do
       end
 
       it "logger = should set the Listen logger" do
+        allow_any_instance_of(ActiveSupport::Deprecation).to receive(:warn).with(any_args)
         Listen.logger = nil
         described_class.logger = logger
         expect(Listen.logger).to be(logger)
       end
 
       it "logger = should leave the Listen logger alone if already set" do
+        allow_any_instance_of(ActiveSupport::Deprecation).to receive(:warn).with(any_args)
         existing_logger = Logger.new(STDOUT)
         Listen.logger = existing_logger
         described_class.logger = logger
@@ -121,6 +137,7 @@ describe ProcessSettings::Monitor do
       end
 
       it "should return a global instance" do
+        allow_any_instance_of(ActiveSupport::Deprecation).to receive(:warn).with(any_args)
         described_class.file_path = "./spec/fixtures/production/combined_process_settings.yml"
         described_class.logger = logger
 
@@ -132,6 +149,7 @@ describe ProcessSettings::Monitor do
       end
 
       it "should start listener depending on DISABLE_LISTEN_CHANGE_MONITORING variable" do
+        allow_any_instance_of(ActiveSupport::Deprecation).to receive(:warn).with(any_args)
         described_class.file_path = "./spec/fixtures/production/combined_process_settings.yml"
         described_class.logger = logger
 
@@ -151,6 +169,7 @@ describe ProcessSettings::Monitor do
       end
 
       it "stores nil into instance" do
+        allow_any_instance_of(ActiveSupport::Deprecation).to receive(:warn).with(any_args)
         described_class.instance
         expect(described_class.instance_variable_get(:@instance)).to be
         described_class.instance = nil
@@ -164,6 +183,7 @@ describe ProcessSettings::Monitor do
       end
 
       it "stores value into instance" do
+        allow_any_instance_of(ActiveSupport::Deprecation).to receive(:warn).with(any_args)
         new_instance = Object.new
         described_class.instance = new_instance
         expect(described_class.instance).to be(new_instance)
@@ -181,6 +201,7 @@ describe ProcessSettings::Monitor do
     end
 
     it "should read from disk the first time" do
+      allow_any_instance_of(ActiveSupport::Deprecation).to receive(:warn).with(any_args)
       process_monitor = described_class.new(MONITOR_SETTINGS_PATH, logger: logger)
       matching_settings = process_monitor.untargeted_settings.matching_settings({})
       expect(matching_settings.size).to eq(1)
@@ -190,6 +211,7 @@ describe ProcessSettings::Monitor do
 
     { modified: [File.expand_path(MONITOR_SETTINGS_PATH), [], []], added: [[], File.expand_path(MONITOR_SETTINGS_PATH), []] }.each do |type, args|
       it "should re-read from disk when callback triggered with #{type}" do
+        allow_any_instance_of(ActiveSupport::Deprecation).to receive(:warn).with(any_args)
         file_change_notifier_stub = Object.new
         class << file_change_notifier_stub
           def to(path)
@@ -215,6 +237,7 @@ describe ProcessSettings::Monitor do
     end
 
     it "should re-read from disk when watcher triggered" do
+      allow_any_instance_of(ActiveSupport::Deprecation).to receive(:warn).with(any_args)
       process_monitor = described_class.new(MONITOR_SETTINGS_PATH, logger: logger)
 
       matching_settings = process_monitor.untargeted_settings.matching_settings({})
@@ -233,7 +256,11 @@ describe ProcessSettings::Monitor do
   end
 
   context "with process_settings" do
-    subject(:process_monitor) { described_class.new(MONITOR_SETTINGS_PATH, logger: logger) }
+    subject(:process_monitor) do
+      allow(ActiveSupport::Deprecation).to receive(:warn).with(anything, :initialize)
+      allow_any_instance_of(ActiveSupport::Deprecation).to receive(:warn).with(any_args)
+      described_class.new(MONITOR_SETTINGS_PATH, logger: logger)
+    end
 
     before do
       File.write(MONITOR_SETTINGS_PATH, MONITOR_EAST_SETTINGS_YAML)
@@ -443,7 +470,11 @@ describe ProcessSettings::Monitor do
   end
 
   describe "#statically_targeted_settings" do
-    let(:process_monitor) { described_class.new(MONITOR_SETTINGS_PATH, logger: logger) }
+    let(:process_monitor) do
+      allow(ActiveSupport::Deprecation).to receive(:warn).with(any_args)
+      allow_any_instance_of(ActiveSupport::Deprecation).to receive(:warn).with(any_args)
+      described_class.new(MONITOR_SETTINGS_PATH, logger: logger)
+    end
 
     before do
       File.write(MONITOR_SETTINGS_PATH, MONITOR_EAST_SETTINGS_YAML)
@@ -489,7 +520,11 @@ describe ProcessSettings::Monitor do
   end
 
   describe "#targeted_value" do
-    let(:process_monitor) { described_class.new(MONITOR_SETTINGS_PATH, logger: logger) }
+    let(:process_monitor) do
+      allow(ActiveSupport::Deprecation).to receive(:warn).with(anything, :initialize)
+      allow_any_instance_of(ActiveSupport::Deprecation).to receive(:warn).with("initialize is deprecated and will be removed from ProcessSettings 1.0", anything)
+      described_class.new(MONITOR_SETTINGS_PATH, logger: logger)
+    end
 
     before do
       File.write(MONITOR_SETTINGS_PATH, MONITOR_EAST_SETTINGS_YAML)
