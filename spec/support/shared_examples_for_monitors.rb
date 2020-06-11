@@ -2,7 +2,11 @@
 
 # RSpec shared examples for ProcessSettings::Monitor
 RSpec.shared_examples "AbstractMonitor" do |settings, logger, scoped_setting|
-  let(:monitor) { described_class.new(settings, logger: logger) }
+  let(:monitor) do
+    allow(ActiveSupport::Deprecation).to receive(:warn).with(anything, :initialize)
+    allow_any_instance_of(ActiveSupport::Deprecation).to receive(:deprecation_warning).with(any_args)
+    described_class.new(settings, logger: logger)
+  end
 
   describe "#initialize" do
     subject { monitor }
@@ -11,6 +15,11 @@ RSpec.shared_examples "AbstractMonitor" do |settings, logger, scoped_setting|
 
     it "defaults to empty static context" do
       expect(monitor.static_context).to eq({})
+    end
+
+    it "raises ArgumentError if logger: nil" do
+      allow_any_instance_of(ActiveSupport::Deprecation).to receive(:deprecation_warning).with(any_args)
+      expect { described_class.new([], logger: nil) }.to raise_exception(ArgumentError, /logger must be not be nil/)
     end
   end
 
