@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 require 'logger'
-require 'process_settings/target'
+require_relative '../../../lib/process_settings/target'
 
 describe ProcessSettings::Target do
   describe "#process_target" do
