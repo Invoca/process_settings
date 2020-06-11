@@ -13,7 +13,6 @@ module ProcessSettings
       attr_writer :instance
 
       def file_path=(new_file_path)
-        ActiveSupport::Deprecation.warn("ProcessSettings::Monitor.file_path= is deprecated and will be removed in v1.0.")
         clear_instance
 
         @file_path = new_file_path
