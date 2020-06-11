@@ -4,12 +4,21 @@ Inspired by [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 Note: this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.10.6] - Unreleased
+### Changed
+- Moved deprecation from `#initialize` up to `.new` so that warning will point to caller.
+- Deprecated lazy `instance` explicitly so that warning will point to caller.
+- Cleaned up noisy spec output including deprecation warnings.
+- Explicit contract enforcement: `raise ArgumentError` if logger: passed as `nil`.
+
+### Fixed
+- Fixed memoization of `Target.true_target`.
+
 ## [0.10.5] - 2020-05-27
 ### Fixed
 - Fixed bug where setting a monitor instance at the `ProcessSettings` and the `ProcessSettings::Monitor`
 can cause unexpected errors due to two monitors being configured.
 
-## [0.10.4] - 2020-05-21
 ### Fixed
 - Added missing `require 'active_support/deprecation'` in case caller hasn't done that.
 
