@@ -8,7 +8,7 @@ describe ProcessSettings::Testing::Helpers do
     include ProcessSettings::Testing::Helpers
   end
 
-  let(:logger) { Logger.new(STDERR) }
+  let(:logger) { Logger.new('/dev/null') }
   let(:test_instance) { TestClass.new }
   let(:combined_process_settings_fixture_path) { File.expand_path("../../../fixtures/production/combined_process_settings.yml", __dir__) }
   let(:initial_process_settings) do

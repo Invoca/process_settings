@@ -37,7 +37,7 @@ describe ProcessSettings::FileMonitor do
     it_should_behave_like(
       "AbstractMonitor",
       File.expand_path(SETTINGS_PATH, __dir__),
-      Logger.new(STDERR).tap { |logger| logger.level = ::Logger::ERROR },
+      Logger.new('/dev/null').tap { |logger| logger.level = ::Logger::ERROR },
       ['sip', 'enabled']
     )
 
