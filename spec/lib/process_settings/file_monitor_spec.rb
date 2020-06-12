@@ -102,7 +102,7 @@ describe ProcessSettings::FileMonitor do
 
       File.write(SETTINGS_PATH, EMPTY_SAMPLE_SETTINGS_YAML)
 
-      sleep(0.3)  # allow enough time for the listen gem to notify us of the changed file
+      sleep(0.5)  # allow enough time for the listen gem to notify us of the changed file
 
       matching_settings = process_monitor.untargeted_settings.matching_settings({})
       expect(matching_settings.first.settings.json_doc).to eq({})
@@ -214,7 +214,7 @@ describe ProcessSettings::FileMonitor do
 
         sleep(0.15)
         File.write(SETTINGS_PATH, EMPTY_SAMPLE_SETTINGS_YAML)
-        sleep(0.3)  # allow enough time for the listen gem to notify us of the changed file
+        sleep(0.5)  # allow enough time for the listen gem to notify us of the changed file
       end
 
       it 'does not call back to the blocks on a noop change' do
@@ -229,7 +229,7 @@ describe ProcessSettings::FileMonitor do
 
         sleep(0.15)
         File.write(SETTINGS_PATH, EAST_SETTINGS_YAML)
-        sleep(0.3)  # allow enough time for the listen gem to notify us of the changed file
+        sleep(0.5)  # allow enough time for the listen gem to notify us of the changed file
       end
 
       it "keeps going even if exceptions raised" do
@@ -247,7 +247,7 @@ describe ProcessSettings::FileMonitor do
 
         sleep(0.15)
         File.write(SETTINGS_PATH, EMPTY_SAMPLE_SETTINGS_YAML)
-        sleep(0.3)  # allow enough time for the listen gem to notify us of the changed file
+        sleep(0.5)  # allow enough time for the listen gem to notify us of the changed file
       end
     end
 
@@ -283,7 +283,7 @@ describe ProcessSettings::FileMonitor do
 
         File.write(SETTINGS_PATH, EMPTY_SAMPLE_SETTINGS_YAML)
 
-        sleep(0.3)  # allow enough time for the listen gem to notify us of the changed file
+        sleep(0.5)  # allow enough time for the listen gem to notify us of the changed file
 
         expect(callbacks).to eq([1, 2])
       end
@@ -314,7 +314,7 @@ describe ProcessSettings::FileMonitor do
 
         expect(callbacks).to eq([])
 
-        sleep(0.3)  # allow enough time for the listen gem to notify us of the changed file
+        sleep(0.5)  # allow enough time for the listen gem to notify us of the changed file
       end
     end
   end
