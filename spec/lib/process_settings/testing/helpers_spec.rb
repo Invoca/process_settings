@@ -4,15 +4,63 @@ require 'spec_helper'
 require 'process_settings/testing/helpers'
 
 describe ProcessSettings::Testing::Helpers do
-  class TestClass
+  class TestClassRSpec
+    @after_blocks = []
+
+    class << self
+      attr_reader :after_blocks
+
+      def after(&block)
+        after_blocks << block
+      end
+    end
+
+    include ProcessSettings::Testing::Helpers
+  end
+
+  class TestClassMinitest
+    @after_blocks = []
+
+    class << self
+      attr_reader :after_blocks
+
+      def teardown(&block)
+        after_blocks << block
+      end
+    end
+
     include ProcessSettings::Testing::Helpers
   end
 
   let(:logger) { Logger.new('/dev/null') }
-  let(:test_instance) { TestClass.new }
+  let(:test_instance) { TestClassRSpec.new }
   let(:combined_process_settings_fixture_path) { File.expand_path("../../../fixtures/production/combined_process_settings.yml", __dir__) }
   let(:initial_process_settings) do
     ProcessSettings::FileMonitor.new(combined_process_settings_fixture_path, logger: logger)
+  end
+
+  RSpec.shared_examples "defines after block" do
+    it 'defines an after block' do
+      expect(test_klass.after_blocks.size).to eq(1)
+      test_instance = test_klass.new
+      ProcessSettings.instance = initial_process_settings
+      expect(test_instance.initial_instance).to eq(initial_process_settings)
+      ProcessSettings.instance = nil
+      test_instance.instance_exec(&test_klass.after_blocks.first)
+      expect(ProcessSettings.instance).to eq(initial_process_settings)
+    end
+  end
+
+  describe 'when included in rspec' do
+    let(:test_klass) { TestClassRSpec }
+
+    include_examples "defines after block"
+  end
+
+  describe 'when included in minitest' do
+    let(:test_klass) { TestClassMinitest }
+
+    include_examples "defines after block"
   end
 
   describe '#stub_process_settings' do
