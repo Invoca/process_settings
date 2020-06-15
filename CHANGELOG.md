@@ -16,6 +16,8 @@ Note: this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0
   1. `Rails.env` (if available)
   2. `ENV['RAILS_ENV']`
   3. `ENV['SERVICE_ENV']`
+- `ProcessSettings::FileMonitor#listen_thread_running?` indicates whether the listen thread
+  is running.
 
 ### Changed
 - Moved deprecation from `#initialize` up to `.new` so that warning will point to caller.

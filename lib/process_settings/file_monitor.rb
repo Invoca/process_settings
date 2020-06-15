@@ -29,8 +29,12 @@ module ProcessSettings
     end
     deprecate :start, deprecator: ActiveSupport::Deprecation.new('1.0', 'ProcessSettings') # will become private
 
-    def enable_listen_thread?(environment)
-      !disable_listen_thread?
+    def listen_thread_running?
+      !@listener.nil?
+    end
+
+    def enable_listen_thread?(environment = nil)
+      !disable_listen_thread?(environment)
     end
 
     def disable_listen_thread?(environment = nil)
@@ -82,6 +86,7 @@ module ProcessSettings
     # stops listening for changes
     def stop
       @listener&.stop
+      @listener = nil
     end
 
     def service_env
