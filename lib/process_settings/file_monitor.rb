@@ -13,7 +13,7 @@ module ProcessSettings
   class FileMonitor < AbstractMonitor
     attr_reader :file_path, :untargeted_settings
 
-    def initialize(file_path, logger:)
+    def initialize(file_path, logger:, environment: nil)
       super(logger: logger)
 
       @file_path = File.expand_path(file_path)
@@ -21,13 +21,30 @@ module ProcessSettings
       @untargeted_settings = nil
       @last_untargetted_settings = nil
 
-      start_internal(enable_listen_thread?)
+      start_internal(enable_listen_thread?(environment))
     end
 
     def start
       start_internal(enable_listen_thread?)
     end
     deprecate :start, deprecator: ActiveSupport::Deprecation.new('1.0', 'ProcessSettings') # will become private
+
+    def enable_listen_thread?(environment)
+      !disable_listen_thread?
+    end
+
+    def disable_listen_thread?(environment = nil)
+      case ENV['DISABLE_LISTEN_CHANGE_MONITORING']
+      when 'true', '1'
+        true
+      when 'false', '0'
+        false
+      when nil
+        environment || service_env == 'test'
+      else
+        raise ArgumentError, "DISABLE_LISTEN_CHANGE_MONITORING has unknown value #{ENV['DISABLE_LISTEN_CHANGE_MONITORING'].inspect}"
+      end
+    end
 
     private
 
@@ -67,27 +84,10 @@ module ProcessSettings
       @listener&.stop
     end
 
-    def enable_listen_thread?
-      !disable_listen_thread?
-    end
-
-    def disable_listen_thread?
-      case ENV['DISABLE_LISTEN_CHANGE_MONITORING']
-      when 'true', '1'
-        true
-      when 'false', '0'
-        false
-      when nil
-        service_env == 'test'
-      else
-        raise ArgumentError, "DISABLE_LISTEN_CHANGE_MONITORING has unknown value #{ENV['DISABLE_LISTEN_CHANGE_MONITORING'].inspect}"
-      end
-    end
-
     def service_env
       if defined?(Rails) && Rails.respond_to?(:env)
         Rails.env
-      end || ENV['SERVICE_ENV']
+      end || ENV['RAILS_ENV'] || ENV['SERVICE_ENV']
     end
 
     # Loads the most recent settings from disk

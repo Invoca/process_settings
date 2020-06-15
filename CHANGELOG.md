@@ -9,6 +9,13 @@ Note: this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0
 - `ProcessSettings::Testing::Helpers` now automatically registers an `after`/`teardown` block to
   set `ProcessSettings.instance` back to the default that was there before it was optionally
   overridden by `stub_process_settings`.
+- `ProcessSettings::FileMonitor.initialize` now accepts an optional keyword argument `environment:`.
+  This is an environment string like can be found in `Rails.env` for Rails applications.
+  It is used to infer to disable the listen thread in the 'test' environment.
+  If left to its default of `nil`, the environment is inferred by the first of these values that is present:
+  1. `Rails.env` (if available)
+  2. `ENV['RAILS_ENV']`
+  3. `ENV['SERVICE_ENV']`
 
 ### Changed
 - Moved deprecation from `#initialize` up to `.new` so that warning will point to caller.
