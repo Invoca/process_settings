@@ -3,6 +3,7 @@
 require 'active_support'
 require 'listen'
 require 'psych'
+require 'active_support/deprecation'
 
 require 'process_settings/abstract_monitor'
 require 'process_settings/targeted_settings'
@@ -20,32 +21,40 @@ module ProcessSettings
       @untargeted_settings = nil
       @last_untargetted_settings = nil
 
-      start
+      start_internal(enable_listen_thread?)
     end
 
-    # starts listening for changes
-    # Note: This method creates a new thread that will be monitoring for changes
-    #       do to the nature of how the Listen gem works, there is no record of
-    #       existing threads, calling this mutliple times will result in spinning off
-    #       multiple listen threads and will have unknow effects
     def start
-      path = File.dirname(file_path)
+      start_internal(enable_listen_thread?)
+    end
+    deprecate :start, deprecator: ActiveSupport::Deprecation.new('1.0', 'ProcessSettings') # will become private
 
-      # to eliminate any race condition:
-      # 1. set up file watcher
-      # 2. start it (this should trigger if any changes have been made since (1))
-      # 3. load the file
+    private
 
-      @listener = file_change_notifier.to(path) do |modified, added, _removed|
-        if modified.include?(file_path) || added.include?(file_path)
-          logger.info("ProcessSettings::Monitor file #{file_path} changed. Reloading.")
-          load_untargeted_settings
+    # optionally starts listening for changes, then loads current settings
+    # Note: If with_listen_thread is truthy, this method creates a new thread that will be
+    #       monitoring for changes.
+    #       Due to how the Listen gem works, there is no record of
+    #       existing threads; calling this multiple times will result in spinning off
+    #       multiple listen threads and will have unknown effects.
+    def start_internal(with_listen_thread)
+      if with_listen_thread
+        path = File.dirname(file_path)
 
-          load_statically_targeted_settings
+        # to eliminate any race condition:
+        # 1. set up file watcher
+        # 2. start it (this should trigger if any changes have been made since (1))
+        # 3. load the file
+
+        @listener = file_change_notifier.to(path) do |modified, added, _removed|
+          if modified.include?(file_path) || added.include?(file_path)
+            logger.info("ProcessSettings::Monitor file #{file_path} changed. Reloading.")
+            load_untargeted_settings
+
+            load_statically_targeted_settings
+          end
         end
-      end
 
-      if enable_listen_thread?
         @listener.start
       end
 
@@ -75,10 +84,10 @@ module ProcessSettings
       end
     end
 
-    private
-
     def service_env
-      (defined?(Rails) && Rails.env) || ENV['SERVICE_ENV']
+      if defined?(Rails) && Rails.respond_to?(:env)
+        Rails.env
+      end || ENV['SERVICE_ENV']
     end
 
     # Loads the most recent settings from disk

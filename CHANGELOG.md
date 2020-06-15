@@ -12,7 +12,8 @@ Note: this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0
 
 ### Changed
 - Moved deprecation from `#initialize` up to `.new` so that warning will point to caller.
-- Deprecated lazy `instance` explicitly so that warning will point to caller.
+- Deprecated public `FileMonitor#start` method. This will become `private` in v1.0.
+- Deprecated lazy `ProcessSettings#instance` explicitly so that warning will point to caller.
 - Cleaned up noisy spec output including deprecation warnings.
 - Explicit contract enforcement: `raise ArgumentError` if logger: passed as `nil`.
 - Allow 'true' ('1') or 'false' ('0') values for `ENV['DISABLE_LISTEN_CHANGE_MONITORING']`;
