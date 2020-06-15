@@ -155,7 +155,7 @@ describe ProcessSettings::Monitor do
         allow(ENV).to receive(:[]).with("SERVICE_ENV").and_return("test")
         allow(ENV).to receive(:[]).with("DISABLE_LISTEN_CHANGE_MONITORING").and_return("1")
         instance = ProcessSettings::FileMonitor.new(file_path, logger: logger)
-        expect(instance.instance_variable_get(:@listener).state).to eq(:initializing)
+        expect(instance.instance_variable_get(:@listener)).to be_nil
         allow(ENV).to receive(:[]).with("SERVICE_ENV").and_return(nil)
         allow(ENV).to receive(:[]).with("DISABLE_LISTEN_CHANGE_MONITORING").and_return("0")
         instance = ProcessSettings::FileMonitor.new(file_path, logger: logger)
