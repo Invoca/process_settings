@@ -78,7 +78,7 @@ module ProcessSettings
     private
 
     def service_env
-      (defined?(Rails) && Rails.environmnent) || ENV['SERVICE_ENV']
+      (defined?(Rails) && Rails.environment) || ENV['SERVICE_ENV']
     end
 
     # Loads the most recent settings from disk
