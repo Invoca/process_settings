@@ -150,15 +150,15 @@ describe ProcessSettings::Monitor do
 
       it "should start listener depending on DISABLE_LISTEN_CHANGE_MONITORING variable" do
         allow_any_instance_of(ActiveSupport::Deprecation).to receive(:warn).with(any_args)
-        described_class.file_path = "./spec/fixtures/production/combined_process_settings.yml"
-        described_class.logger = logger
+        file_path = "./spec/fixtures/production/combined_process_settings.yml"
 
+        allow(ENV).to receive(:[]).with("SERVICE_ENV").and_return("test")
         allow(ENV).to receive(:[]).with("DISABLE_LISTEN_CHANGE_MONITORING").and_return("1")
-        instance = described_class.instance
+        instance = ProcessSettings::FileMonitor.new(file_path, logger: logger)
         expect(instance.instance_variable_get(:@listener).state).to eq(:initializing)
-        described_class.clear_instance
-        allow(ENV).to receive(:[]).with("DISABLE_LISTEN_CHANGE_MONITORING").and_return(nil)
-        instance = described_class.instance
+        allow(ENV).to receive(:[]).with("SERVICE_ENV").and_return(nil)
+        allow(ENV).to receive(:[]).with("DISABLE_LISTEN_CHANGE_MONITORING").and_return("0")
+        instance = ProcessSettings::FileMonitor.new(file_path, logger: logger)
         expect(instance.instance_variable_get(:@listener).state).to eq(:processing_events)
       end
     end

@@ -45,7 +45,7 @@ module ProcessSettings
         end
       end
 
-      unless ENV['DISABLE_LISTEN_CHANGE_MONITORING']
+      if enable_listen_thread?
         @listener.start
       end
 
@@ -58,7 +58,28 @@ module ProcessSettings
       @listener&.stop
     end
 
+    def enable_listen_thread?
+      !disable_listen_thread?
+    end
+
+    def disable_listen_thread?
+      case ENV['DISABLE_LISTEN_CHANGE_MONITORING']
+      when 'true', '1'
+        true
+      when 'false', '0'
+        false
+      when nil
+        service_env == 'test'
+      else
+        raise ArgumentError, "DISABLE_LISTEN_CHANGE_MONITORING has unknown value #{ENV['DISABLE_LISTEN_CHANGE_MONITORING'].inspect}"
+      end
+    end
+
     private
+
+    def service_env
+      (defined?(Rails) && Rails.environmnent) || ENV['SERVICE_ENV']
+    end
 
     # Loads the most recent settings from disk
     def load_untargeted_settings
