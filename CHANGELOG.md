@@ -15,6 +15,8 @@ Note: this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0
 - Deprecated lazy `instance` explicitly so that warning will point to caller.
 - Cleaned up noisy spec output including deprecation warnings.
 - Explicit contract enforcement: `raise ArgumentError` if logger: passed as `nil`.
+- Allow 'true' ('1') or 'false' ('0') values for `ENV['DISABLE_LISTEN_CHANGE_MONITORING']`;
+  default to 'false' when `Rails.env || ENV['SERVICE_ENV']) == 'test'`.
 
 ### Fixed
 - Fixed memoization of `Target.true_target`.
