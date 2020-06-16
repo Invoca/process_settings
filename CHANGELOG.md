@@ -36,6 +36,7 @@ Note: this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0
 - Fixed bug where setting a monitor instance at the `ProcessSettings` and the `ProcessSettings::Monitor`
 can cause unexpected errors due to two monitors being configured.
 
+## [0.10.4] - 2020-05-21
 ### Fixed
 - Added missing `require 'active_support/deprecation'` in case caller hasn't done that.
 
@@ -111,7 +112,8 @@ switching the script to use `Tempdir` for generating temporary file name
 - `ProcessSettings::Monitor.on_change` has been deprecated; it will be removed in version `1.0.0`.
   `ProcessSettings::Monitor.when_updated` should be used instead.
 
-[0.11.0]: https://github.com/Invoca/process_settings/compare/v0.10.4...v0.11.0
+[0.11.0]: https://github.com/Invoca/process_settings/compare/v0.10.5...v0.11.0
+[0.10.5]: https://github.com/Invoca/process_settings/compare/v0.10.4...v0.10.5
 [0.10.4]: https://github.com/Invoca/process_settings/compare/v0.10.3...v0.10.4
 [0.10.3]: https://github.com/Invoca/process_settings/compare/v0.10.2...v0.10.3
 [0.10.2]: https://github.com/Invoca/process_settings/compare/v0.10.1...v0.10.2
