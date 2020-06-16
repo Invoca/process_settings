@@ -98,6 +98,8 @@ describe ProcessSettings::FileMonitor do
       expect(matching_settings.size).to eq(1)
       expect(matching_settings.first.settings.json_doc).to eq('sip' => { 'enabled' => true })
 
+      callback = "callback not called"
+      process_monitor.when_updated(initial_update: false) { callback = "callback called" }
       sleep(0.15)
 
       File.write(SETTINGS_PATH, EMPTY_SAMPLE_SETTINGS_YAML)
@@ -105,7 +107,7 @@ describe ProcessSettings::FileMonitor do
       sleep(0.5)  # allow enough time for the listen gem to notify us of the changed file
 
       matching_settings = process_monitor.untargeted_settings.matching_settings({})
-      expect(matching_settings.first.settings.json_doc).to eq({})
+      expect(matching_settings.first.settings.json_doc).to eq({}), callback
     end
   end
 
