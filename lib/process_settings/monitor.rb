@@ -13,7 +13,6 @@ module ProcessSettings
       attr_writer :instance
 
       def file_path=(new_file_path)
-        ActiveSupport::Deprecation.warn("ProcessSettings::Monitor.file_path= is deprecated and will be removed in v1.0.")
         clear_instance
 
         @file_path = new_file_path
@@ -31,11 +30,16 @@ module ProcessSettings
       end
 
       def instance
-        @instance ||= default_instance
+        if @instance
+          @instance
+        else
+          ActiveSupport::Deprecation.warn("`ProcessSettings::Monitor.instance` lazy create is deprecated and will be removed in v1.0. Assign a `FileMonitor` object to `ProcessSettings.instance =` instead.")
+          @instance = default_instance
+        end
       end
 
       def default_instance
-        ActiveSupport::Deprecation.warn("`ProcessSettings::Monitor.instance` is deprecated and will be removed in v1.0. Assign a `FileMonitor` object to `ProcessSettings.instance` instead.")
+        ActiveSupport::Deprecation.warn("`ProcessSettings::Monitor.instance` is deprecated and will be removed in v1.0. Assign a `FileMonitor` object to `ProcessSettings.instance =` instead.")
         @default_instance ||= new_from_settings
       end
 

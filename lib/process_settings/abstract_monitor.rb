@@ -15,7 +15,7 @@ module ProcessSettings
     attr_reader :static_context, :statically_targeted_settings
 
     def initialize(logger:)
-      @logger = logger
+      @logger = logger or raise ArgumentError, "logger must be not be nil"
       @on_change_callbacks = []
       @when_updated_blocks = Set.new
       @static_context = {}

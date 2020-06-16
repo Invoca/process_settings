@@ -98,7 +98,7 @@ module ProcessSettings
 
     class << self
       def true_target
-        @true_target || new(TRUE_JSON_DOC)
+        @true_target ||= new(TRUE_JSON_DOC)
       end
     end
   end

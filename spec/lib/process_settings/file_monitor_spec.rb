@@ -17,7 +17,7 @@ describe ProcessSettings::FileMonitor do
   EAST_SETTINGS_YAML = EAST_SETTINGS.to_yaml
   EMPTY_SAMPLE_SETTINGS_YAML = EMPTY_SAMPLE_SETTINGS.to_yaml
 
-  let(:logger) { Logger.new(STDERR).tap { |logger| logger.level = ::Logger::ERROR } }
+  let(:logger) { Logger.new('/dev/null').tap { |logger| logger.level = ::Logger::ERROR } }
 
   RSpec.configuration.before(:each) do
     Listen.stop
@@ -37,7 +37,7 @@ describe ProcessSettings::FileMonitor do
     it_should_behave_like(
       "AbstractMonitor",
       File.expand_path(SETTINGS_PATH, __dir__),
-      Logger.new(STDERR).tap { |logger| logger.level = ::Logger::ERROR },
+      Logger.new('/dev/null').tap { |logger| logger.level = ::Logger::ERROR },
       ['sip', 'enabled']
     )
 
@@ -98,14 +98,16 @@ describe ProcessSettings::FileMonitor do
       expect(matching_settings.size).to eq(1)
       expect(matching_settings.first.settings.json_doc).to eq('sip' => { 'enabled' => true })
 
+      callback = "callback not called"
+      process_monitor.when_updated(initial_update: false) { callback = "callback called" }
       sleep(0.15)
 
       File.write(SETTINGS_PATH, EMPTY_SAMPLE_SETTINGS_YAML)
 
-      sleep(0.3)  # allow enough time for the listen gem to notify us of the changed file
+      sleep(0.5)  # allow enough time for the listen gem to notify us of the changed file
 
       matching_settings = process_monitor.untargeted_settings.matching_settings({})
-      expect(matching_settings.first.settings.json_doc).to eq({})
+      expect(matching_settings.first.settings.json_doc).to eq({}), callback
     end
   end
 
@@ -144,8 +146,8 @@ describe ProcessSettings::FileMonitor do
 
     describe "#when_updated" do
       it 'calls back to block once when registered (by default)' do
-        when_updated_proc_1 = Proc.new { true }
-        when_updated_proc_2 = Proc.new { true }
+        when_updated_proc_1 = -> { true }
+        when_updated_proc_2 = -> { true }
 
         expect(when_updated_proc_1).to receive(:call).with(process_monitor)
         expect(when_updated_proc_2).to receive(:call).with(process_monitor)
@@ -155,8 +157,8 @@ describe ProcessSettings::FileMonitor do
       end
 
       it 'calls back to block once when registered (initial_update: true)' do
-        when_updated_proc_1 = Proc.new { true }
-        when_updated_proc_2 = Proc.new { true }
+        when_updated_proc_1 = -> { true }
+        when_updated_proc_2 = -> { true }
 
         expect(when_updated_proc_1).to receive(:call).with(process_monitor)
         expect(when_updated_proc_2).to receive(:call).with(process_monitor)
@@ -166,8 +168,8 @@ describe ProcessSettings::FileMonitor do
       end
 
       it 'does not call back to block when registered (initial_update: false)' do
-        when_updated_proc_1 = Proc.new { true }
-        when_updated_proc_2 = Proc.new { true }
+        when_updated_proc_1 = -> { true }
+        when_updated_proc_2 = -> { true }
 
         expect(when_updated_proc_1).to_not receive(:call).with(process_monitor)
         expect(when_updated_proc_2).to_not receive(:call).with(process_monitor)
@@ -183,7 +185,7 @@ describe ProcessSettings::FileMonitor do
       end
 
       it 'is idempotent' do
-        when_updated_proc = Proc.new { true }
+        when_updated_proc = -> { true }
         expect(when_updated_proc).to receive(:call).with(process_monitor)
 
         process_monitor.when_updated(&when_updated_proc)
@@ -191,8 +193,8 @@ describe ProcessSettings::FileMonitor do
       end
 
       it 'calls back to each block when static_context changes' do
-        when_updated_proc_1 = Proc.new { true }
-        when_updated_proc_2 = Proc.new { true }
+        when_updated_proc_1 = -> { true }
+        when_updated_proc_2 = -> { true }
 
         expect(when_updated_proc_1).to receive(:call).with(process_monitor).exactly(2)
         expect(when_updated_proc_2).to receive(:call).with(process_monitor).exactly(2)
@@ -203,8 +205,8 @@ describe ProcessSettings::FileMonitor do
       end
 
       it 'calls back to each block when the file changes' do
-        when_updated_proc_1 = Proc.new { true }
-        when_updated_proc_2 = Proc.new { true }
+        when_updated_proc_1 = -> { true }
+        when_updated_proc_2 = -> { true }
 
         expect(when_updated_proc_1).to receive(:call).with(process_monitor).exactly(2)
         expect(when_updated_proc_2).to receive(:call).with(process_monitor).exactly(2)
@@ -214,12 +216,12 @@ describe ProcessSettings::FileMonitor do
 
         sleep(0.15)
         File.write(SETTINGS_PATH, EMPTY_SAMPLE_SETTINGS_YAML)
-        sleep(0.3)  # allow enough time for the listen gem to notify us of the changed file
+        sleep(0.5)  # allow enough time for the listen gem to notify us of the changed file
       end
 
       it 'does not call back to the blocks on a noop change' do
-        when_updated_proc_1 = Proc.new { true }
-        when_updated_proc_2 = Proc.new { true }
+        when_updated_proc_1 = -> { true }
+        when_updated_proc_2 = -> { true }
 
         expect(when_updated_proc_1).to receive(:call).with(process_monitor)
         expect(when_updated_proc_2).to receive(:call).with(process_monitor)
@@ -229,12 +231,12 @@ describe ProcessSettings::FileMonitor do
 
         sleep(0.15)
         File.write(SETTINGS_PATH, EAST_SETTINGS_YAML)
-        sleep(0.3)  # allow enough time for the listen gem to notify us of the changed file
+        sleep(0.5)  # allow enough time for the listen gem to notify us of the changed file
       end
 
       it "keeps going even if exceptions raised" do
-        when_updated_proc_1 = Proc.new { true }
-        when_updated_proc_2 = Proc.new { true }
+        when_updated_proc_1 = -> { true }
+        when_updated_proc_2 = -> { true }
 
         expect(when_updated_proc_1).to receive(:call).with(process_monitor).and_raise(StandardError, 'oops 1').exactly(2)
         expect(when_updated_proc_2).to receive(:call).with(process_monitor).and_raise(StandardError, 'oops 2').exactly(2)
@@ -247,7 +249,7 @@ describe ProcessSettings::FileMonitor do
 
         sleep(0.15)
         File.write(SETTINGS_PATH, EMPTY_SAMPLE_SETTINGS_YAML)
-        sleep(0.3)  # allow enough time for the listen gem to notify us of the changed file
+        sleep(0.5)  # allow enough time for the listen gem to notify us of the changed file
       end
     end
 
@@ -283,7 +285,7 @@ describe ProcessSettings::FileMonitor do
 
         File.write(SETTINGS_PATH, EMPTY_SAMPLE_SETTINGS_YAML)
 
-        sleep(0.3)  # allow enough time for the listen gem to notify us of the changed file
+        sleep(0.5)  # allow enough time for the listen gem to notify us of the changed file
 
         expect(callbacks).to eq([1, 2])
       end
@@ -314,7 +316,7 @@ describe ProcessSettings::FileMonitor do
 
         expect(callbacks).to eq([])
 
-        sleep(0.3)  # allow enough time for the listen gem to notify us of the changed file
+        sleep(0.5)  # allow enough time for the listen gem to notify us of the changed file
       end
     end
   end

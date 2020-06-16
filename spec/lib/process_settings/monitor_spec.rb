@@ -5,19 +5,19 @@ require 'logger'
 require 'support/shared_examples_for_monitors'
 
 describe ProcessSettings::Monitor do
-  SETTINGS_PATH = "./settings#{Process.pid}.yml"
-  SAMPLE_SETTINGS = [{ 'target' => true, 'settings' => { 'sip' => { 'enabled' => true } } }, { 'meta' => { 'version' => 19, 'END' => true } }].freeze
-  EAST_SETTINGS = [{ 'target' => { 'region' => 'east' }, 'settings' => { 'reject_call' => true } },
-                   { 'target' => true, 'settings' => { 'sip' => { 'enabled' => true } } },
-                   { 'target' => { 'caller_id' => ['+18003334444', '+18887776666']}, 'settings' => { 'reject_call' => false }},
-                   { 'target' => { 'region' => 'east', 'caller_id' => ['+18003334444', '+18887776666'] }, 'settings' => { 'collective' => true }},
-                   { 'meta' => { 'version' => 19, 'END' => true }}].freeze
-  EMPTY_SAMPLE_SETTINGS = [{ 'target' => true, 'settings' => {} }, { 'meta' => { 'version' => 19, 'END' => true }}].freeze
-  SAMPLE_SETTINGS_YAML = SAMPLE_SETTINGS.to_yaml
-  EAST_SETTINGS_YAML = EAST_SETTINGS.to_yaml
-  EMPTY_SAMPLE_SETTINGS_YAML = EMPTY_SAMPLE_SETTINGS.to_yaml
+  MONITOR_SETTINGS_PATH = "./settings#{Process.pid}.yml"
+  MONITOR_SAMPLE_SETTINGS = [{ 'target' => true, 'settings' => { 'sip' => { 'enabled' => true } } }, { 'meta' => { 'version' => 19, 'END' => true } }].freeze
+  MONITOR_EAST_SETTINGS = [{ 'target' => { 'region' => 'east' }, 'settings' => { 'reject_call' => true } },
+                           { 'target' => true, 'settings' => { 'sip' => { 'enabled' => true } } },
+                           { 'target' => { 'caller_id' => ['+18003334444', '+18887776666']}, 'settings' => { 'reject_call' => false }},
+                           { 'target' => { 'region' => 'east', 'caller_id' => ['+18003334444', '+18887776666'] }, 'settings' => { 'collective' => true }},
+                           { 'meta' => { 'version' => 19, 'END' => true }}].freeze
+  MONITOR_EMPTY_MONITOR_SAMPLE_SETTINGS = [{ 'target' => true, 'settings' => {} }, { 'meta' => { 'version' => 19, 'END' => true }}].freeze
+  MONITOR_SAMPLE_SETTINGS_YAML = MONITOR_SAMPLE_SETTINGS.to_yaml
+  MONITOR_EAST_SETTINGS_YAML = MONITOR_EAST_SETTINGS.to_yaml
+  MONITOR_EMPTY_MONITOR_SAMPLE_SETTINGS_YAML = MONITOR_EMPTY_MONITOR_SAMPLE_SETTINGS.to_yaml
 
-  let(:logger) { Logger.new(STDERR).tap { |logger| logger.level = ::Logger::ERROR } }
+  let(:logger) { Logger.new('/dev/null').tap { |logger| logger.level = ::Logger::ERROR } }
 
   RSpec.configuration.before(:each) do
     Listen.stop
@@ -28,15 +28,22 @@ describe ProcessSettings::Monitor do
   end
 
   describe "default behavior" do
-    before { File.write(settings_file, EAST_SETTINGS_YAML) }
+    before { File.write(settings_file, MONITOR_EAST_SETTINGS_YAML) }
     after  { FileUtils.rm_f(settings_file) }
 
-    let(:settings_file) { File.expand_path(SETTINGS_PATH, __dir__) }
-    let(:monitor) { described_class.new(settings_file, logger: logger) }
+    before do
+      allow(ActiveSupport::Deprecation).to receive(:warn).with(anything, :initialize)
+      allow_any_instance_of(ActiveSupport::Deprecation).to receive(:warn).with("initialize is deprecated and will be removed from ProcessSettings 1.0", anything)
+    end
+
+    let(:settings_file) { File.expand_path(MONITOR_SETTINGS_PATH, __dir__) }
+    let(:monitor) do
+      described_class.new(settings_file, logger: logger)
+    end
 
     it_should_behave_like(
       "AbstractMonitor",
-      File.expand_path(SETTINGS_PATH, __dir__),
+      File.expand_path(MONITOR_SETTINGS_PATH, __dir__),
       Logger.new(STDERR).tap { |logger| logger.level = ::Logger::ERROR },
       ['sip', 'enabled']
     )
@@ -50,14 +57,18 @@ describe ProcessSettings::Monitor do
 
   describe "class methods" do
     describe '[] operator' do
-      subject(:process_monitor) { described_class.new(SETTINGS_PATH, logger: logger) }
+      subject(:process_monitor) do
+        allow(ActiveSupport::Deprecation).to receive(:warn).with(anything, :initialize)
+        allow_any_instance_of(ActiveSupport::Deprecation).to receive(:warn).with("initialize is deprecated and will be removed from ProcessSettings 1.0", anything)
+        described_class.new(MONITOR_SETTINGS_PATH, logger: logger)
+      end
 
       before do
-        File.write(SETTINGS_PATH, EAST_SETTINGS_YAML)
+        File.write(MONITOR_SETTINGS_PATH, MONITOR_EAST_SETTINGS_YAML)
       end
 
       after do
-        FileUtils.rm_f(SETTINGS_PATH)
+        FileUtils.rm_f(MONITOR_SETTINGS_PATH)
       end
 
       it 'delegates to the current monitor instance' do
@@ -82,6 +93,7 @@ describe ProcessSettings::Monitor do
       end
 
       it "should raise an exception if not configured" do
+        allow_any_instance_of(ActiveSupport::Deprecation).to receive(:warn).with(any_args)
         described_class.file_path = nil
 
         expect do
@@ -90,6 +102,7 @@ describe ProcessSettings::Monitor do
       end
 
       it "should raise an exception if logger not set" do
+        allow_any_instance_of(ActiveSupport::Deprecation).to receive(:warn).with(any_args)
         described_class.file_path = "./spec/fixtures/production/combined_process_settings.yml"
 
         expect do
@@ -98,6 +111,7 @@ describe ProcessSettings::Monitor do
       end
 
       it "should not raise an exception about file_path or logger if configured" do
+        allow_any_instance_of(ActiveSupport::Deprecation).to receive(:warn).with(any_args)
         described_class.file_path = nil
         described_class.logger = nil
         instance_stub = Object.new
@@ -107,12 +121,14 @@ describe ProcessSettings::Monitor do
       end
 
       it "logger = should set the Listen logger" do
+        allow_any_instance_of(ActiveSupport::Deprecation).to receive(:warn).with(any_args)
         Listen.logger = nil
         described_class.logger = logger
         expect(Listen.logger).to be(logger)
       end
 
       it "logger = should leave the Listen logger alone if already set" do
+        allow_any_instance_of(ActiveSupport::Deprecation).to receive(:warn).with(any_args)
         existing_logger = Logger.new(STDOUT)
         Listen.logger = existing_logger
         described_class.logger = logger
@@ -121,6 +137,7 @@ describe ProcessSettings::Monitor do
       end
 
       it "should return a global instance" do
+        allow_any_instance_of(ActiveSupport::Deprecation).to receive(:warn).with(any_args)
         described_class.file_path = "./spec/fixtures/production/combined_process_settings.yml"
         described_class.logger = logger
 
@@ -132,15 +149,16 @@ describe ProcessSettings::Monitor do
       end
 
       it "should start listener depending on DISABLE_LISTEN_CHANGE_MONITORING variable" do
-        described_class.file_path = "./spec/fixtures/production/combined_process_settings.yml"
-        described_class.logger = logger
+        allow_any_instance_of(ActiveSupport::Deprecation).to receive(:warn).with(any_args)
+        file_path = "./spec/fixtures/production/combined_process_settings.yml"
 
+        allow(ENV).to receive(:[]).with("SERVICE_ENV").and_return("test")
         allow(ENV).to receive(:[]).with("DISABLE_LISTEN_CHANGE_MONITORING").and_return("1")
-        instance = described_class.instance
-        expect(instance.instance_variable_get(:@listener).state).to eq(:initializing)
-        described_class.clear_instance
-        allow(ENV).to receive(:[]).with("DISABLE_LISTEN_CHANGE_MONITORING").and_return(nil)
-        instance = described_class.instance
+        instance = ProcessSettings::FileMonitor.new(file_path, logger: logger)
+        expect(instance.instance_variable_get(:@listener)).to be_nil
+        allow(ENV).to receive(:[]).with("SERVICE_ENV").and_return(nil)
+        allow(ENV).to receive(:[]).with("DISABLE_LISTEN_CHANGE_MONITORING").and_return("0")
+        instance = ProcessSettings::FileMonitor.new(file_path, logger: logger)
         expect(instance.instance_variable_get(:@listener).state).to eq(:processing_events)
       end
     end
@@ -151,6 +169,7 @@ describe ProcessSettings::Monitor do
       end
 
       it "stores nil into instance" do
+        allow_any_instance_of(ActiveSupport::Deprecation).to receive(:warn).with(any_args)
         described_class.instance
         expect(described_class.instance_variable_get(:@instance)).to be
         described_class.instance = nil
@@ -164,6 +183,7 @@ describe ProcessSettings::Monitor do
       end
 
       it "stores value into instance" do
+        allow_any_instance_of(ActiveSupport::Deprecation).to receive(:warn).with(any_args)
         new_instance = Object.new
         described_class.instance = new_instance
         expect(described_class.instance).to be(new_instance)
@@ -173,23 +193,25 @@ describe ProcessSettings::Monitor do
 
   describe "#untargeted_settings" do
     before do
-      File.write(SETTINGS_PATH, SAMPLE_SETTINGS_YAML)
+      File.write(MONITOR_SETTINGS_PATH, MONITOR_SAMPLE_SETTINGS_YAML)
     end
 
     after do
-      FileUtils.rm_f(SETTINGS_PATH)
+      FileUtils.rm_f(MONITOR_SETTINGS_PATH)
     end
 
     it "should read from disk the first time" do
-      process_monitor = described_class.new(SETTINGS_PATH, logger: logger)
+      allow_any_instance_of(ActiveSupport::Deprecation).to receive(:warn).with(any_args)
+      process_monitor = described_class.new(MONITOR_SETTINGS_PATH, logger: logger)
       matching_settings = process_monitor.untargeted_settings.matching_settings({})
       expect(matching_settings.size).to eq(1)
-      expect(matching_settings.first.target.json_doc).to eq(SAMPLE_SETTINGS.first['target'])
-      expect(matching_settings.first.settings.instance_variable_get(:@json_doc)).to eq(SAMPLE_SETTINGS.first['settings'])
+      expect(matching_settings.first.target.json_doc).to eq(MONITOR_SAMPLE_SETTINGS.first['target'])
+      expect(matching_settings.first.settings.instance_variable_get(:@json_doc)).to eq(MONITOR_SAMPLE_SETTINGS.first['settings'])
     end
 
-    { modified: [File.expand_path(SETTINGS_PATH), [], []], added: [[], File.expand_path(SETTINGS_PATH), []] }.each do |type, args|
+    { modified: [File.expand_path(MONITOR_SETTINGS_PATH), [], []], added: [[], File.expand_path(MONITOR_SETTINGS_PATH), []] }.each do |type, args|
       it "should re-read from disk when callback triggered with #{type}" do
+        allow_any_instance_of(ActiveSupport::Deprecation).to receive(:warn).with(any_args)
         file_change_notifier_stub = Object.new
         class << file_change_notifier_stub
           def to(path)
@@ -206,7 +228,7 @@ describe ProcessSettings::Monitor do
         expect(file_change_notifier_stub).to receive(:to).with(File.expand_path('.')) { |&blk| block = blk; listener_stub }
         expect_any_instance_of(ProcessSettings::Monitor).to receive(:file_change_notifier) { file_change_notifier_stub }
 
-        process_monitor = described_class.new(SETTINGS_PATH, logger: logger)
+        process_monitor = described_class.new(MONITOR_SETTINGS_PATH, logger: logger)
 
         expect(process_monitor).to receive(:load_untargeted_settings) { }
 
@@ -215,7 +237,8 @@ describe ProcessSettings::Monitor do
     end
 
     it "should re-read from disk when watcher triggered" do
-      process_monitor = described_class.new(SETTINGS_PATH, logger: logger)
+      allow_any_instance_of(ActiveSupport::Deprecation).to receive(:warn).with(any_args)
+      process_monitor = described_class.new(MONITOR_SETTINGS_PATH, logger: logger)
 
       matching_settings = process_monitor.untargeted_settings.matching_settings({})
       expect(matching_settings.size).to eq(1)
@@ -223,9 +246,9 @@ describe ProcessSettings::Monitor do
 
       sleep(0.15)
 
-      File.write(SETTINGS_PATH, EMPTY_SAMPLE_SETTINGS_YAML)
+      File.write(MONITOR_SETTINGS_PATH, MONITOR_EMPTY_MONITOR_SAMPLE_SETTINGS_YAML)
 
-      sleep(0.3)  # allow enough time for the listen gem to notify us of the changed file
+      sleep(0.5)  # allow enough time for the listen gem to notify us of the changed file
 
       matching_settings = process_monitor.untargeted_settings.matching_settings({})
       expect(matching_settings.first.settings.json_doc).to eq({})
@@ -233,14 +256,18 @@ describe ProcessSettings::Monitor do
   end
 
   context "with process_settings" do
-    subject(:process_monitor) { described_class.new(SETTINGS_PATH, logger: logger) }
+    subject(:process_monitor) do
+      allow(ActiveSupport::Deprecation).to receive(:warn).with(anything, :initialize)
+      allow_any_instance_of(ActiveSupport::Deprecation).to receive(:warn).with(any_args)
+      described_class.new(MONITOR_SETTINGS_PATH, logger: logger)
+    end
 
     before do
-      File.write(SETTINGS_PATH, EAST_SETTINGS_YAML)
+      File.write(MONITOR_SETTINGS_PATH, MONITOR_EAST_SETTINGS_YAML)
     end
 
     after do
-      FileUtils.rm_f(SETTINGS_PATH)
+      FileUtils.rm_f(MONITOR_SETTINGS_PATH)
     end
 
     describe "#static_context =" do
@@ -266,37 +293,41 @@ describe ProcessSettings::Monitor do
     end
 
     describe "#when_updated" do
+      subject(:process_monitor) do
+        allow(ActiveSupport::Deprecation).to receive(:warn).with(anything, :initialize)
+        allow_any_instance_of(ActiveSupport::Deprecation).to receive(:warn).with(any_args)
+        described_class.new(MONITOR_SETTINGS_PATH, logger: logger, environment: 'development') # development so we can test monitoring
+      end
+
       it 'calls back to block once when registered (by default)' do
-        when_updated_proc_1 = Proc.new { true }
-        when_updated_proc_2 = Proc.new { true }
+        callback_counts = Hash.new(0)
+        when_updated_proc_A = ->(_process_settings_monitor) { callback_counts[:A] += 1; true }
+        when_updated_proc_B = ->(_process_settings_monitor) { callback_counts[:B] += 1; true }
 
-        expect(when_updated_proc_1).to receive(:call).with(process_monitor)
-        expect(when_updated_proc_2).to receive(:call).with(process_monitor)
+        process_monitor.when_updated(&when_updated_proc_A)
+        process_monitor.when_updated(&when_updated_proc_B)
 
-        process_monitor.when_updated(&when_updated_proc_1)
-        process_monitor.when_updated(&when_updated_proc_2)
+        expect(callback_counts).to eq(A: 1, B: 1)
       end
 
       it 'calls back to block once when registered (initial_update: true)' do
-        when_updated_proc_1 = Proc.new { true }
-        when_updated_proc_2 = Proc.new { true }
+        callback_counts = Hash.new(0)
+        when_updated_proc_A = ->(_process_settings_monitor) { callback_counts[:A] += 1; true }
+        when_updated_proc_B = ->(_process_settings_monitor) { callback_counts[:B] += 1; true }
 
-        expect(when_updated_proc_1).to receive(:call).with(process_monitor)
-        expect(when_updated_proc_2).to receive(:call).with(process_monitor)
-
-        process_monitor.when_updated(initial_update: true, &when_updated_proc_1)
-        process_monitor.when_updated(initial_update: true, &when_updated_proc_2)
+        process_monitor.when_updated(initial_update: true, &when_updated_proc_A)
+        process_monitor.when_updated(initial_update: true, &when_updated_proc_B)
       end
 
       it 'does not call back to block when registered (initial_update: false)' do
-        when_updated_proc_1 = Proc.new { true }
-        when_updated_proc_2 = Proc.new { true }
+        callback_counts = Hash.new(0)
+        when_updated_proc_A = ->(_process_settings_monitor) { callback_counts[:A] += 1; true }
+        when_updated_proc_B = ->(_process_settings_monitor) { callback_counts[:B] += 1; true }
 
-        expect(when_updated_proc_1).to_not receive(:call).with(process_monitor)
-        expect(when_updated_proc_2).to_not receive(:call).with(process_monitor)
+        process_monitor.when_updated(initial_update: false, &when_updated_proc_A)
+        process_monitor.when_updated(initial_update: false, &when_updated_proc_B)
 
-        process_monitor.when_updated(initial_update: false, &when_updated_proc_1)
-        process_monitor.when_updated(initial_update: false, &when_updated_proc_2)
+        expect(callback_counts).to eq({})
       end
 
       it 'passes the current instance to the block for initial update' do
@@ -306,71 +337,73 @@ describe ProcessSettings::Monitor do
       end
 
       it 'is idempotent' do
-        when_updated_proc = Proc.new { true }
-        expect(when_updated_proc).to receive(:call).with(process_monitor)
+        callback_counts = Hash.new(0)
+        when_updated_proc_A = ->(_process_settings_monitor) { callback_counts[:A] += 1; true }
 
-        process_monitor.when_updated(&when_updated_proc)
-        process_monitor.when_updated(&when_updated_proc)
+        process_monitor.when_updated(&when_updated_proc_A)
+        process_monitor.when_updated(&when_updated_proc_A)
+
+        expect(callback_counts).to eq(A: 1)
       end
 
       it 'calls back to each block when static_context changes' do
-        when_updated_proc_1 = Proc.new { true }
-        when_updated_proc_2 = Proc.new { true }
+        callback_counts = Hash.new(0)
+        when_updated_proc_A = ->(_process_settings_monitor) { callback_counts[:A] += 1; true }
+        when_updated_proc_B = ->(_process_settings_monitor) { callback_counts[:B] += 1; true }
 
-        expect(when_updated_proc_1).to receive(:call).with(process_monitor).exactly(2)
-        expect(when_updated_proc_2).to receive(:call).with(process_monitor).exactly(2)
-
-        process_monitor.when_updated(&when_updated_proc_1)
-        process_monitor.when_updated(&when_updated_proc_2)
+        process_monitor.when_updated(&when_updated_proc_A)
+        process_monitor.when_updated(&when_updated_proc_B)
         process_monitor.static_context = { 'region' => 'west' }
+
+        expect(callback_counts).to eq(A: 2, B: 2)
       end
 
       it 'calls back to each block when the file changes' do
-        when_updated_proc_1 = Proc.new { true }
-        when_updated_proc_2 = Proc.new { true }
+        callback_counts = Hash.new(0)
+        when_updated_proc_A = ->(_process_settings_monitor) { callback_counts[:A] += 1; true }
+        when_updated_proc_B = ->(_process_settings_monitor) { callback_counts[:B] += 1; true }
 
-        expect(when_updated_proc_1).to receive(:call).with(process_monitor).exactly(2)
-        expect(when_updated_proc_2).to receive(:call).with(process_monitor).exactly(2)
-
-        process_monitor.when_updated(&when_updated_proc_1)
-        process_monitor.when_updated(&when_updated_proc_2)
+        process_monitor.when_updated(&when_updated_proc_A)
+        process_monitor.when_updated(&when_updated_proc_B)
 
         sleep(0.15)
-        File.write(SETTINGS_PATH, EMPTY_SAMPLE_SETTINGS_YAML)
-        sleep(0.3)  # allow enough time for the listen gem to notify us of the changed file
+        File.write(MONITOR_SETTINGS_PATH, MONITOR_EMPTY_MONITOR_SAMPLE_SETTINGS_YAML)
+        sleep(0.5)  # allow enough time for the listen gem to notify us of the changed file
+
+        expect(callback_counts).to eq(A: 2, B: 2)
       end
 
       it 'does not call back to the blocks on a noop change' do
-        when_updated_proc_1 = Proc.new { true }
-        when_updated_proc_2 = Proc.new { true }
+        callback_counts = Hash.new(0)
+        when_updated_proc_A = ->(_process_settings_monitor) { callback_counts[:A] += 1; true }
+        when_updated_proc_B = ->(_process_settings_monitor) { callback_counts[:B] += 1; true }
 
-        expect(when_updated_proc_1).to receive(:call).with(process_monitor)
-        expect(when_updated_proc_2).to receive(:call).with(process_monitor)
-
-        process_monitor.when_updated(&when_updated_proc_1)
-        process_monitor.when_updated(&when_updated_proc_2)
+        process_monitor.when_updated(&when_updated_proc_A)
+        process_monitor.when_updated(&when_updated_proc_B)
 
         sleep(0.15)
-        File.write(SETTINGS_PATH, EAST_SETTINGS_YAML)
-        sleep(0.3)  # allow enough time for the listen gem to notify us of the changed file
+        File.write(MONITOR_SETTINGS_PATH, MONITOR_EAST_SETTINGS_YAML)
+        sleep(0.5)  # allow enough time for the listen gem to notify us of the changed file
+
+        expect(callback_counts).to eq(A: 1, B: 1)
       end
 
       it "keeps going even if exceptions raised" do
-        when_updated_proc_1 = Proc.new { true }
-        when_updated_proc_2 = Proc.new { true }
+        callback_counts = Hash.new(0)
+        when_updated_proc_A = ->(_process_settings_monitor) { callback_counts[:A] += 1; raise StandardError, 'oops A' }
+        when_updated_proc_B = ->(_process_settings_monitor) { callback_counts[:B] += 1; raise StandardError, 'oops B' }
 
-        expect(when_updated_proc_1).to receive(:call).with(process_monitor).and_raise(StandardError, 'oops 1').exactly(2)
-        expect(when_updated_proc_2).to receive(:call).with(process_monitor).and_raise(StandardError, 'oops 2').exactly(2)
+        process_monitor.when_updated(&when_updated_proc_A)
+        process_monitor.when_updated(&when_updated_proc_B)
 
-        process_monitor.when_updated(&when_updated_proc_1)
-        process_monitor.when_updated(&when_updated_proc_2)
-
-        expect(logger).to receive(:error).with("ProcessSettings::Monitor#call_when_updated_blocks rescued exception:\nStandardError: oops 1")
-        expect(logger).to receive(:error).with("ProcessSettings::Monitor#call_when_updated_blocks rescued exception:\nStandardError: oops 2")
+        expect(logger).to receive(:error).with("ProcessSettings::Monitor#call_when_updated_blocks rescued exception:\nStandardError: oops A")
+        expect(logger).to receive(:error).with("ProcessSettings::Monitor#call_when_updated_blocks rescued exception:\nStandardError: oops B")
 
         sleep(0.15)
-        File.write(SETTINGS_PATH, EMPTY_SAMPLE_SETTINGS_YAML)
-        sleep(0.3)  # allow enough time for the listen gem to notify us of the changed file
+        File.write(MONITOR_SETTINGS_PATH, MONITOR_EMPTY_MONITOR_SAMPLE_SETTINGS_YAML)
+        sleep(0.5)  # allow enough time for the listen gem to notify us of the changed file
+
+        expect(callback_counts).to eq(A: 2, B: 2)
       end
     end
 
@@ -404,9 +437,9 @@ describe ProcessSettings::Monitor do
 
         sleep(0.15)
 
-        File.write(SETTINGS_PATH, EMPTY_SAMPLE_SETTINGS_YAML)
+        File.write(MONITOR_SETTINGS_PATH, MONITOR_EMPTY_MONITOR_SAMPLE_SETTINGS_YAML)
 
-        sleep(0.3)  # allow enough time for the listen gem to notify us of the changed file
+        sleep(0.5)  # allow enough time for the listen gem to notify us of the changed file
 
         expect(callbacks).to eq([1, 2])
       end
@@ -417,7 +450,7 @@ describe ProcessSettings::Monitor do
         callback_1
         callback_2
 
-        File.write(SETTINGS_PATH, EAST_SETTINGS_YAML)
+        File.write(MONITOR_SETTINGS_PATH, MONITOR_EAST_SETTINGS_YAML)
 
         expect(callbacks).to eq([])
       end
@@ -433,24 +466,28 @@ describe ProcessSettings::Monitor do
 
         sleep(0.15)
 
-        File.write(SETTINGS_PATH, EMPTY_SAMPLE_SETTINGS_YAML)
+        File.write(MONITOR_SETTINGS_PATH, MONITOR_EMPTY_MONITOR_SAMPLE_SETTINGS_YAML)
 
         expect(callbacks).to eq([])
 
-        sleep(0.3)  # allow enough time for the listen gem to notify us of the changed file
+        sleep(0.5)  # allow enough time for the listen gem to notify us of the changed file
       end
     end
   end
 
   describe "#statically_targeted_settings" do
-    let(:process_monitor) { described_class.new(SETTINGS_PATH, logger: logger) }
+    let(:process_monitor) do
+      allow(ActiveSupport::Deprecation).to receive(:warn).with(any_args)
+      allow_any_instance_of(ActiveSupport::Deprecation).to receive(:warn).with(any_args)
+      described_class.new(MONITOR_SETTINGS_PATH, logger: logger)
+    end
 
     before do
-      File.write(SETTINGS_PATH, EAST_SETTINGS_YAML)
+      File.write(MONITOR_SETTINGS_PATH, MONITOR_EAST_SETTINGS_YAML)
     end
 
     after do
-      FileUtils.rm_f(SETTINGS_PATH)
+      FileUtils.rm_f(MONITOR_SETTINGS_PATH)
     end
 
     it "keeps all entries when targeted" do
@@ -489,14 +526,18 @@ describe ProcessSettings::Monitor do
   end
 
   describe "#targeted_value" do
-    let(:process_monitor) { described_class.new(SETTINGS_PATH, logger: logger) }
+    let(:process_monitor) do
+      allow(ActiveSupport::Deprecation).to receive(:warn).with(anything, :initialize)
+      allow_any_instance_of(ActiveSupport::Deprecation).to receive(:warn).with("initialize is deprecated and will be removed from ProcessSettings 1.0", anything)
+      described_class.new(MONITOR_SETTINGS_PATH, logger: logger)
+    end
 
     before do
-      File.write(SETTINGS_PATH, EAST_SETTINGS_YAML)
+      File.write(MONITOR_SETTINGS_PATH, MONITOR_EAST_SETTINGS_YAML)
     end
 
     after do
-      FileUtils.rm_f(SETTINGS_PATH)
+      FileUtils.rm_f(MONITOR_SETTINGS_PATH)
     end
 
     it "should respect static targeting with dynamic overrides" do

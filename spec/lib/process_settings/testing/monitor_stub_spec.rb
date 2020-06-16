@@ -13,7 +13,10 @@ describe ProcessSettings::Testing::MonitorStub do
                       status_change_min_days: 10
                   EOS
 
-  subject { ProcessSettings::Testing::MonitorStub.new(SETTINGS_HASH) }
+  subject do
+    allow(ActiveSupport::Deprecation).to receive(:warn).with("ProcessSettings::Testing::MonitorStub is deprecated and will be removed in future versions. Use ProcessSettings::Testing::Monitor instead.", anything)
+    ProcessSettings::Testing::MonitorStub.new(SETTINGS_HASH)
+  end
 
   describe "#targeted_value" do
     it "returns values when found" do

@@ -21,25 +21,25 @@ gem 'process_settings', '~> 0.4'
 ```
 
 ## Usage
-The `ProcessSettings::Monitor` and related classes can be freely created and used at any time.
-But typical usage is through the `ProcessSettings::Monitor.instance`.
+The `ProcessSettings::FileMonitor` and related classes can be freely created and used at any time.
+But typical usage is through the `ProcessSettings.instance`.
 That should be configured at process startup before use.
 ### Configuration
-Before using `ProcessSettings::Monitor.instance`, you must first configure the path to the combined process settings file on disk,
+Before using `ProcessSettings.instance`, you must first configure the path to the combined process settings file on disk,
 and provide a logger.
 ```ruby
 require 'process_settings'
 
-ProcessSettings::Monitor.file_path = "/etc/process_settings/combined_process_settings.yml"
-ProcessSettings::Monitor.logger = logger
+ProcessSettings.instance = ProcessSettings::FileMonitor.new("/etc/process_settings/combined_process_settings.yml",
+                                                            logger: logger)
 ```
-### Monitor Initialization
-The `ProcessSettings::Monitor` is a hybrid singleton. The class attribute `instance` returns
-the current instance. If not already set, this is lazy-created based on the above configuration.
+### Instance Initialization
+The `ProcessSettings` is a hybrid singleton. The class attribute `instance` returns
+the current instance as set at configuration time. Deprecated: If not already set, this is lazy-created based on the above configuration.
 
 The monitor should be initialized with static (unchanging) context for your process:
 ```
-ProcessSettings::Monitor.static_context = {
+ProcessSettings.instance.static_context = {
   "service_name" => "frontend",
   "datacenter" => "AWS-US-EAST-1"
 }
@@ -76,7 +76,7 @@ log_level = ProcessSettings['frontend', 'log_level']
 => "info"
 ```
 #### ProcessSettings[] interface
-The `ProcessSettings[]` method delegates to `ProcessSettings::Monitor#[]` on the `instance`.
+The `ProcessSettings[]` method delegates to `ProcessSettings.instance#[]` on the `instance`.
 
 `[]` interface:
 
@@ -114,22 +114,22 @@ http_version = ProcessSettings['frontend', 'http_version', required: false] || 2
 
 ### Dynamic Settings
 
-The `ProcessSettings::Monitor` loads settings changes dynamically whenever the file changes,
+The `ProcessSettings::FileMonitor` loads settings changes dynamically whenever the file changes,
 by using the [listen](https://github.com/guard/listen) gem which in turn uses the `INotify` module of the Linux kernel, or `FSEvents` on MacOS. There is no need to restart the process or send it a signal to tell it to reload changes.
 
 There are two ways to get access the latest settings from inside the process:
 
 #### Read Latest Setting Through `ProcessSettings[]`
 
-The simplest approach--as shown above--is to read the latest settings at any time through `ProcessSettings[]` (which delegates to `ProcessSettings::Monitor.instance`):
+The simplest approach--as shown above--is to read the latest settings at any time through `ProcessSettings[]` (which delegates to `ProcessSettings.instance`):
 ```
 http_version = ProcessSettings['frontend', 'http_version']
 ```
 
 #### Register an `on_change` Callback
-Alternatively, if you need to execute some code when there is a change, register a callback with `ProcessSettings::Monitor#on_change`:
+Alternatively, if you need to execute some code when there is a change, register a callback with `ProcessSettings.instance#on_change`:
 ```
-ProcessSettings::Monitor.instance.on_change do
+ProcessSettings.instance.on_change do
   logger.level = ProcessSettings['frontend', 'log_level']
 end
 ```
@@ -166,7 +166,7 @@ The settings YAML files are always combined in alphabetical order by file path. 
 ### Testing
 For testing, it is often necessary to set a specific override hash for the process_settings values to use in
 that use case.  The `ProcessSettings::Testing::Helpers` module is provided for this purpose.  It can be used to
-override a specific hash of process settings, while leving the rest in tact, and resetting back to the defaults
+override a specific hash of process settings, while leaving the rest intact, and resetting back to the defaults
 after the test case is over.  Here are some examples using various testing frameworks:
 
 #### RSpec
@@ -179,10 +179,7 @@ RSpec.configure do |config|
 
   include ProcessSettings::Testing::Helpers
 
-  after do
-   reset_process_settings
-  end
-
+  # Note: the include above will automatically register a global after block that will reset process_settings to their initial values.
   # ...
 end
 ```
@@ -205,12 +202,12 @@ end
 require 'process_settings/testing/helpers'
 
 context SomeClass do
+  include ProcessSettings::Testing::Helpers
+
+  # Note: the include above will automatically register a teardown block that will reset process_settings to their initial values.
+
   setup do
     stub_process_settings(honeypot: { answer_odds: 100 })
-  end
-
-  teardown do
-    reset_process_settings
   end
 
   # ...

@@ -4,6 +4,33 @@ Inspired by [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 Note: this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.11.0] - Unreleased
+### Added
+- `ProcessSettings::Testing::Helpers` now automatically registers an `after`/`teardown` block to
+  set `ProcessSettings.instance` back to the default that was there before it was optionally
+  overridden by `stub_process_settings`.
+- `ProcessSettings::FileMonitor.initialize` now accepts an optional keyword argument `environment:`.
+  This is an environment string like can be found in `Rails.env` for Rails applications.
+  It is used to infer to disable the listen thread in the 'test' environment.
+  If left to its default of `nil`, the environment is inferred by the first of these values that is present:
+  1. `Rails.env` (if available)
+  2. `ENV['RAILS_ENV']`
+  3. `ENV['SERVICE_ENV']`
+- `ProcessSettings::FileMonitor#listen_thread_running?` indicates whether the listen thread
+  is running.
+
+### Changed
+- Moved deprecation from `#initialize` up to `.new` so that warning will point to caller.
+- Deprecated public `FileMonitor#start` method. This will become `private` in v1.0.
+- Deprecated lazy `ProcessSettings#instance` explicitly so that warning will point to caller.
+- Cleaned up noisy spec output including deprecation warnings.
+- Explicit contract enforcement: `raise ArgumentError` if logger: passed as `nil`.
+- Allow 'true' ('1') or 'false' ('0') values for `ENV['DISABLE_LISTEN_CHANGE_MONITORING']`;
+  default to 'false' when `Rails.env || ENV['SERVICE_ENV']) == 'test'`.
+
+### Fixed
+- Fixed memoization of `Target.true_target`.
+
 ## [0.10.5] - 2020-05-27
 ### Fixed
 - Fixed bug where setting a monitor instance at the `ProcessSettings` and the `ProcessSettings::Monitor`
@@ -85,6 +112,7 @@ switching the script to use `Tempdir` for generating temporary file name
 - `ProcessSettings::Monitor.on_change` has been deprecated; it will be removed in version `1.0.0`.
   `ProcessSettings::Monitor.when_updated` should be used instead.
 
+[0.11.0]: https://github.com/Invoca/process_settings/compare/v0.10.5...v0.11.0
 [0.10.5]: https://github.com/Invoca/process_settings/compare/v0.10.4...v0.10.5
 [0.10.4]: https://github.com/Invoca/process_settings/compare/v0.10.3...v0.10.4
 [0.10.3]: https://github.com/Invoca/process_settings/compare/v0.10.2...v0.10.3

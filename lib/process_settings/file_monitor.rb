@@ -3,6 +3,7 @@
 require 'active_support'
 require 'listen'
 require 'psych'
+require 'active_support/deprecation'
 
 require 'process_settings/abstract_monitor'
 require 'process_settings/targeted_settings'
@@ -12,7 +13,7 @@ module ProcessSettings
   class FileMonitor < AbstractMonitor
     attr_reader :file_path, :untargeted_settings
 
-    def initialize(file_path, logger:)
+    def initialize(file_path, logger:, environment: nil)
       super(logger: logger)
 
       @file_path = File.expand_path(file_path)
@@ -20,32 +21,61 @@ module ProcessSettings
       @untargeted_settings = nil
       @last_untargetted_settings = nil
 
-      start
+      start_internal(enable_listen_thread?(environment))
     end
 
-    # starts listening for changes
-    # Note: This method creates a new thread that will be monitoring for changes
-    #       do to the nature of how the Listen gem works, there is no record of
-    #       existing threads, calling this mutliple times will result in spinning off
-    #       multiple listen threads and will have unknow effects
     def start
-      path = File.dirname(file_path)
+      start_internal(enable_listen_thread?)
+    end
+    deprecate :start, deprecator: ActiveSupport::Deprecation.new('1.0', 'ProcessSettings') # will become private
 
-      # to eliminate any race condition:
-      # 1. set up file watcher
-      # 2. start it (this should trigger if any changes have been made since (1))
-      # 3. load the file
+    def listen_thread_running?
+      !@listener.nil?
+    end
 
-      @listener = file_change_notifier.to(path) do |modified, added, _removed|
-        if modified.include?(file_path) || added.include?(file_path)
-          logger.info("ProcessSettings::Monitor file #{file_path} changed. Reloading.")
-          load_untargeted_settings
+    private
 
-          load_statically_targeted_settings
-        end
+    def enable_listen_thread?(environment = nil)
+      !disable_listen_thread?(environment)
+    end
+
+    def disable_listen_thread?(environment = nil)
+      case ENV['DISABLE_LISTEN_CHANGE_MONITORING']
+      when 'true', '1'
+        true
+      when 'false', '0'
+        false
+      when nil
+        (environment || service_env) == 'test'
+      else
+        raise ArgumentError, "DISABLE_LISTEN_CHANGE_MONITORING has unknown value #{ENV['DISABLE_LISTEN_CHANGE_MONITORING'].inspect}"
       end
+    end
 
-      unless ENV['DISABLE_LISTEN_CHANGE_MONITORING']
+    # optionally starts listening for changes, then loads current settings
+    # Note: If with_listen_thread is truthy, this method creates a new thread that will be
+    #       monitoring for changes.
+    #       Due to how the Listen gem works, there is no record of
+    #       existing threads; calling this multiple times will result in spinning off
+    #       multiple listen threads and will have unknown effects.
+    def start_internal(with_listen_thread)
+      if with_listen_thread
+        path = File.dirname(file_path)
+
+        # to eliminate any race condition:
+        # 1. set up file watcher
+        # 2. start it (this should trigger if any changes have been made since (1))
+        # 3. load the file
+
+        @listener = file_change_notifier.to(path) do |modified, added, _removed|
+          if modified.include?(file_path) || added.include?(file_path)
+            logger.info("ProcessSettings::Monitor file #{file_path} changed. Reloading.")
+            load_untargeted_settings
+
+            load_statically_targeted_settings
+          end
+        end
+
         @listener.start
       end
 
@@ -56,9 +86,14 @@ module ProcessSettings
     # stops listening for changes
     def stop
       @listener&.stop
+      @listener = nil
     end
 
-    private
+    def service_env
+      if defined?(Rails) && Rails.respond_to?(:env)
+        Rails.env
+      end || ENV['RAILS_ENV'] || ENV['SERVICE_ENV']
+    end
 
     # Loads the most recent settings from disk
     def load_untargeted_settings

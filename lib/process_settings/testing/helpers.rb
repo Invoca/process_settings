@@ -9,7 +9,20 @@ require 'process_settings/testing/monitor'
 module ProcessSettings
   module Testing
     module Helpers
+      class << self
+        def included(including_klass)
+          after_method =
+            if including_klass.respond_to?(:teardown)
+              :teardown
+            else
+              :after
+            end
 
+          including_klass.send(after_method) do
+            ProcessSettings.instance = initial_instance
+          end
+        end
+      end
       # Adds the given settings_hash as an override at the end of the process_settings array, with default targeting (true).
       # Therefore this will override these settings while leaving others alone.
       #
@@ -33,8 +46,6 @@ module ProcessSettings
           logger: initial_instance.logger
         )
       end
-
-      private
 
       def initial_instance
         @initial_instance ||= ProcessSettings.instance

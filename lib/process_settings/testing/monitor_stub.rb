@@ -11,8 +11,14 @@ module ProcessSettings
   module Testing
     # This class implements the Monitor#targeted_value interface but is stubbed to use a simple hash in tests
     class MonitorStub
+      class << self
+        def new(*_args)
+          ActiveSupport::Deprecation.warn("ProcessSettings::Testing::MonitorStub is deprecated and will be removed in future versions. Use ProcessSettings::Testing::Monitor instead.", caller)
+          super
+        end
+      end
+
       def initialize(settings_hash)
-        ActiveSupport::Deprecation.warn("ProcessSettings::Testing::MonitorStub is deprecated and will be removed in future versions. Use ProcessSettings::Testing::Monitor instead.", caller)
         @settings_hash = HashWithHashPath[settings_hash]
       end
 
