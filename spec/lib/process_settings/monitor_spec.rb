@@ -293,37 +293,41 @@ describe ProcessSettings::Monitor do
     end
 
     describe "#when_updated" do
+      subject(:process_monitor) do
+        allow(ActiveSupport::Deprecation).to receive(:warn).with(anything, :initialize)
+        allow_any_instance_of(ActiveSupport::Deprecation).to receive(:warn).with(any_args)
+        described_class.new(MONITOR_SETTINGS_PATH, logger: logger, environment: 'development') # development so we can test monitoring
+      end
+
       it 'calls back to block once when registered (by default)' do
-        when_updated_proc_1 = Proc.new { true }
-        when_updated_proc_2 = Proc.new { true }
+        callback_counts = Hash.new(0)
+        when_updated_proc_A = ->(_process_settings_monitor) { callback_counts[:A] += 1; true }
+        when_updated_proc_B = ->(_process_settings_monitor) { callback_counts[:B] += 1; true }
 
-        expect(when_updated_proc_1).to receive(:call).with(process_monitor)
-        expect(when_updated_proc_2).to receive(:call).with(process_monitor)
+        process_monitor.when_updated(&when_updated_proc_A)
+        process_monitor.when_updated(&when_updated_proc_B)
 
-        process_monitor.when_updated(&when_updated_proc_1)
-        process_monitor.when_updated(&when_updated_proc_2)
+        expect(callback_counts).to eq(A: 1, B: 1)
       end
 
       it 'calls back to block once when registered (initial_update: true)' do
-        when_updated_proc_1 = Proc.new { true }
-        when_updated_proc_2 = Proc.new { true }
+        callback_counts = Hash.new(0)
+        when_updated_proc_A = ->(_process_settings_monitor) { callback_counts[:A] += 1; true }
+        when_updated_proc_B = ->(_process_settings_monitor) { callback_counts[:B] += 1; true }
 
-        expect(when_updated_proc_1).to receive(:call).with(process_monitor)
-        expect(when_updated_proc_2).to receive(:call).with(process_monitor)
-
-        process_monitor.when_updated(initial_update: true, &when_updated_proc_1)
-        process_monitor.when_updated(initial_update: true, &when_updated_proc_2)
+        process_monitor.when_updated(initial_update: true, &when_updated_proc_A)
+        process_monitor.when_updated(initial_update: true, &when_updated_proc_B)
       end
 
       it 'does not call back to block when registered (initial_update: false)' do
-        when_updated_proc_1 = Proc.new { true }
-        when_updated_proc_2 = Proc.new { true }
+        callback_counts = Hash.new(0)
+        when_updated_proc_A = ->(_process_settings_monitor) { callback_counts[:A] += 1; true }
+        when_updated_proc_B = ->(_process_settings_monitor) { callback_counts[:B] += 1; true }
 
-        expect(when_updated_proc_1).to_not receive(:call).with(process_monitor)
-        expect(when_updated_proc_2).to_not receive(:call).with(process_monitor)
+        process_monitor.when_updated(initial_update: false, &when_updated_proc_A)
+        process_monitor.when_updated(initial_update: false, &when_updated_proc_B)
 
-        process_monitor.when_updated(initial_update: false, &when_updated_proc_1)
-        process_monitor.when_updated(initial_update: false, &when_updated_proc_2)
+        expect(callback_counts).to eq({})
       end
 
       it 'passes the current instance to the block for initial update' do
@@ -333,71 +337,73 @@ describe ProcessSettings::Monitor do
       end
 
       it 'is idempotent' do
-        when_updated_proc = Proc.new { true }
-        expect(when_updated_proc).to receive(:call).with(process_monitor)
+        callback_counts = Hash.new(0)
+        when_updated_proc_A = ->(_process_settings_monitor) { callback_counts[:A] += 1; true }
 
-        process_monitor.when_updated(&when_updated_proc)
-        process_monitor.when_updated(&when_updated_proc)
+        process_monitor.when_updated(&when_updated_proc_A)
+        process_monitor.when_updated(&when_updated_proc_A)
+
+        expect(callback_counts).to eq(A: 1)
       end
 
       it 'calls back to each block when static_context changes' do
-        when_updated_proc_1 = Proc.new { true }
-        when_updated_proc_2 = Proc.new { true }
+        callback_counts = Hash.new(0)
+        when_updated_proc_A = ->(_process_settings_monitor) { callback_counts[:A] += 1; true }
+        when_updated_proc_B = ->(_process_settings_monitor) { callback_counts[:B] += 1; true }
 
-        expect(when_updated_proc_1).to receive(:call).with(process_monitor).exactly(2)
-        expect(when_updated_proc_2).to receive(:call).with(process_monitor).exactly(2)
-
-        process_monitor.when_updated(&when_updated_proc_1)
-        process_monitor.when_updated(&when_updated_proc_2)
+        process_monitor.when_updated(&when_updated_proc_A)
+        process_monitor.when_updated(&when_updated_proc_B)
         process_monitor.static_context = { 'region' => 'west' }
+
+        expect(callback_counts).to eq(A: 2, B: 2)
       end
 
       it 'calls back to each block when the file changes' do
-        when_updated_proc_1 = Proc.new { true }
-        when_updated_proc_2 = Proc.new { true }
+        callback_counts = Hash.new(0)
+        when_updated_proc_A = ->(_process_settings_monitor) { callback_counts[:A] += 1; true }
+        when_updated_proc_B = ->(_process_settings_monitor) { callback_counts[:B] += 1; true }
 
-        expect(when_updated_proc_1).to receive(:call).with(process_monitor).exactly(2)
-        expect(when_updated_proc_2).to receive(:call).with(process_monitor).exactly(2)
-
-        process_monitor.when_updated(&when_updated_proc_1)
-        process_monitor.when_updated(&when_updated_proc_2)
+        process_monitor.when_updated(&when_updated_proc_A)
+        process_monitor.when_updated(&when_updated_proc_B)
 
         sleep(0.15)
         File.write(MONITOR_SETTINGS_PATH, MONITOR_EMPTY_MONITOR_SAMPLE_SETTINGS_YAML)
         sleep(0.5)  # allow enough time for the listen gem to notify us of the changed file
+
+        expect(callback_counts).to eq(A: 2, B: 2)
       end
 
       it 'does not call back to the blocks on a noop change' do
-        when_updated_proc_1 = Proc.new { true }
-        when_updated_proc_2 = Proc.new { true }
+        callback_counts = Hash.new(0)
+        when_updated_proc_A = ->(_process_settings_monitor) { callback_counts[:A] += 1; true }
+        when_updated_proc_B = ->(_process_settings_monitor) { callback_counts[:B] += 1; true }
 
-        expect(when_updated_proc_1).to receive(:call).with(process_monitor)
-        expect(when_updated_proc_2).to receive(:call).with(process_monitor)
-
-        process_monitor.when_updated(&when_updated_proc_1)
-        process_monitor.when_updated(&when_updated_proc_2)
+        process_monitor.when_updated(&when_updated_proc_A)
+        process_monitor.when_updated(&when_updated_proc_B)
 
         sleep(0.15)
         File.write(MONITOR_SETTINGS_PATH, MONITOR_EAST_SETTINGS_YAML)
         sleep(0.5)  # allow enough time for the listen gem to notify us of the changed file
+
+        expect(callback_counts).to eq(A: 1, B: 1)
       end
 
       it "keeps going even if exceptions raised" do
-        when_updated_proc_1 = -> { true }
-        when_updated_proc_2 = -> { true }
+        callback_counts = Hash.new(0)
+        when_updated_proc_A = ->(_process_settings_monitor) { callback_counts[:A] += 1; raise StandardError, 'oops A' }
+        when_updated_proc_B = ->(_process_settings_monitor) { callback_counts[:B] += 1; raise StandardError, 'oops B' }
 
-        expect(when_updated_proc_1).to receive(:call).with(process_monitor).and_raise(StandardError, 'oops 1').exactly(2)
-        expect(when_updated_proc_2).to receive(:call).with(process_monitor).and_raise(StandardError, 'oops 2').exactly(2)
+        process_monitor.when_updated(&when_updated_proc_A)
+        process_monitor.when_updated(&when_updated_proc_B)
 
-        process_monitor.when_updated(&when_updated_proc_1)
-        process_monitor.when_updated(&when_updated_proc_2)
-
-        expect(logger).to receive(:error).with("ProcessSettings::Monitor#call_when_updated_blocks rescued exception:\nStandardError: oops 1")
-        expect(logger).to receive(:error).with("ProcessSettings::Monitor#call_when_updated_blocks rescued exception:\nStandardError: oops 2")
+        expect(logger).to receive(:error).with("ProcessSettings::Monitor#call_when_updated_blocks rescued exception:\nStandardError: oops A")
+        expect(logger).to receive(:error).with("ProcessSettings::Monitor#call_when_updated_blocks rescued exception:\nStandardError: oops B")
 
         sleep(0.15)
         File.write(MONITOR_SETTINGS_PATH, MONITOR_EMPTY_MONITOR_SAMPLE_SETTINGS_YAML)
         sleep(0.5)  # allow enough time for the listen gem to notify us of the changed file
+
+        expect(callback_counts).to eq(A: 2, B: 2)
       end
     end
 

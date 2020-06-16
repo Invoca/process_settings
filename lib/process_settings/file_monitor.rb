@@ -33,6 +33,8 @@ module ProcessSettings
       !@listener.nil?
     end
 
+    private
+
     def enable_listen_thread?(environment = nil)
       !disable_listen_thread?(environment)
     end
@@ -44,13 +46,11 @@ module ProcessSettings
       when 'false', '0'
         false
       when nil
-        environment || service_env == 'test'
+        (environment || service_env) == 'test'
       else
         raise ArgumentError, "DISABLE_LISTEN_CHANGE_MONITORING has unknown value #{ENV['DISABLE_LISTEN_CHANGE_MONITORING'].inspect}"
       end
     end
-
-    private
 
     # optionally starts listening for changes, then loads current settings
     # Note: If with_listen_thread is truthy, this method creates a new thread that will be
