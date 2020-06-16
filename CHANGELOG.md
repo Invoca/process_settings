@@ -4,7 +4,7 @@ Inspired by [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 Note: this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.11.0] - Unreleased
+## [0.11.0] - 2020-06-16
 ### Added
 - `ProcessSettings::Testing::Helpers` now automatically registers an `after`/`teardown` block to
   set `ProcessSettings.instance` back to the default that was there before it was optionally
