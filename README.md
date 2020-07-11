@@ -126,16 +126,20 @@ The simplest approach--as shown above--is to read the latest settings at any tim
 http_version = ProcessSettings['frontend', 'http_version']
 ```
 
-#### Register an `on_change` Callback
-Alternatively, if you need to execute some code when there is a change, register a callback with `ProcessSettings.instance#on_change`:
+#### Register a `when_updated` Callback
+Alternatively, if you need to execute initially and whenever the value is updated, register a callback with `ProcessSettings.instance#when_updated`:
 ```
-ProcessSettings.instance.on_change do
+ProcessSettings.instance.when_updated do
   logger.level = ProcessSettings['frontend', 'log_level']
 end
 ```
-Note that all callbacks run sequentially on the shared change monitoring thread, so please be considerate!
+By default, the `when_updated` block is called initially when registered. We've found this to be convenient in most cases; it can be disabled by passing `initial_update: false`, in which case the block will be called 0 or more times in the future, when any of the process settings for this process change.
 
-There is no provision for unregistering callbacks. Instead, replace the `instance` of the monitor with a new one.
+`when_updated` is idempotent.
+
+In case you need to cancel the callback later, `when_updated` returns a handle (the block itself) which can later be passed into `cancel_when_updated`.
+
+Note that all callbacks run sequentially on the shared change monitoring thread, so please be considerate!
 
 ## Targeting
 Each settings YAML file has an optional `target` key at the top level, next to `settings`.
