@@ -12,10 +12,10 @@ module ProcessSettings
       class << self
         def included(including_klass)
           after_method =
-            if including_klass.respond_to?(:teardown)
-              :teardown
-            else
+            if including_klass.respond_to?(:after)
               :after
+            else
+              :teardown
             end
 
           including_klass.send(after_method) do
