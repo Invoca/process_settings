@@ -10,6 +10,7 @@ require_relative '../lib/process_settings/targeted_settings'
 
 PROGRAM_NAME = File.basename($PROGRAM_NAME)
 SETTINGS_FOLDER = 'settings'
+MINIMUM_LIBYAML_VERSION = Gem::Version.new('0.2.6') # So that null (nil) values don't have trailing spaces.
 
 def end_marker(version)
   {
@@ -75,9 +76,28 @@ def add_warning_comment(yaml, root_folder, program_name, settings_folder)
   yaml.sub("\n", "\n" + warning_comment)
 end
 
+def check_libyaml_version
+  Gem::Version.new(Psych::LIBYAML_VERSION) >= MINIMUM_LIBYAML_VERSION or
+    warn <<~EOS
+
+      #{PROGRAM_NAME} error: libyaml version #{Psych::LIBYAML_VERSION} must be at least #{MINIMUM_LIBYAML_VERSION}. Try:
+  
+          brew update && upgrade libyaml
+  
+      You may also need:
+  
+          gem install psych -- --enable-bundled-libyaml
+    EOS
+
+  exit(1)
+end
+
+
 #
 # main
 #
+
+check_libyaml_version
 
 options = parse_options(ARGV.dup)
 
