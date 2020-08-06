@@ -4,6 +4,12 @@ Inspired by [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 Note: this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.12.0] - 2020-08-06
+### Changed
+- `bin/combine_process_settings` now uses an explicit `: null` value for null (nil in Ruby) values, vs.
+the former implicit `: ` at end of line. This is important because the trailing space was sometimes deleted
+when committed and pushed, depending on editor settings and git(hub) hook configuration. 
+
 ## [0.11.0] - 2020-06-16
 ### Added
 - `ProcessSettings::Testing::Helpers` now automatically registers an `after`/`teardown` block to
@@ -112,6 +118,7 @@ switching the script to use `Tempdir` for generating temporary file name
 - `ProcessSettings::Monitor.on_change` has been deprecated; it will be removed in version `1.0.0`.
   `ProcessSettings::Monitor.when_updated` should be used instead.
 
+[0.11.0]: https://github.com/Invoca/process_settings/compare/v0.11.0...v0.12.0
 [0.11.0]: https://github.com/Invoca/process_settings/compare/v0.10.5...v0.11.0
 [0.10.5]: https://github.com/Invoca/process_settings/compare/v0.10.4...v0.10.5
 [0.10.4]: https://github.com/Invoca/process_settings/compare/v0.10.3...v0.10.4
