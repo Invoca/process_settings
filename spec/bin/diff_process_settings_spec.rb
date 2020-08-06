@@ -12,7 +12,7 @@ describe 'diff_process_settings' do
       honeypot:
 !       max_recording_seconds: 300
         answer_odds: 100
-        status_change_min_days: 10
+        status_change_min_days:
   - filename: telecom/log_level.yml
 --- 5,11 ----
   - filename: honeypot.yml
@@ -20,7 +20,7 @@ describe 'diff_process_settings' do
       honeypot:
 !       max_recording_seconds: 600
         answer_odds: 100
-        status_change_min_days: 10
+        status_change_min_days:
   - filename: telecom/log_level.yml
     EOS
   end
@@ -44,7 +44,7 @@ describe 'diff_process_settings' do
             honeypot:
       !       max_recording_seconds: 300
               answer_odds: 100
-              status_change_min_days: 10
+              status_change_min_days:
         - filename: telecom/log_level.yml
       --- 5,11 ----
         - filename: honeypot.yml
@@ -52,7 +52,7 @@ describe 'diff_process_settings' do
             honeypot:
       !       max_recording_seconds: 600
               answer_odds: 100
-              status_change_min_days: 10
+              status_change_min_days:
         - filename: telecom/log_level.yml
     EOS
   end

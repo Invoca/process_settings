@@ -10,7 +10,7 @@ describe ProcessSettings::Testing::MonitorStub do
                     honeypot:
                       max_recording_seconds: 300
                       answer_odds: 100
-                      status_change_min_days: 10
+                      status_change_min_days:
                   EOS
 
   subject do
