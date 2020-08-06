@@ -7,7 +7,7 @@
     honeypot:
       max_recording_seconds: 600
       answer_odds: 200
-      status_change_min_days: null
+      status_change_min_days: 10
 - filename: telecom/log_level.yml
   target:
     app: telecom

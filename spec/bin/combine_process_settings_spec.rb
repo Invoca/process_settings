@@ -61,7 +61,7 @@ describe 'combine_process_settings' do
           honeypot:
             max_recording_seconds: 600
             answer_odds: 100
-            status_change_min_days: null
+            status_change_min_days: 10
       - filename: stop_incoming_requests.yml
         target:
           region: east
