@@ -4,6 +4,11 @@ Inspired by [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 Note: this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.13.0] - 2020-08-07
+### Changed
+- Removed explicit `: null` because `libyaml` 0.2.5 doesn't write the trailing space to key off.
+Instead, explicitly depend on the `psych` gem and check that libyaml is at least 0.2.5.
+
 ## [0.12.0] - 2020-08-06
 ### Changed
 - `bin/combine_process_settings` now uses an explicit `: null` value for null (nil in Ruby) values, vs.
@@ -118,7 +123,8 @@ switching the script to use `Tempdir` for generating temporary file name
 - `ProcessSettings::Monitor.on_change` has been deprecated; it will be removed in version `1.0.0`.
   `ProcessSettings::Monitor.when_updated` should be used instead.
 
-[0.11.0]: https://github.com/Invoca/process_settings/compare/v0.11.0...v0.12.0
+[0.13.0]: https://github.com/Invoca/process_settings/compare/v0.12.0...v0.13.0
+[0.12.0]: https://github.com/Invoca/process_settings/compare/v0.11.0...v0.12.0
 [0.11.0]: https://github.com/Invoca/process_settings/compare/v0.10.5...v0.11.0
 [0.10.5]: https://github.com/Invoca/process_settings/compare/v0.10.4...v0.10.5
 [0.10.4]: https://github.com/Invoca/process_settings/compare/v0.10.3...v0.10.4
