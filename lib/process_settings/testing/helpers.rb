@@ -11,15 +11,14 @@ module ProcessSettings
     module Helpers
       class << self
         def included(including_klass)
-          after_method =
-            if including_klass.respond_to?(:teardown)
-              :teardown
-            else
-              :after
+          if including_klass.respond_to?(:after)  # rspec
+            including_klass.after do
+              ProcessSettings.instance = initial_instance
             end
-
-          including_klass.send(after_method) do
-            ProcessSettings.instance = initial_instance
+          else                                    # minitest
+            including_klass.define_method(:teardown) do
+              ProcessSettings.instance = initial_instance
+            end
           end
         end
       end

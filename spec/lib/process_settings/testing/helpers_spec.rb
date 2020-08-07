@@ -15,18 +15,22 @@ describe ProcessSettings::Testing::Helpers do
       end
     end
 
+    def call_after_block
+      instance_exec(&self.class.after_blocks.first)
+    end
+
     include ProcessSettings::Testing::Helpers
   end
 
   class TestClassMinitest
-    @after_blocks = []
-
     class << self
-      attr_reader :after_blocks
-
-      def teardown(&block)
-        after_blocks << block
+      def after_blocks
+        Array(instance_method(:teardown))
       end
+    end
+
+    def call_after_block
+      self.class.after_blocks.first.bind(self).call
     end
 
     include ProcessSettings::Testing::Helpers
@@ -46,7 +50,7 @@ describe ProcessSettings::Testing::Helpers do
       ProcessSettings.instance = initial_process_settings
       expect(test_instance.initial_instance).to eq(initial_process_settings)
       ProcessSettings.instance = nil
-      test_instance.instance_exec(&test_klass.after_blocks.first)
+      test_instance.call_after_block
       expect(ProcessSettings.instance).to eq(initial_process_settings)
     end
   end
