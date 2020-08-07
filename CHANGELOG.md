@@ -4,6 +4,10 @@ Inspired by [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 Note: this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.13.3] - Unreleased
+### Fixed
+- Fixed `Testing::Helpers` for `minitest` to define a `teardown` method rather than call a `teardown` helper.
+
 ## [0.13.2] - 2020-08-07
 ### Fixed
 - Fixed typo in error message: "brew upgrade".
@@ -130,6 +134,8 @@ switching the script to use `Tempdir` for generating temporary file name
 - `ProcessSettings::Monitor.on_change` has been deprecated; it will be removed in version `1.0.0`.
   `ProcessSettings::Monitor.when_updated` should be used instead.
 
+[0.13.3]: https://github.com/Invoca/process_settings/compare/v0.13.2...v0.13.3
+[0.13.2]: https://github.com/Invoca/process_settings/compare/v0.13.1...v0.13.2
 [0.13.1]: https://github.com/Invoca/process_settings/compare/v0.12.0...v0.13.1
 [0.12.0]: https://github.com/Invoca/process_settings/compare/v0.11.0...v0.12.0
 [0.11.0]: https://github.com/Invoca/process_settings/compare/v0.10.5...v0.11.0
