@@ -77,11 +77,11 @@ end
 
 MINIMUM_LIBYAML_VERSION = '0.2.5' # So that null (nil) values don't have trailing spaces.
 
-def check_libyaml_version
+def warn_if_old_libyaml_version
   if Gem::Version.new(Psych::LIBYAML_VERSION) < Gem::Version.new(MINIMUM_LIBYAML_VERSION)
     warn <<~EOS
 
-      #{PROGRAM_NAME} error: libyaml version #{Psych::LIBYAML_VERSION} must be at least #{MINIMUM_LIBYAML_VERSION}. Try:
+      #{PROGRAM_NAME} warning: libyaml version #{Psych::LIBYAML_VERSION} is out of date; it should be at least #{MINIMUM_LIBYAML_VERSION}. On a Mac, try:
 
           brew update && brew upgrade libyaml
 
@@ -89,8 +89,6 @@ def check_libyaml_version
 
           gem install psych -- --enable-bundled-libyaml
     EOS
-
-    exit(1)
   end
 end
 
@@ -101,7 +99,7 @@ end
 
 options = parse_options(ARGV.dup)
 
-check_libyaml_version
+warn_if_old_libyaml_version
 
 combined_settings = read_and_combine_settings(Pathname.new(options.root_folder) + SETTINGS_FOLDER)
 
