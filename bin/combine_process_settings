@@ -83,7 +83,7 @@ def check_libyaml_version
 
       #{PROGRAM_NAME} error: libyaml version #{Psych::LIBYAML_VERSION} must be at least #{MINIMUM_LIBYAML_VERSION}. Try:
 
-          brew update && upgrade libyaml
+          brew update && brew upgrade libyaml
 
       You may also need:
 
