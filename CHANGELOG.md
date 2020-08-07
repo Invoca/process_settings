@@ -4,6 +4,10 @@ Inspired by [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 Note: this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.13.2] - 2020-08-07
+### Fixed
+- Fixed typo in error message: "brew upgrade".
+
 ## [0.13.1] - 2020-08-06
 ### Changed
 - Removed explicit `: null` because `libyaml` 0.2.5 doesn't write the trailing space to key off.
