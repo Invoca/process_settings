@@ -106,7 +106,7 @@ combined_settings = read_and_combine_settings(Pathname.new(options.root_folder) 
 version_number = options.version || default_version_number(options.initial_filename)
 combined_settings << end_marker(version_number)
 
-yaml = combined_settings.to_yaml
+yaml = combined_settings.to_yaml.gsub(/: $/, ':') # libyaml before 0.2.5 wrote trailing space for nil
 yaml_with_warning_comment = add_warning_comment(yaml, options.root_folder, PROGRAM_NAME, SETTINGS_FOLDER)
 
 output_filename     = options.output_filename
