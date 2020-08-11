@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    process_settings (0.13.3.pre.1)
+    process_settings (0.13.3)
       activesupport (>= 4.2, < 7)
       json
       listen (~> 3.0)
@@ -23,7 +23,7 @@ GEM
     ast (2.4.0)
     bump (0.6.1)
     coderay (1.1.2)
-    concurrent-ruby (1.1.6)
+    concurrent-ruby (1.1.7)
     coveralls (0.8.22)
       json (>= 1.8, < 3)
       simplecov (~> 0.16.1)

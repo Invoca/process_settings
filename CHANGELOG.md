@@ -4,7 +4,7 @@ Inspired by [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 Note: this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.13.3] - Unreleased
+## [0.13.3] - 2020-08-11
 ### Fixed
 - Fixed `Testing::Helpers` for `minitest` to define a `teardown` method rather than call a `teardown` helper.
 
