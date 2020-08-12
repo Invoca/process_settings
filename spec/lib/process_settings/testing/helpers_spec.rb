@@ -4,7 +4,7 @@ require 'spec_helper'
 require 'process_settings/testing/helpers'
 
 describe ProcessSettings::Testing::Helpers do
-  class TestClassRSpec
+  class TestClassDefaultToRSpec
     @after_blocks = []
 
     class << self
@@ -22,6 +22,24 @@ describe ProcessSettings::Testing::Helpers do
     include ProcessSettings::Testing::Helpers
   end
 
+  class TestClassRSpec
+    @after_blocks = []
+
+    class << self
+      attr_reader :after_blocks
+
+      def after(&block)
+        after_blocks << block
+      end
+    end
+
+    def call_after_block
+      instance_exec(&self.class.after_blocks.first)
+    end
+
+    include ProcessSettings::Testing::RSpec::Helpers
+  end
+
   class TestClassMinitest
     class << self
       def after_blocks
@@ -33,7 +51,7 @@ describe ProcessSettings::Testing::Helpers do
       self.class.after_blocks.first.bind(self).call
     end
 
-    include ProcessSettings::Testing::Helpers
+    include ProcessSettings::Testing::Minitest::Helpers
   end
 
   let(:logger) { Logger.new('/dev/null') }
@@ -57,6 +75,12 @@ describe ProcessSettings::Testing::Helpers do
 
   describe 'when included in rspec' do
     let(:test_klass) { TestClassRSpec }
+
+    include_examples "defines after block"
+  end
+
+  describe 'when defaulted in rspec' do
+    let(:test_klass) { TestClassDefaultToRSpec }
 
     include_examples "defines after block"
   end
