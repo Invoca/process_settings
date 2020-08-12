@@ -4,6 +4,12 @@ Inspired by [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 Note: this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.14.0] - Unreleased
+### Added
+- Separated `ProcessSettings::Testing::Minitest::Helpers` from `ProcessSettings::Testing::RSpec::Helpers` since it is difficult
+to infer which is which. Left `ProcessSettings::Testing::Helpers` as an alias for `ProcessSettings::Testing::RSpec::Helpers` for
+backward-compatibility.
+
 ## [0.13.3] - 2020-08-11
 ### Fixed
 - Fixed `Testing::Helpers` for `minitest` to define a `teardown` method rather than call a `teardown` helper.
@@ -134,6 +140,7 @@ switching the script to use `Tempdir` for generating temporary file name
 - `ProcessSettings::Monitor.on_change` has been deprecated; it will be removed in version `1.0.0`.
   `ProcessSettings::Monitor.when_updated` should be used instead.
 
+[0.14.0]: https://github.com/Invoca/process_settings/compare/v0.13.3...v0.14.0
 [0.13.3]: https://github.com/Invoca/process_settings/compare/v0.13.2...v0.13.3
 [0.13.2]: https://github.com/Invoca/process_settings/compare/v0.13.1...v0.13.2
 [0.13.1]: https://github.com/Invoca/process_settings/compare/v0.12.0...v0.13.1
