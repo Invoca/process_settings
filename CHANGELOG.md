@@ -4,8 +4,8 @@ Inspired by [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 Note: this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.14.0] - Unreleased
-### Added
+## [0.14.0] - 2020-08-13
+### Changed
 - Separated `ProcessSettings::Testing::Minitest::Helpers` from `ProcessSettings::Testing::RSpec::Helpers` since it is difficult
 to infer which is which. Left `ProcessSettings::Testing::Helpers` as an alias for `ProcessSettings::Testing::RSpec::Helpers` for
 backward-compatibility.
