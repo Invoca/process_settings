@@ -1,10 +1,19 @@
+GIT
+  remote: git@github.com:Invoca/listen
+  revision: 2db73fa6a5f987fdd471f82e49a153ae50540767
+  ref: 2db73fa6a5f987fdd471f82e49a153ae50540767
+  specs:
+    listen (3.2.1.invoca.3)
+      rb-fsevent (~> 0.10, >= 0.10.3)
+      rb-inotify (~> 0.9, >= 0.9.10)
+
 PATH
   remote: .
   specs:
-    process_settings (0.14.0)
+    process_settings (0.14.1)
       activesupport (>= 4.2, < 7)
       json
-      listen (~> 3.0)
+      listen (= 3.2.1.invoca.3)
       psych (~> 3.2)
 
 GEM
@@ -36,9 +45,6 @@ GEM
     i18n (1.8.5)
       concurrent-ruby (~> 1.0)
     json (2.1.0)
-    listen (3.2.1)
-      rb-fsevent (~> 0.10, >= 0.10.3)
-      rb-inotify (~> 0.9, >= 0.9.10)
     method_source (0.9.0)
     minitest (5.14.1)
     parallel (1.12.1)
@@ -104,6 +110,7 @@ DEPENDENCIES
   appraisal
   bump (~> 0.6.1)
   coveralls
+  listen (= 3.2.1.invoca.3)!
   process_settings!
   pry
   rake
