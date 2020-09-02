@@ -99,6 +99,7 @@ module ProcessSettings
       dynamic_context.each do |key, value|
         if static_context.key? key
           warn('WARNING: Dynamic keys overlap with Static keys!')
+          break
         end
       end
       # TODO: Cache the last used dynamic context as a potential optimization to avoid unnecessary deep merges
