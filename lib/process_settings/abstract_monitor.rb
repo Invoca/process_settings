@@ -96,24 +96,15 @@ module ProcessSettings
       # this can be rather costly to do every time if the dynamic context is not changing
 
       # Warn in the case where dynamic context was attempting to change a static value
-      require 'pry'
-      require 'pry-byebug'
-      binding.pry
-      if dynamic_context.present?
-        dynamic_context.each do |key, value|
-          if static_context.key? key
-            warn('WARNING: Dynamic keys overlap with Static keys!')
-          end
+      dynamic_context.each do |key, value|
+        if static_context.key? key
+          warn('WARNING: Dynamic keys overlap with Static keys!')
         end
       end
       # TODO: Cache the last used dynamic context as a potential optimization to avoid unnecessary deep merges
       # TECH-4402 was created to address these todos
 
-      # puts dynamic_keys
       full_context = dynamic_context.deep_merge(static_context)
-      # if original_static_content != static_content
-      #   warn("")
-      # end
       result = statically_targeted_settings.reduce(:not_found) do |latest_result, target_and_settings|
         # find last value from matching targets
         if target_and_settings.target.target_key_matches?(full_context)
