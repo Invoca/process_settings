@@ -11,8 +11,8 @@ module ProcessSettings
   OnChangeDeprecation = ActiveSupport::Deprecation.new('1.0', 'ProcessSettings::Monitor')
 
   class AbstractMonitor
-    @@full_context_cache = {}
 
+    attr_accessor :full_context_cache
     attr_reader :min_polling_seconds, :logger
     attr_reader :static_context, :statically_targeted_settings
 
@@ -21,6 +21,7 @@ module ProcessSettings
       @on_change_callbacks = []
       @when_updated_blocks = Set.new
       @static_context = {}
+      @full_context_cache = {}
     end
 
     # This is the main entry point for looking up settings on the Monitor instance.
@@ -105,13 +106,15 @@ module ProcessSettings
         end
       end
 
-      # To avoid unnecessary deep merge store deep_merges in class variable hash and lookup before deep_merge
-      key = static_context.to_s + dynamic_context.to_s
-      if @@full_context_cache[key]
-        full_context = @@full_context_cache[key]
+      # Cache the last used dynamic context as a potential optimization to avoid unnecessary deep merge
+      key = dynamic_context
+      if full_context_cache[key]
+        full_context = full_context_cache[key]
+        logger.info("cache hit with dynamic_context: #{key}")
       else
         full_context = dynamic_context.deep_merge(static_context)
-        @@full_context_cache[key] = full_context
+        full_context_cache[key] = full_context
+        logger.info("cache miss with dynamic_context: #{key}")
       end
 
       result = statically_targeted_settings.reduce(:not_found) do |latest_result, target_and_settings|
