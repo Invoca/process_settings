@@ -99,22 +99,25 @@ module ProcessSettings
       # this can be rather costly to do every time if the dynamic context is not changing
 
       # Warn in the case where dynamic context was attempting to change a static value
-      dynamic_context.each do |key, value|
-        if static_context.key? key
-          warn("WARNING: Dynamic key: '#{key}' overlaps with Static key!")
-          break
+      changes = dynamic_context.each_with_object({}) do |(key, dynamic_value), result|
+        if static_context.has_key?(key)
+          static_value = static_context[key]
+          if static_value != dynamic_value
+            result[key] = [static_value, dynamic_value]
+          end
         end
       end
 
+      changes.empty? or warn("WARNING: static context overwritten by dynamic!\n#{changes.inspect}")
+
       # Cache the last used dynamic context as a potential optimization to avoid unnecessary deep merge
-      key = dynamic_context
-      if full_context_cache[key]
-        full_context = full_context_cache[key]
-        logger.info("cache hit with dynamic_context: #{key}")
+      if full_context_cache[dynamic_context]
+        full_context = full_context_cache[dynamic_context]
+        logger.info("cache hit with dynamic_context: #{dynamic_context}")
       else
         full_context = dynamic_context.deep_merge(static_context)
-        full_context_cache[key] = full_context
-        logger.info("cache miss with dynamic_context: #{key}")
+        full_context_cache[dynamic_context] = full_context
+        logger.info("cache miss with dynamic_context: #{dynamic_context}")
       end
 
       result = statically_targeted_settings.reduce(:not_found) do |latest_result, target_and_settings|
