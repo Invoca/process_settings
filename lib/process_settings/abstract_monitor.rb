@@ -11,6 +11,8 @@ module ProcessSettings
   OnChangeDeprecation = ActiveSupport::Deprecation.new('1.0', 'ProcessSettings::Monitor')
 
   class AbstractMonitor
+    @@full_context_cache = {}
+
     attr_reader :min_polling_seconds, :logger
     attr_reader :static_context, :statically_targeted_settings
 
@@ -102,10 +104,16 @@ module ProcessSettings
           break
         end
       end
-      # TODO: Cache the last used dynamic context as a potential optimization to avoid unnecessary deep merges
-      # TECH-4402 was created to address these todos
 
-      full_context = dynamic_context.deep_merge(static_context)
+      # To avoid unnecessary deep merge store deep_merges in class variable hash and lookup before deep_merge
+      key = static_context.to_s + dynamic_context.to_s
+      if @@full_context_cache[key]
+        full_context = @@full_context_cache[key]
+      else
+        full_context = dynamic_context.deep_merge(static_context)
+        @@full_context_cache[key] = full_context
+      end
+
       result = statically_targeted_settings.reduce(:not_found) do |latest_result, target_and_settings|
         # find last value from matching targets
         if target_and_settings.target.target_key_matches?(full_context)
