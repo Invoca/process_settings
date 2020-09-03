@@ -98,7 +98,7 @@ module ProcessSettings
       # Warn in the case where dynamic context was attempting to change a static value
       dynamic_context.each do |key, value|
         if static_context.key? key
-          warn('WARNING: Dynamic keys overlap with Static keys!')
+          warn("WARNING: Dynamic key: '#{key}' overlaps with Static key!")
           break
         end
       end
