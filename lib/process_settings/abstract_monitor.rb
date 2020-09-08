@@ -12,9 +12,8 @@ module ProcessSettings
 
   class AbstractMonitor
 
-    attr_accessor :full_context_cache
     attr_reader :min_polling_seconds, :logger
-    attr_reader :static_context, :statically_targeted_settings
+    attr_reader :static_context, :statically_targeted_settings, :full_context_cache
 
     def initialize(logger:)
       @logger = logger or raise ArgumentError, "logger must be not be nil"
@@ -116,7 +115,9 @@ module ProcessSettings
         logger.info("cache hit with dynamic_context: #{dynamic_context}")
       else
         full_context = dynamic_context.deep_merge(static_context)
-        full_context_cache[dynamic_context] = full_context
+        if full_context_cache.size <= 1000 # keep this cache memory finite
+          full_context_cache[dynamic_context] = full_context
+        end
         logger.info("cache miss with dynamic_context: #{dynamic_context}")
       end
 
