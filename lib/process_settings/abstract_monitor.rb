@@ -109,18 +109,7 @@ module ProcessSettings
 
       changes.empty? or warn("WARNING: static context overwritten by dynamic!\n#{changes.inspect}")
 
-      # Cache the last used dynamic context as a potential optimization to avoid unnecessary deep merge
-      if full_context_cache[dynamic_context]
-        full_context = full_context_cache[dynamic_context]
-        logger.info("cache hit with dynamic_context: #{dynamic_context}")
-      else
-        full_context = dynamic_context.deep_merge(static_context)
-        if full_context_cache.size <= 1000 # keep this cache memory finite
-          full_context_cache[dynamic_context] = full_context
-        end
-        logger.info("cache miss with dynamic_context: #{dynamic_context}")
-      end
-
+      full_context = full_context_from_cache(dynamic_context)
       result = statically_targeted_settings.reduce(:not_found) do |latest_result, target_and_settings|
         # find last value from matching targets
         if target_and_settings.target.target_key_matches?(full_context)
@@ -139,6 +128,22 @@ module ProcessSettings
         end
       else
         result
+      end
+    end
+
+    def full_context_from_cache(dynamic_context)
+      if (full_context = full_context_cache[dynamic_context])
+        logger.info("cache hit ...")
+        full_context
+      else
+        logger.info("cache miss ...")
+        dynamic_context.deep_merge(static_context).tap do |full_context|
+          if full_context_cache.size <= 1000
+            full_context_cache[dynamic_context] = full_context
+          else
+            logger.info("cache limit reached ...")
+          end
+        end
       end
     end
 
