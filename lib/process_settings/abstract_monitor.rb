@@ -11,14 +11,16 @@ module ProcessSettings
   OnChangeDeprecation = ActiveSupport::Deprecation.new('1.0', 'ProcessSettings::Monitor')
 
   class AbstractMonitor
+
     attr_reader :min_polling_seconds, :logger
-    attr_reader :static_context, :statically_targeted_settings
+    attr_reader :static_context, :statically_targeted_settings, :full_context_cache
 
     def initialize(logger:)
       @logger = logger or raise ArgumentError, "logger must be not be nil"
       @on_change_callbacks = []
       @when_updated_blocks = Set.new
       @static_context = {}
+      @full_context_cache = {}
     end
 
     # This is the main entry point for looking up settings on the Monitor instance.
@@ -94,10 +96,20 @@ module ProcessSettings
     def targeted_value(*path, dynamic_context:, required: true)
       # Merging the static context in is necessary to make sure that the static context isn't shifting
       # this can be rather costly to do every time if the dynamic context is not changing
-      # TODO: Warn in the case where dynamic context was attempting to change a static value
-      # TODO: Cache the last used dynamic context as a potential optimization to avoid unnecessary deep merges
-      # TECH-4402 was created to address these todos
-      full_context = dynamic_context.deep_merge(static_context)
+
+      # Warn in the case where dynamic context was attempting to change a static value
+      changes = dynamic_context.each_with_object({}) do |(key, dynamic_value), result|
+        if static_context.has_key?(key)
+          static_value = static_context[key]
+          if static_value != dynamic_value
+            result[key] = [static_value, dynamic_value]
+          end
+        end
+      end
+
+      changes.empty? or warn("WARNING: static context overwritten by dynamic!\n#{changes.inspect}")
+
+      full_context = full_context_from_cache(dynamic_context)
       result = statically_targeted_settings.reduce(:not_found) do |latest_result, target_and_settings|
         # find last value from matching targets
         if target_and_settings.target.target_key_matches?(full_context)
@@ -116,6 +128,22 @@ module ProcessSettings
         end
       else
         result
+      end
+    end
+
+    def full_context_from_cache(dynamic_context)
+      if (full_context = full_context_cache[dynamic_context])
+        logger.info("cache hit ...")
+        full_context
+      else
+        logger.info("cache miss ...")
+        dynamic_context.deep_merge(static_context).tap do |full_context|
+          if full_context_cache.size <= 1000
+            full_context_cache[dynamic_context] = full_context
+          else
+            logger.info("cache limit reached ...")
+          end
+        end
       end
     end
 
