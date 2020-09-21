@@ -181,7 +181,7 @@ require 'process_settings/testing/helpers'
 RSpec.configure do |config|
   # ...
 
-  include ProcessSettings::Testing::RSpec::Helpers
+  config.include ProcessSettings::Testing::RSpec::Helpers
 
   # Note: the include above will automatically register a global after block that will reset process_settings to their initial values.
   # ...
