@@ -34,10 +34,7 @@ input_files =
       if path == '-'
         ''
       else
-        unless File.exists?(path)
-          warn "#{path} not found--must be a path to combined_process_settings.yml"
-          exit 1
-        end
+        File.exist?(path) or path = '/dev/null'
         "< #{path}"
       end
     end

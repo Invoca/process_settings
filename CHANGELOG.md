@@ -4,6 +4,14 @@ Inspired by [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 Note: this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.15.1] - Unreleased
+### Fixed
+- Fixed bug where if `make` output of combined_process_settings.yml was unchanged (ignoring version number),
+  that version would be considered a no-op and discarded
+  EVEN IF it was different from what is live in S3.
+  Now, the make output is compared to current as well as what's live in S3; if either are different,
+  the new version is committed and pushed live.
+
 ## [0.15.0] - 2020-09-08
 ### Added
 - Added a `warn` when dynamic keys overlap with static ones and added `full_context_cache` to avoid repetitive deep merges.
@@ -144,6 +152,7 @@ switching the script to use `Tempdir` for generating temporary file name
 - `ProcessSettings::Monitor.on_change` has been deprecated; it will be removed in version `1.0.0`.
   `ProcessSettings::Monitor.when_updated` should be used instead.
 
+[0.15.1]: https://github.com/Invoca/process_settings/compare/v0.15.0...v0.15.1
 [0.15.0]: https://github.com/Invoca/process_settings/compare/v0.14.0...v0.15.0
 [0.14.0]: https://github.com/Invoca/process_settings/compare/v0.13.3...v0.14.0
 [0.13.3]: https://github.com/Invoca/process_settings/compare/v0.13.2...v0.13.3

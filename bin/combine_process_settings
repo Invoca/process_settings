@@ -92,6 +92,26 @@ def warn_if_old_libyaml_version
   end
 end
 
+def settings_files_match?(filename_1, filename_2)
+  filename_1 && filename_2 &&
+    File.exist?(filename_1) && File.exist?(filename_2) &&
+    diff_process_settings(filename_1, filename_2)
+end
+
+def diff_process_settings(filename_1, filename_2)
+  system(<<~EOS)
+    bundle exec diff_process_settings --silent "#{filename_1}" "#{filename_2}"
+  EOS
+  status_code = $?.exitstatus
+  case status_code
+  when 0
+    true
+  when 1
+    false
+  else
+    raise "diff_process_settings failed with code #{status_code}"
+  end
+end
 
 #
 # main
@@ -115,14 +135,17 @@ tmp_output_filename = "#{output_filename}.tmp"
 system("rm -f #{tmp_output_filename}")
 File.write(tmp_output_filename, yaml_with_warning_comment)
 
-system(<<~EOS)
-  if bundle exec diff_process_settings --silent #{tmp_output_filename} #{output_filename} ; then
-    #{"echo #{options.root_folder}: unchanged;" if options.verbose}
-    rm -f #{tmp_output_filename};
+if settings_files_match?(options.initial_filename, tmp_output_filename)
+  if settings_files_match?(output_filename, tmp_output_filename)
+    puts "#{options.root_folder}: unchanged" if options.verbose
+    FileUtils.rm_f(tmp_output_filename)
   else
-    #{"echo #{options.root_folder}: UPDATING;" if options.verbose}
-    mv #{tmp_output_filename} #{output_filename};
-  fi
-EOS
+    puts "#{options.root_folder}: UPDATING (changed now)" if options.verbose
+    FileUtils.mv(tmp_output_filename, output_filename)
+  end
+else
+  puts "#{options.root_folder}: UPDATING (unchanged now, but changed from initial)" if options.verbose
+  FileUtils.mv(tmp_output_filename, output_filename)
+end
 
 exit(0)
