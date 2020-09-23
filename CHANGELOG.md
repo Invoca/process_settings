@@ -4,7 +4,7 @@ Inspired by [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 Note: this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.15.1] - Unreleased
+## [0.15.1] - 2020-09-23
 ### Fixed
 - Fixed bug where if `make` output of combined_process_settings.yml was unchanged (ignoring version number),
   that version would be considered a no-op and discarded
