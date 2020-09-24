@@ -6,7 +6,7 @@ Note: this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0
 
 ## [0.16.0] - 2020-09-24
 ### Changed
-- Changed the AbstractMonitor logging of cache hits and misses to debug level
+- Updated the AbstractMonitor to no longer log cache hits and misses
 
 ## [0.15.1] - 2020-09-23
 ### Fixed
