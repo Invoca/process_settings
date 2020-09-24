@@ -4,6 +4,10 @@ Inspired by [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 Note: this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.16.0] - 2020-09-24
+### Changed
+- Changed the AbstractMonitor logging of cache hits and misses to debug level
+
 ## [0.15.1] - 2020-09-23
 ### Fixed
 - Fixed bug where if `make` output of combined_process_settings.yml was unchanged (ignoring version number),
@@ -152,6 +156,7 @@ switching the script to use `Tempdir` for generating temporary file name
 - `ProcessSettings::Monitor.on_change` has been deprecated; it will be removed in version `1.0.0`.
   `ProcessSettings::Monitor.when_updated` should be used instead.
 
+[0.16.0]: https://github.com/Invoca/process_settings/compare/v0.15.1...v0.16.0
 [0.15.1]: https://github.com/Invoca/process_settings/compare/v0.15.0...v0.15.1
 [0.15.0]: https://github.com/Invoca/process_settings/compare/v0.14.0...v0.15.0
 [0.14.0]: https://github.com/Invoca/process_settings/compare/v0.13.3...v0.14.0
