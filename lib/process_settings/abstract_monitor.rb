@@ -133,15 +133,11 @@ module ProcessSettings
 
     def full_context_from_cache(dynamic_context)
       if (full_context = full_context_cache[dynamic_context])
-        logger.info("cache hit ...")
         full_context
       else
-        logger.info("cache miss ...")
         dynamic_context.deep_merge(static_context).tap do |full_context|
           if full_context_cache.size <= 1000
             full_context_cache[dynamic_context] = full_context
-          else
-            logger.info("cache limit reached ...")
           end
         end
       end
