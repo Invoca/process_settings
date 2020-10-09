@@ -395,4 +395,18 @@ describe ProcessSettings::FileMonitor do
       expect(process_monitor.targeted_value('collective', dynamic_context: { 'region' => 'west', 'caller_id' => '+18887776666' }, required: false)).to eq(true)
     end
   end
+
+  describe "#restart_after_fork" do
+    let(:monitor) { described_class.new(SETTINGS_PATH, logger: logger) }
+    subject { monitor.restart_after_fork}
+
+    before do
+      File.write(SETTINGS_PATH, EAST_SETTINGS_YAML)
+      expect(monitor).to receive(:start_internal).with(true).and_return(true)
+    end
+
+    after {FileUtils.rm_f(SETTINGS_PATH) }
+
+    it { should eq(true) }
+  end
 end
