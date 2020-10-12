@@ -4,6 +4,11 @@ Inspired by [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 Note: this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.17.0] - Unreleased
+### Added
+- Added `FileMonitor#restart_after_fork` to be used to restart the file monitoring after
+process forking occurs like with `unicorn`
+
 ## [0.16.0] - 2020-09-24
 ### Changed
 - Updated the AbstractMonitor to no longer log cache hits and misses
@@ -46,7 +51,7 @@ Instead, explicitly depend on the `psych` gem and check that libyaml is at least
 ### Changed
 - `bin/combine_process_settings` now uses an explicit `: null` value for null (nil in Ruby) values, vs.
 the former implicit `: ` at end of line. This is important because the trailing space was sometimes deleted
-when committed and pushed, depending on editor settings and git(hub) hook configuration. 
+when committed and pushed, depending on editor settings and git(hub) hook configuration.
 
 ## [0.11.0] - 2020-06-16
 ### Added
@@ -156,6 +161,7 @@ switching the script to use `Tempdir` for generating temporary file name
 - `ProcessSettings::Monitor.on_change` has been deprecated; it will be removed in version `1.0.0`.
   `ProcessSettings::Monitor.when_updated` should be used instead.
 
+[0.17.0]: https://github.com/Invoca/process_settings/compare/v0.16.0...v0.17.0
 [0.16.0]: https://github.com/Invoca/process_settings/compare/v0.15.1...v0.16.0
 [0.15.1]: https://github.com/Invoca/process_settings/compare/v0.15.0...v0.15.1
 [0.15.0]: https://github.com/Invoca/process_settings/compare/v0.14.0...v0.15.0

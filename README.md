@@ -167,6 +167,19 @@ This will be applied in any process that has (`service_name == "frontend"` OR `s
 ### Precedence
 The settings YAML files are always combined in alphabetical order by file path. Later settings take precedence over the earlier ones.
 
+### Forked Processes
+When using `ProcessSettings` within an environment that is forking threads (like `unicorn` web servers), you can restart the `FileMonitor`
+after the fork with `restart_after_fork`.
+```ruby
+# unicorn.rb
+
+preload_app true
+
+after_fork do
+  ProcessSettings.instance.restart_after_fork
+end
+```
+
 ### Testing
 For testing, it is often necessary to set a specific override hash for the process_settings values to use in
 that use case.  The `ProcessSettings::Testing::RSpec::Helpers` and `ProcessSettings::Testing::Minitest::Helpers` modules are provided for this purpose.

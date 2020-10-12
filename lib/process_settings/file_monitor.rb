@@ -27,7 +27,11 @@ module ProcessSettings
     def start
       start_internal(enable_listen_thread?)
     end
-    deprecate :start, deprecator: ActiveSupport::Deprecation.new('1.0', 'ProcessSettings') # will become private
+    deprecate start: :restart_after_fork, deprecator: ActiveSupport::Deprecation.new('1.0', 'ProcessSettings')
+
+    def restart_after_fork
+      start_internal(enable_listen_thread?)
+    end
 
     def listen_thread_running?
       !@listener.nil?
