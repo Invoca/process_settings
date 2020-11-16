@@ -8,7 +8,7 @@ require 'active_support/deprecation'
 require 'process_settings/abstract_monitor'
 require 'process_settings/targeted_settings'
 require 'process_settings/hash_path'
-require 'process_settings/helpers/process_settings_watchdog'
+require 'process_settings/helpers/watchdog'
 require 'exception_handling'
 
 module ProcessSettings
