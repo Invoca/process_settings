@@ -8,6 +8,8 @@ require 'active_support/deprecation'
 require 'process_settings/abstract_monitor'
 require 'process_settings/targeted_settings'
 require 'process_settings/hash_path'
+require 'process_settings/helpers/process_settings_watchdog'
+require 'exception_handling'
 
 module ProcessSettings
   class FileMonitor < AbstractMonitor
@@ -22,6 +24,31 @@ module ProcessSettings
       @last_untargetted_settings = nil
 
       start_internal(enable_listen_thread?(environment))
+    end
+
+    def start_watchdog_thread(file_path = :missing)
+      if file_path == :missing
+        ActiveSupport::Deprecation.warn("ProcessEnvSetup.start_watchdog_thread with no arguments is deprecated")
+        file_path = ProcessSettings::Monitor.file_path
+      end
+
+      @watchdog_thread and raise ArgumentError, "watchdog thread already running!"
+      @watchdog_thread = Thread.new do
+        watchdog = ProcessSettings::Watchdog.new(file_path)
+        loop do
+          ExceptionHandling.ensure_safe("ProcessSettings::Watchdog thread") do
+            sleep(1.minute)
+            watchdog.check
+          end
+        end
+      end
+    end
+
+    def stop_watchdog_thread
+      if @watchdog_thread
+        Thread.kill(@watchdog_thread)
+        @watchdog_thread = nil
+      end
     end
 
     def start
