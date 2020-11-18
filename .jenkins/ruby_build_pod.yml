@@ -14,5 +14,7 @@ spec:
     resources:
       requests:
         memory: "400Mi"
+      limits:
+        memory: "400Mi"
     command:
       - cat
