@@ -13,6 +13,6 @@ spec:
     tty: true
     resources:
       requests:
-        memory: "200Mi"
+        memory: "400Mi"
     command:
       - cat
