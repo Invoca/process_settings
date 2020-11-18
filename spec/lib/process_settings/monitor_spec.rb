@@ -124,7 +124,7 @@ describe ProcessSettings::Monitor do
         allow_any_instance_of(ActiveSupport::Deprecation).to receive(:warn).with(any_args)
         Listen.logger = nil
         described_class.logger = logger
-        expect(Listen.logger).to be(logger)
+        expect(Listen.logger).to eq(logger)
       end
 
       it "logger = should leave the Listen logger alone if already set" do
