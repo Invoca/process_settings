@@ -8,7 +8,6 @@ gem 'activesupport', '>= 4.2', '< 7'
 gem 'appraisal'
 gem 'bump', '~> 0.6.1'
 gem 'coveralls', require: false
-gem 'exception_handling'
 gem 'pry'
 gem 'rake'
 gem 'rspec'
