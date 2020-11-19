@@ -46,7 +46,7 @@ module ProcessSettings
       def logger=(new_logger)
         ActiveSupport::Deprecation.warn("ProcessSettings::Monitor.logger is deprecated and will be removed in v1.0.")
         @logger = new_logger
-        Listen.logger ||= new_logger
+        Listen.logger = new_logger unless Listen.instance_variable_get(:@logger)
       end
 
       deprecate :logger, :logger=, :file_path, :file_path=, deprecator: ActiveSupport::Deprecation.new('1.0', 'ProcessSettings')
