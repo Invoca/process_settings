@@ -26,12 +26,7 @@ module ProcessSettings
       start_internal(enable_listen_thread?(environment))
     end
 
-    def start_watchdog_thread(file_path = :missing)
-      if file_path == :missing
-        ActiveSupport::Deprecation.warn("ProcessEnvSetup.start_watchdog_thread with no arguments is deprecated")
-        file_path = ProcessSettings::Monitor.file_path
-      end
-
+    def start_watchdog_thread(file_path)
       @watchdog_thread and raise ArgumentError, "watchdog thread already running!"
       @watchdog_thread = Thread.new do
         watchdog = ProcessSettings::Watchdog.new(file_path)
