@@ -28,19 +28,19 @@ module ProcessSettings
     def start_watchdog_thread(file_path)
       @watchdog_thread and raise ArgumentError, "watchdog thread already running!"
       @watchdog_thread = Thread.new do
-        watchdog = ProcessSettings::Watchdog.new(file_path)
+        watchdog = Watchdog.new(file_path)
         loop do
-          ExceptionHandling.ensure_safe("ProcessSettings::Watchdog thread") do
-            sleep(1.minute)
-            watchdog.check
-          end
+          sleep(1.minute)
+          watchdog.check
+        rescue => ex
+          logger.error("ProcessSettings::Watchdog thread: #{ex.class.name}: #{ex.message}")
         end
       end
     end
 
     def stop_watchdog_thread
       if @watchdog_thread
-        Thread.kill(@watchdog_thread)
+        @watchdog_thread&.kill
         @watchdog_thread = nil
       end
     end
