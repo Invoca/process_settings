@@ -409,4 +409,49 @@ describe ProcessSettings::FileMonitor do
 
     it { should eq(true) }
   end
+
+  describe "#start_watchdog_thread" do
+    let(:monitor) { described_class.new(SETTINGS_PATH, logger: logger) }
+    let(:file_path) { monitor.file_path }
+    subject { monitor.start_watchdog_thread(file_path) }
+
+    before do
+      File.write(SETTINGS_PATH, EAST_SETTINGS_YAML)
+    end
+
+    after do
+      FileUtils.rm_f(SETTINGS_PATH)
+      monitor.stop_watchdog_thread
+    end
+
+    it "should start a watchdog thread" do
+      expect(monitor).to receive(:start_watchdog_thread).with(file_path)
+      subject
+    end
+
+    it "should raise argument if watchdog is already running" do
+      expect(monitor).to receive(:start_watchdog_thread).with(file_path).and_call_original.exactly(2)
+      subject
+      expect { monitor.start_watchdog_thread(file_path) }.to raise_exception(ArgumentError, "watchdog thread already running!")
+    end
+  end
+
+  describe "#stop_watchdog_thread" do
+    let(:monitor) { described_class.new(SETTINGS_PATH, logger: logger) }
+    let(:file_path) { monitor.file_path }
+    subject { monitor.stop_watchdog_thread }
+
+    before do
+      File.write(SETTINGS_PATH, EAST_SETTINGS_YAML)
+    end
+
+    after do
+      FileUtils.rm_f(SETTINGS_PATH)
+    end
+
+    it "should stop a watchdog thread" do
+      expect(monitor).to receive(:stop_watchdog_thread)
+      subject
+    end
+  end
 end
