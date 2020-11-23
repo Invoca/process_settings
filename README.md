@@ -181,9 +181,8 @@ end
 ```
 
 ### Start Watchdog
-Since we heavily depend on the [listen gem](https://github.com/guard/listen), as a secondary insurance measure we can use a `ProcessSettings::Watchdog` to ensure that a given file path's versions from memory and disk are in sync.
- 
-When using `ProcessSettings` you can start a watchdog thread using `start_watchdog_thread` on a particular file path. You may not start if it has already been started.
+When using `ProcessSettings` you can start a watchdog thread using `start_watchdog_thread` on a particular file path. The watchdog will poll once a minute to double-check if any changes have been missed due to a bug in the `listen` gem or the supporting OS drivers like `inotify`.
+You may not start the watchdog thread it has already been started. 
 ```ruby
 ProcessSettings.instance.start_watchdog_thread(file_path)
 ```
