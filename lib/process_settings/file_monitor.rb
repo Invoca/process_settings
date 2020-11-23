@@ -39,10 +39,8 @@ module ProcessSettings
     end
 
     def stop_watchdog_thread
-      if @watchdog_thread
-        @watchdog_thread&.kill
-        @watchdog_thread = nil
-      end
+      @watchdog_thread&.kill
+      @watchdog_thread = nil
     end
 
     def start
