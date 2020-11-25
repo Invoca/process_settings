@@ -8,6 +8,7 @@ require 'active_support/deprecation'
 require 'process_settings/abstract_monitor'
 require 'process_settings/targeted_settings'
 require 'process_settings/hash_path'
+require 'process_settings/helpers/watchdog'
 
 module ProcessSettings
   class FileMonitor < AbstractMonitor
@@ -22,6 +23,24 @@ module ProcessSettings
       @last_untargetted_settings = nil
 
       start_internal(enable_listen_thread?(environment))
+    end
+
+    def start_watchdog_thread(file_path)
+      @watchdog_thread and raise ArgumentError, "watchdog thread already running!"
+      @watchdog_thread = Thread.new do
+        watchdog = Watchdog.new(file_path)
+        loop do
+          sleep(1.minute)
+          watchdog.check
+        rescue => ex
+          logger.error("ProcessSettings::Watchdog thread: #{ex.class.name}: #{ex.message}")
+        end
+      end
+    end
+
+    def stop_watchdog_thread
+      @watchdog_thread&.kill
+      @watchdog_thread = nil
     end
 
     def start

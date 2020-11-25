@@ -4,6 +4,7 @@ source 'http://rubygems.org'
 
 gemspec
 
+gem 'activesupport', '>= 4.2', '< 7'
 gem 'appraisal'
 gem 'bump', '~> 0.6.1'
 gem 'coveralls', require: false

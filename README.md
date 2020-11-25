@@ -180,6 +180,19 @@ after_fork do
 end
 ```
 
+### Start Watchdog
+When using `ProcessSettings` you can start a watchdog thread using `start_watchdog_thread` on a particular file path. The watchdog will poll once a minute to double-check if any changes have been missed due to a bug in the `listen` gem or the supporting OS drivers like `inotify`.
+You may not start the watchdog thread it has already been started. 
+```ruby
+ProcessSettings.instance.start_watchdog_thread(file_path)
+```
+
+### Stop Watchdog
+When using `ProcessSettings` you can stop a watchdog thread using `stop_watchdog_thread`. Once stopped you may start a new watchdog thread.
+```ruby
+ProcessSettings.instance.stop_watchdog_thread
+```
+
 ### Testing
 For testing, it is often necessary to set a specific override hash for the process_settings values to use in
 that use case.  The `ProcessSettings::Testing::RSpec::Helpers` and `ProcessSettings::Testing::Minitest::Helpers` modules are provided for this purpose.
