@@ -167,6 +167,7 @@ switching the script to use `Tempdir` for generating temporary file name
 - `ProcessSettings::Monitor.on_change` has been deprecated; it will be removed in version `1.0.0`.
   `ProcessSettings::Monitor.when_updated` should be used instead.
 
+[0.18.0]: https://github.com/Invoca/process_settings/compare/v0.17.0...v0.18.0
 [0.17.0]: https://github.com/Invoca/process_settings/compare/v0.16.0...v0.17.0
 [0.16.0]: https://github.com/Invoca/process_settings/compare/v0.15.1...v0.16.0
 [0.15.1]: https://github.com/Invoca/process_settings/compare/v0.15.0...v0.15.1
