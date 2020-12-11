@@ -7,6 +7,20 @@ metadata:
   namespace: jenkins
   name: process_settings
 spec:
+  tolerations:
+  - key: dedicated
+    operator: Equal
+    value: jenkins
+    effect: NoSchedule
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: kops.k8s.io/instancegroup
+            operator: In
+            values:
+            - jenkins
   containers:
   - name: ruby
     image: ruby:2.6.5
