@@ -114,7 +114,11 @@ module ProcessSettings
         # find last value from matching targets
         if target_and_settings.target.target_key_matches?(full_context)
           if (value = target_and_settings.settings.json_doc.mine(*path, not_found_value: :not_found)) != :not_found
-            latest_result = value
+            latest_result = if latest_result.is_a?(Hash) && value.is_a?(Hash)
+                              latest_result.deep_merge(value)
+                            else
+                              value
+                            end
           end
         end
         latest_result

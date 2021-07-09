@@ -11,6 +11,8 @@ describe ProcessSettings::FileMonitor do
                    { 'target' => true, 'settings' => { 'sip' => { 'enabled' => true } } },
                    { 'target' => { 'caller_id' => ['+18003334444', '+18887776666']}, 'settings' => { 'reject_call' => false }},
                    { 'target' => { 'region' => 'east', 'caller_id' => ['+18003334444', '+18887776666'] }, 'settings' => { 'collective' => true }},
+                   { 'settings' => { 'frontend' => { 'api_rate_limits' => { 'test_1' => 100 } } } },
+                   { 'settings' => { 'frontend' => { 'api_rate_limits' => { 'test_2' => 50 } } } },
                    { 'meta' => { 'version' => 19, 'END' => true }}].freeze
   EMPTY_SAMPLE_SETTINGS = [{ 'target' => true, 'settings' => {} }, { 'meta' => { 'version' => 19, 'END' => true }}].freeze
   SAMPLE_SETTINGS_YAML = SAMPLE_SETTINGS.to_yaml
@@ -338,7 +340,14 @@ describe ProcessSettings::FileMonitor do
       result = process_monitor.statically_targeted_settings
       settings = result.map { |s| s.settings.json_doc }
 
-      expect(settings).to eq([{ 'reject_call' => true }, { 'sip' => { 'enabled' => true } }, { 'reject_call' => false }, { 'collective' => true }])
+      expect(settings).to eq([
+                               { 'reject_call' => true },
+                               { 'sip' => { 'enabled' => true } },
+                               { 'reject_call' => false },
+                               { 'collective' => true },
+                               { "frontend" => {"api_rate_limits" => { "test_1" => 100 } } },
+                               { "frontend" =>{ "api_rate_limits" => { "test_2" => 50 } } }
+                            ])
     end
 
     it "keeps subset of targeted entries" do
@@ -347,7 +356,12 @@ describe ProcessSettings::FileMonitor do
       result = process_monitor.statically_targeted_settings
       settings = result.map { |s| s.settings.json_doc }
 
-      expect(settings).to eq([{ 'sip' => { 'enabled' => true } }, {"reject_call" => false}])
+      expect(settings).to eq([
+                               { 'sip' => { 'enabled' => true } },
+                               { 'reject_call' => false },
+                               { "frontend" => {"api_rate_limits" => { "test_1" => 100 } } },
+                               { "frontend" =>{ "api_rate_limits" => { "test_2" => 50 } } }
+                             ])
     end
 
     it "recomputes targeting if static_context changes" do
@@ -363,7 +377,12 @@ describe ProcessSettings::FileMonitor do
       expect(result3.object_id).to_not eq(result.object_id)
 
       settings = result3.map { |s| s.settings.json_doc }
-      expect(settings).to eq([{ 'sip' => { 'enabled' => true } }, {"reject_call" => false}])
+      expect(settings).to eq([
+                               { 'sip' => { 'enabled' => true } },
+                               { 'reject_call' => false },
+                               { "frontend" => {"api_rate_limits" => { "test_1" => 100 } } },
+                               { "frontend" =>{ "api_rate_limits" => { "test_2" => 50 } } }
+                             ])
     end
   end
 
@@ -393,6 +412,12 @@ describe ProcessSettings::FileMonitor do
       expect(process_monitor.targeted_value('collective', dynamic_context: { 'caller_id' => '+18887776666' }, required: false)).to eq(true)
       expect(process_monitor.targeted_value('collective', dynamic_context: { 'region' => 'west', 'caller_id' => '+18880006666' }, required: false)).to eq(nil)
       expect(process_monitor.targeted_value('collective', dynamic_context: { 'region' => 'west', 'caller_id' => '+18887776666' }, required: false)).to eq(true)
+    end
+
+    it "deep merges results when they are hashes" do
+      expect(process_monitor.targeted_value('frontend', 'api_rate_limits', 'test_1', dynamic_context: {})).to eq(100)
+      expect(process_monitor.targeted_value('frontend', 'api_rate_limits', 'test_2', dynamic_context: {})).to eq(50)
+      expect(process_monitor.targeted_value('frontend', 'api_rate_limits', dynamic_context: {})).to eq({ 'test_1' => 100, 'test_2' => 50 })
     end
   end
 
