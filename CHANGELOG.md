@@ -4,10 +4,15 @@ Inspired by [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 Note: this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.19.0] - Unreleased
+### Fixed
+- Fixed a bug where accessing a setting that is a `Hash` defined across multiple file entries
+  would return the last matching value instead of deep merging the full set of settings
+
 ## [0.18.0] - 2020-11-24
 ### Added
-- Added `FileMonitor#start_watchdog_thread` and `FileMonitor#start_watchdog_thread` to be used to start and 
-stop the `@watchdog_thread`. The watchdog will poll once a minute to double-check if any changes have been missed 
+- Added `FileMonitor#start_watchdog_thread` and `FileMonitor#start_watchdog_thread` to be used to start and
+stop the `@watchdog_thread`. The watchdog will poll once a minute to double-check if any changes have been missed
 due to a bug in the `listen` gem or the supporting OS drivers like `inotify`.
 
 ## [0.17.0] - 2020-10-12
@@ -167,6 +172,7 @@ switching the script to use `Tempdir` for generating temporary file name
 - `ProcessSettings::Monitor.on_change` has been deprecated; it will be removed in version `1.0.0`.
   `ProcessSettings::Monitor.when_updated` should be used instead.
 
+[0.18.0]: https://github.com/Invoca/process_settings/compare/v0.18.0...v0.19.0
 [0.18.0]: https://github.com/Invoca/process_settings/compare/v0.17.0...v0.18.0
 [0.17.0]: https://github.com/Invoca/process_settings/compare/v0.16.0...v0.17.0
 [0.16.0]: https://github.com/Invoca/process_settings/compare/v0.15.1...v0.16.0
