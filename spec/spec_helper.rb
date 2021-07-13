@@ -9,7 +9,7 @@ Coveralls.wear!
 
 RSpec.configure do |config|
   config.add_formatter  :progress
-  config.add_formatter  RspecJunitFormatter, ENV['JUNIT_OUTPUT'] || 'spec/reports/rspec.xml'
+  config.add_formatter  RspecJunitFormatter, ENV['JUNIT_OUTPUT'].presence || 'spec/reports/rspec.xml'
 
   config.expect_with :rspec do |expectations|
     expectations.include_chain_clauses_in_custom_matcher_descriptions = true
