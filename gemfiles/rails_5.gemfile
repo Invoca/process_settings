@@ -2,9 +2,9 @@
 
 source "http://rubygems.org"
 
+gem "activesupport", "~> 5.2"
 gem "appraisal"
 gem "bump", "~> 0.6.1"
-gem "coveralls", require: false
 gem "pry"
 gem "rake"
 gem "rspec"
@@ -14,6 +14,7 @@ gem "rubocop", "0.54.0"
 gem "rubocop-git"
 gem "ruby-prof"
 gem "ruby-prof-flamegraph"
-gem "activesupport", "~> 5.2"
+gem "simplecov"
+gem "simplecov-lcov"
 
 gemspec path: "../"

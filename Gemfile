@@ -7,7 +7,6 @@ gemspec
 gem 'activesupport', '>= 4.2', '< 7'
 gem 'appraisal'
 gem 'bump', '~> 0.6.1'
-gem 'coveralls', require: false
 gem 'pry'
 gem 'rake'
 gem 'rspec'
@@ -17,3 +16,5 @@ gem 'rubocop', '0.54.0'
 gem 'rubocop-git'
 gem 'ruby-prof'
 gem 'ruby-prof-flamegraph'
+gem 'simplecov'
+gem 'simplecov-lcov'
