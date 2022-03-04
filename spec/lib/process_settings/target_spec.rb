@@ -134,6 +134,54 @@ describe ProcessSettings::Target do
       expect(process_target.target_key_matches?(context_hash)).to be_truthy
       expect(process_target.target_key_matches?({})).to be_falsey
     end
+
+    context "for substring matching" do
+      it "should match on values when using backslash delimiters in target hash" do
+        context_hash = {
+          'service' => 'telecom-1',
+          'region'  => 'east',
+          'cdr'     => { 'caller' => '+18056807000' }
+        }
+        target_hash = {
+          'service' => '/telecom/'
+        }
+        process_target = described_class.new(target_hash)
+        expect(process_target.target_key_matches?(context_hash)).to be_truthy
+        expect(process_target.target_key_matches?({})).to be_falsey
+        expect(process_target.target_key_matches?({ 'service' => 'tele' })).to be_falsey
+      end
+
+      it "should not match if no characters are between the backslash delimiters" do
+        context_hash = {
+          'service' => 'telecom',
+          'region'  => 'east',
+          'cdr'     => { 'caller' => '+18056807000' }
+        }
+        target_hash = {
+          'service' => '//'
+        }
+        process_target = described_class.new(target_hash)
+        expect(process_target.target_key_matches?(context_hash)).to be_falsey
+        expect(process_target.target_key_matches?({})).to be_falsey
+        expect(process_target.target_key_matches?({ 'service' => '' })).to be_falsey
+        expect(process_target.target_key_matches?({ 'service' => '//' })).to be_truthy
+      end
+
+      it "should not match if only one backslash delimiter is provdied" do
+        context_hash = {
+          'service' => 'telecom',
+          'region'  => 'east',
+          'cdr'     => { 'caller' => '+18056807000' }
+        }
+        target_hash = {
+          'service' => '/telecom'
+        }
+        process_target = described_class.new(target_hash)
+        expect(process_target.target_key_matches?(context_hash)).to be_falsey
+        expect(process_target.target_key_matches?({})).to be_falsey
+        expect(process_target.target_key_matches?({ 'service' => '/telecom' })).to be_truthy
+      end
+    end
   end
 
   describe "#with_static_context" do

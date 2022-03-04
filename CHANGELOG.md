@@ -4,6 +4,10 @@ Inspired by [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 Note: this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.20.0] - 2022-03-04
+### Added
+- Added substring matching for targeting. See [README.md](README.md#Matching-Values) for usage examples.
+
 ## [0.19.0] - 2021-07-09
 ### Fixed
 - Fixed a bug where accessing a setting that is a `Hash` defined across multiple file entries
