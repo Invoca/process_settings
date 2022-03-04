@@ -91,8 +91,8 @@ module ProcessSettings
         when true, false
           target_value
         when String
-          if target_value =~ /\/.+\// # Any string that starts and ends with backslashes.
-            context_hash.match?(target_value[1..-2])
+          if (pattern = target_value[/\A \/ (.+) \/ \z/x, 1]) # Any string that starts and ends with slashes.
+            context_hash.match?(pattern)
           else
             target_value == context_hash
           end

@@ -135,51 +135,106 @@ describe ProcessSettings::Target do
       expect(process_target.target_key_matches?({})).to be_falsey
     end
 
-    context "for substring matching" do
-      it "should match on values when using backslash delimiters in target hash" do
-        context_hash = {
-          'service' => 'telecom-1',
+    describe "for substring matching" do
+      subject { process_target.target_key_matches?(context_hash) }
+      let(:process_target) { described_class.new(target_hash) }
+      let(:context_hash) do
+        {
+          'service' => service,
           'region'  => 'east',
           'cdr'     => { 'caller' => '+18056807000' }
         }
-        target_hash = {
-          'service' => '/telecom/'
-        }
-        process_target = described_class.new(target_hash)
-        expect(process_target.target_key_matches?(context_hash)).to be_truthy
-        expect(process_target.target_key_matches?({})).to be_falsey
-        expect(process_target.target_key_matches?({ 'service' => 'tele' })).to be_falsey
       end
 
-      it "should not match if no characters are between the backslash delimiters" do
-        context_hash = {
-          'service' => 'telecom',
-          'region'  => 'east',
-          'cdr'     => { 'caller' => '+18056807000' }
-        }
-        target_hash = {
-          'service' => '//'
-        }
-        process_target = described_class.new(target_hash)
-        expect(process_target.target_key_matches?(context_hash)).to be_falsey
-        expect(process_target.target_key_matches?({})).to be_falsey
-        expect(process_target.target_key_matches?({ 'service' => '' })).to be_falsey
-        expect(process_target.target_key_matches?({ 'service' => '//' })).to be_truthy
+      context "with target value that has a slash at the start and end" do
+        let(:target_hash) { { 'service' => '/telecom/' } }
+
+        context "when context hash value matches" do
+          let(:service) { 'telecom-1' }
+
+          it { is_expected.to be_truthy }
+        end
+
+        context "with an empty context hash" do
+          let(:context_hash) { {} }
+          it { is_expected.to be_falsey }
+        end
+
+        context "with a non-matching context value" do
+          let(:service) { 'tele' }
+          it { is_expected.to be_falsey }
+        end
       end
 
-      it "should not match if only one backslash delimiter is provdied" do
-        context_hash = {
-          'service' => 'telecom',
-          'region'  => 'east',
-          'cdr'     => { 'caller' => '+18056807000' }
-        }
-        target_hash = {
-          'service' => '/telecom'
-        }
-        process_target = described_class.new(target_hash)
-        expect(process_target.target_key_matches?(context_hash)).to be_falsey
-        expect(process_target.target_key_matches?({})).to be_falsey
-        expect(process_target.target_key_matches?({ 'service' => '/telecom' })).to be_truthy
+      context "when target value only has a leading slash" do
+        let(:target_hash) { { 'service' => '/telecom' } }
+
+        context "when context hash value has the string but not the slash" do
+          let(:service) { 'telecom' }
+
+          it { is_expected.to be_falsey }
+        end
+
+        context "when context hash value exactly matches target value" do
+          let(:service) { '/telecom' }
+          it { is_expected.to be_truthy }
+        end
+      end
+
+      context "when target value only has a trailing slash" do
+        let(:target_hash) { { 'service' => 'telecom/' } }
+
+        context "when context hash value has the string but not the slash" do
+          let(:service) { 'telecom' }
+
+          it { is_expected.to be_falsey }
+        end
+
+        context "when context hash value exactly matches target value" do
+          let(:service) { 'telecom/' }
+          it { is_expected.to be_truthy }
+        end
+      end
+
+      context "when target value has embedded slashes (not at the front or back)" do
+        let(:target_hash) { { 'service' => 'tmp/dir/log' } }
+
+        context "when context hash value is the target value except the first and last character" do
+          let(:service) { 'mp/dir/lo' }
+          it { is_expected.to be_falsey }
+        end
+
+        context "when context hash value exactly matches target value" do
+          let(:service) { 'tmp/dir/log' }
+          it { is_expected.to be_truthy }
+        end
+      end
+
+      context "when target value is valid and also has embedded slashes" do
+        let(:target_hash) { { 'service' => '/tmp/dir/log/'} }
+
+        context "when context hash value matches the target" do
+          let(:service) { 'tmp/dir/log/service-log.txt' }
+          it { is_expected.to be_truthy }
+        end
+
+        context "when context hash only has whats between the embedded slashes" do
+          let(:service) { 'dir' }
+          it { is_expected.to be_falsey }
+        end
+      end
+
+      context "when target value is two slashes and nothing else" do
+        let(:target_hash) { { 'service' => '//' } }
+        context "when context hash value exactly matches" do
+          let(:service) {'//' }
+          it { is_expected.to be_truthy }
+        end
+
+        context "when context hash value is empty" do
+          let(:service) {'' }
+          it { is_expected.to be_falsey }
+        end
       end
     end
   end

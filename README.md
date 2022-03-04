@@ -165,12 +165,12 @@ target:
 This will be applied in any process that has (`service_name == "frontend"` OR `service_name == "auth"`) AND `datacenter == "AWS-US-EAST-1"`.
 
 ### Matching Values
-By adding a backslash `/` at the front and end of a value, context values will be applied if the string between the backslashes is a substring of the value.
+By adding a slash `/` at the front and end of a value, context values will be applied if the string between the slashes is a substring of the value.
 ```
 target:
   service_name: /frontend/
 ```
-This will be applied in any process that has `service_name =~ "frontend"`. As an example this will match `"frontend-1"`
+This will be applied in any process that has `service_name =~ /frontend/`. As an example this will match `"frontend-1"`
 
 ### Precedence
 The settings YAML files are always combined in alphabetical order by file path. Later settings take precedence over the earlier ones.
