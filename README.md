@@ -164,8 +164,8 @@ target:
 ```
 This will be applied in any process that has (`service_name == "frontend"` OR `service_name == "auth"`) AND `datacenter == "AWS-US-EAST-1"`.
 
-### Matching Values
-To provide a regular expression for matching, surround it with a leading and trailing slash `/`. For example:
+### Regexp Targeting
+To provide a regular expression for targeting, surround it with a leading and trailing slash `/`. For example:
 ```
 target:
   service_name: /frontend-\d/

@@ -135,7 +135,7 @@ describe ProcessSettings::Target do
       expect(process_target.target_key_matches?({})).to be_falsey
     end
 
-    describe "for substring matching" do
+    describe "for regex matching" do
       subject { process_target.target_key_matches?(context_hash) }
       let(:process_target) { described_class.new(target_hash) }
       let(:context_hash) do

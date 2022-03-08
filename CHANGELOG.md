@@ -6,7 +6,7 @@ Note: this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0
 
 ## [0.20.0] - 2022-03-04
 ### Added
-- Added substring matching for targeting. See [README.md](README.md#Matching-Values) for usage examples.
+- Added regular expressions capabilities to targeting. See [README.md](README.md#Regexp-Targeting) for usage examples.
 
 ## [0.19.0] - 2021-07-09
 ### Fixed
