@@ -164,6 +164,14 @@ target:
 ```
 This will be applied in any process that has (`service_name == "frontend"` OR `service_name == "auth"`) AND `datacenter == "AWS-US-EAST-1"`.
 
+### Regexp Targeting
+To provide a regular expression for targeting, use the ruby regex keyword `!ruby/regexp` followed by your regular expression. For example:
+```
+target:
+  service_name: !ruby/regexp /frontend-\d/
+```
+This will be applied in any process that has `service_name` that has `frontend-` followed with a number. As an example this will match `"frontend-1"`
+
 ### Precedence
 The settings YAML files are always combined in alphabetical order by file path. Later settings take precedence over the earlier ones.
 

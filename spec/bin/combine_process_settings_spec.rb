@@ -32,6 +32,11 @@ describe 'combine_process_settings' do
             max_recording_seconds: 600
             answer_odds: 100
             status_change_min_days:
+      - filename: regex_target.yml
+        target:
+          service: !ruby/regexp /frontend/
+        settings:
+          test_setting: 100
       - filename: stop_incoming_requests.yml
         target:
           region: east

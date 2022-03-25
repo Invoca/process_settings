@@ -90,6 +90,8 @@ module ProcessSettings
           end
         when true, false
           target_value
+        when Regexp
+          context_hash.match?(target_value)
         else
           target_value == context_hash
         end

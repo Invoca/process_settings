@@ -4,6 +4,12 @@ Inspired by [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 Note: this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.20.0] - Unreleased
+### Added
+- Added regular expressions capabilities to targeting. See [README.md](README.md#Regexp-Targeting) for usage examples.
+### Fixed
+- Use `Pysch.safe_load_file` over `Pysch.load_file` with `Regexp` as only permitted class.
+
 ## [0.19.0] - 2021-07-09
 ### Fixed
 - Fixed a bug where accessing a setting that is a `Hash` defined across multiple file entries

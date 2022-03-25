@@ -78,6 +78,21 @@ describe ProcessSettings::TargetedSettings do
     end
   end
 
+  context "with ruby's special regular expression keyword" do
+    let(:file_path) { File.expand_path("../../fixtures/production/combined_process_settings-20.yml", __dir__) }
+
+    describe ".from_file" do
+      it "reads from yaml file and properly converts the special keyword and expression in the file into a ruby Regexp object" do
+        targeted_settings = described_class.from_file(file_path)
+
+        regex_target_setting = targeted_settings.targeted_settings_array[1]
+        expect(regex_target_setting.filename).to eq("regex_target.yml")
+        expect(regex_target_setting.target.json_doc).to eq({ "service" => /frontend/ })
+        expect(regex_target_setting.settings.json_doc).to eq({ "test_setting" => 100 })
+      end
+    end
+  end
+
   describe ".from_array" do
     it "delegates" do
       target_and_settings = described_class.from_array(TARGETED_SETTINGS)

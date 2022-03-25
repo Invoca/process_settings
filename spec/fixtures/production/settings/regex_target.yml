@@ -1,0 +1,5 @@
+---
+target:
+  service: !ruby/regexp /frontend/
+settings:
+  test_setting: 100
