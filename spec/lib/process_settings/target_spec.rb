@@ -146,8 +146,8 @@ describe ProcessSettings::Target do
         }
       end
 
-      context "with target value that has a slash at the start and end" do
-        let(:target_hash) { { 'service' => '/telecom/' } }
+      context "with target value is a regular expression" do
+        let(:target_hash) { { 'service' => /telecom/ } }
 
         context "when context hash value matches" do
           let(:service) { 'telecom-1' }
@@ -166,8 +166,8 @@ describe ProcessSettings::Target do
         end
       end
 
-      context "when target value only has a leading slash" do
-        let(:target_hash) { { 'service' => '/telecom' } }
+      context "when target value is a regex as a string" do
+        let(:target_hash) { { 'service' => '/telecom/' } }
 
         context "when context hash value has the string but not the slash" do
           let(:service) { 'telecom' }
@@ -175,43 +175,14 @@ describe ProcessSettings::Target do
           it { is_expected.to be_falsey }
         end
 
-        context "when context hash value exactly matches target value" do
-          let(:service) { '/telecom' }
-          it { is_expected.to be_truthy }
-        end
-      end
-
-      context "when target value only has a trailing slash" do
-        let(:target_hash) { { 'service' => 'telecom/' } }
-
-        context "when context hash value has the string but not the slash" do
-          let(:service) { 'telecom' }
-
-          it { is_expected.to be_falsey }
-        end
-
-        context "when context hash value exactly matches target value" do
-          let(:service) { 'telecom/' }
-          it { is_expected.to be_truthy }
-        end
-      end
-
-      context "when target value has embedded slashes (not at the front or back)" do
-        let(:target_hash) { { 'service' => 'tmp/dir/log' } }
-
-        context "when context hash value is the target value except the first and last character" do
-          let(:service) { 'mp/dir/lo' }
-          it { is_expected.to be_falsey }
-        end
-
-        context "when context hash value exactly matches target value" do
-          let(:service) { 'tmp/dir/log' }
+        context "when context hash value exactly matches the string target value" do
+          let(:service) { '/telecom/' }
           it { is_expected.to be_truthy }
         end
       end
 
       context "when target value is valid and also has embedded slashes" do
-        let(:target_hash) { { 'service' => '/tmp/dir/log/'} }
+        let(:target_hash) { { 'service' => /tmp\/dir\/log/ } }
 
         context "when context hash value matches the target" do
           let(:service) { 'tmp/dir/log/service-log.txt' }
@@ -220,19 +191,6 @@ describe ProcessSettings::Target do
 
         context "when context hash only has whats between the embedded slashes" do
           let(:service) { 'dir' }
-          it { is_expected.to be_falsey }
-        end
-      end
-
-      context "when target value is two slashes and nothing else" do
-        let(:target_hash) { { 'service' => '//' } }
-        context "when context hash value exactly matches" do
-          let(:service) {'//' }
-          it { is_expected.to be_truthy }
-        end
-
-        context "when context hash value is empty" do
-          let(:service) {'' }
           it { is_expected.to be_falsey }
         end
       end

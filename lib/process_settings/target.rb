@@ -90,12 +90,8 @@ module ProcessSettings
           end
         when true, false
           target_value
-        when String
-          if (pattern = target_value[/\A \/ (.+) \/ \z/x, 1]) # Any string that starts and ends with slashes.
-            context_hash.match?(pattern)
-          else
-            target_value == context_hash
-          end
+        when Regexp
+          context_hash.match?(target_value)
         else
           target_value == context_hash
         end
