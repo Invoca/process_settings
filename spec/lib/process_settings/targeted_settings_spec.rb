@@ -22,9 +22,14 @@ describe ProcessSettings::TargetedSettings do
 
   describe "#initialize" do
     it "requires version:" do
+      expected_message = if RUBY_VERSION < '2.7'
+        /missing keyword: version/
+      else
+        /missing keyword: :version/
+      end
       expect do
         described_class.new([])
-      end.to raise_error(ArgumentError, /missing keyword: version/)
+      end.to raise_error(ArgumentError, expected_message)
     end
 
     it "requires non-empty version:" do
