@@ -4,6 +4,10 @@ Inspired by [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 Note: this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0] - Unreleased
+### Removed
+- Removed explicit support for Rails 4
+
 ## [0.19.0] - 2021-07-09
 ### Fixed
 - Fixed a bug where accessing a setting that is a `Hash` defined across multiple file entries
@@ -172,7 +176,8 @@ switching the script to use `Tempdir` for generating temporary file name
 - `ProcessSettings::Monitor.on_change` has been deprecated; it will be removed in version `1.0.0`.
   `ProcessSettings::Monitor.when_updated` should be used instead.
 
-[0.18.0]: https://github.com/Invoca/process_settings/compare/v0.18.0...v0.19.0
+[1.0.0]: https://github.com/Invoca/process_settings/compare/v0.19.0...v1.0.0
+[0.19.0]: https://github.com/Invoca/process_settings/compare/v0.18.0...v0.19.0
 [0.18.0]: https://github.com/Invoca/process_settings/compare/v0.17.0...v0.18.0
 [0.17.0]: https://github.com/Invoca/process_settings/compare/v0.16.0...v0.17.0
 [0.16.0]: https://github.com/Invoca/process_settings/compare/v0.15.1...v0.16.0
