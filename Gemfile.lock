@@ -94,7 +94,6 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  activesupport (>= 4.2, < 7)
   appraisal
   bump (~> 0.6.1)
   process_settings!
@@ -111,4 +110,4 @@ DEPENDENCIES
   simplecov-lcov
 
 BUNDLED WITH
-   1.17.3
+   2.2.29
