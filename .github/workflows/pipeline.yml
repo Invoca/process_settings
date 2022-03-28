@@ -7,12 +7,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby: [2.6]
+        ruby: [2.6, 2.7, '3.0', 3.1]
         gemfile:
         - Gemfile
-        - gemfiles/rails_4.gemfile
         - gemfiles/rails_5.gemfile
         - gemfiles/rails_6.gemfile
+        exclude:
+        - ruby: '3.0'
+          gemfile: gemfiles/rails_5.gemfile
+        - ruby: 3.1
+          gemfile: gemfiles/rails_5.gemfile
     env:
       BUNDLE_GEMFILE: ${{ matrix.gemfile }}
     steps:
@@ -20,7 +24,7 @@ jobs:
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby }}
-        bundler: 1.17.3
+        bundler: 2.3.10
         bundler-cache: true
     - name: Unit Tests
       run: |
