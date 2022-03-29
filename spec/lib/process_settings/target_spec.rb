@@ -194,6 +194,20 @@ describe ProcessSettings::Target do
           it { is_expected.to be_falsey }
         end
       end
+
+      context "when context hash and target hash don't match keys" do
+        let(:context_hash) do
+          {
+            'service' => { 'name' => service },
+            'region'  => 'east',
+            'cdr'     => { 'caller' => '+18056807000' }
+          }
+        end
+        let(:target_hash) { { 'service' => /telecom/ } }
+        let(:service) { 'telecom-1' }
+
+        it { is_expected.to be_falsey }
+      end
     end
   end
 
@@ -392,6 +406,81 @@ describe ProcessSettings::Target do
         end
 
         it { should eq(target_hash) }
+      end
+    end
+
+    describe "for regex matching" do
+      subject { process_target.with_static_context(context_hash).json_doc }
+      let(:process_target) { described_class.new(target_hash) }
+      let(:context_hash) do
+        {
+          'service' => service,
+          'region'  => 'east',
+          'cdr'     => { 'caller' => '+18056807000' }
+        }
+      end
+
+      context "with target value is a regular expression" do
+        let(:target_hash) { { 'service' => /telecom/ } }
+
+        context "when context hash value matches" do
+          let(:service) { 'telecom-1' }
+
+          it { is_expected.to be_truthy }
+        end
+
+        context "with an empty context hash" do
+          let(:context_hash) { {} }
+          it { is_expected.to eq(target_hash) }
+        end
+
+        context "with a non-matching context value" do
+          let(:service) { 'tele' }
+          it { is_expected.to be_falsey }
+        end
+      end
+
+      context "when target value is a regex as a string" do
+        let(:target_hash) { { 'service' => '/telecom/' } }
+
+        context "when context hash value has the string but not the slash" do
+          let(:service) { 'telecom' }
+
+          it { is_expected.to be_falsey }
+        end
+
+        context "when context hash value exactly matches the string target value" do
+          let(:service) { '/telecom/' }
+          it { is_expected.to be_truthy }
+        end
+      end
+
+      context "when target value is valid and also has embedded slashes" do
+        let(:target_hash) { { 'service' => /tmp\/dir\/log/ } }
+
+        context "when context hash value matches the target" do
+          let(:service) { 'tmp/dir/log/service-log.txt' }
+          it { is_expected.to be_truthy }
+        end
+
+        context "when context hash only has whats between the embedded slashes" do
+          let(:service) { 'dir' }
+          it { is_expected.to be_falsey }
+        end
+      end
+
+      context "when context hash and target hash don't match keys" do
+        let(:context_hash) do
+          {
+            'service' => { 'name' => service },
+            'region'  => 'east',
+            'cdr'     => { 'caller' => '+18056807000' }
+          }
+        end
+        let(:target_hash) { { 'service' => /telecom/ } }
+        let(:service) { 'telecom-1' }
+
+        it { is_expected.to be_falsey }
       end
     end
   end

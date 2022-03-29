@@ -38,6 +38,12 @@ module ProcessSettings
           with_static_context_hash(target_value, static_context_hash)
         when true, false
           !target_value == !static_context_hash
+        when Regexp
+          if static_context_hash.is_a?(String)
+            static_context_hash.match?(target_value)
+          else
+            static_context_hash == target_value
+          end
         else
           target_value == static_context_hash
         end
@@ -91,7 +97,11 @@ module ProcessSettings
         when true, false
           target_value
         when Regexp
-          context_hash.match?(target_value)
+          if context_hash.is_a?(String)
+            context_hash.match?(target_value)
+          else
+            context_hash == target_value
+          end
         else
           target_value == context_hash
         end
