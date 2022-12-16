@@ -14,7 +14,7 @@ module ProcessSettings
 
     def check
       if version_from_memory != version_from_disk && (Time.now - mtime_from_disk) > MAX_MTIME_DIFFERENCE
-        raise ProcessSettings::OutOfSync.new("ProcessSettings versions are out of sync!\n Version from Disk: #{version_from_disk}\n Version from Memory: #{version_from_memory}\n mtime of file: #{mtime_from_disk}")
+        raise OutOfSync.new("ProcessSettings versions are out of sync!\n Version from Disk: #{version_from_disk}\n Version from Memory: #{version_from_memory}\n mtime of file: #{mtime_from_disk}")
       end
     end
 
