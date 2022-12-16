@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     process_settings (1.0.0)
-      activesupport (>= 5.2, < 7)
+      activesupport
       json
       listen (~> 3.0)
       psych (~> 3.2)
