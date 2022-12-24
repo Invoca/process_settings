@@ -75,7 +75,7 @@ GEM
     ruby-prof-flamegraph (0.3.0)
       ruby-prof (~> 0.13)
     ruby-progressbar (1.11.0)
-    simplecov (0.21.2)
+    simplecov (0.22.0)
       docile (~> 1.1)
       simplecov-html (~> 0.11)
       simplecov_json_formatter (~> 0.1)
