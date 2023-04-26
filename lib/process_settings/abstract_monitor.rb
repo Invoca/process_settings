@@ -2,8 +2,8 @@
 
 require 'active_support'
 
-require 'process_settings/targeted_settings'
-require 'process_settings/hash_path'
+require_relative 'targeted_settings'
+require_relative 'hash_path'
 
 module ProcessSettings
   class SettingsPathNotFound < StandardError; end

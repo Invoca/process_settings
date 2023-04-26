@@ -5,10 +5,10 @@ require 'listen'
 require 'psych'
 require 'active_support/deprecation'
 
-require 'process_settings/abstract_monitor'
-require 'process_settings/targeted_settings'
-require 'process_settings/hash_path'
-require 'process_settings/helpers/watchdog'
+require_relative 'abstract_monitor'
+require_relative 'targeted_settings'
+require_relative 'hash_path'
+require_relative 'helpers/watchdog'
 
 module ProcessSettings
   class FileMonitor < AbstractMonitor
