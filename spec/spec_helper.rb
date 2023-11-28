@@ -2,6 +2,7 @@
 
 require 'rspec_junit_formatter'
 require 'process_settings'
+require 'active_support/core_ext'
 
 require 'pry'
 
