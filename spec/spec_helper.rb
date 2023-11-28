@@ -2,11 +2,10 @@
 
 require 'rspec_junit_formatter'
 require 'process_settings'
-require 'active_support/core_ext'
 
 require 'pry'
 
-if ENV['GITHUB_ACTIONS'].presence
+if ENV['GITHUB_ACTIONS'] && !ENV['GITHUB_ACTIONS'].strip.empty?
   require 'simplecov'
   require 'simplecov-lcov'
 
@@ -23,8 +22,15 @@ if ENV['GITHUB_ACTIONS'].presence
 end
 
 RSpec.configure do |config|
+  formatter_outpath_path =
+    if ENV['JUNIT_OUTPUT'] && !ENV['JUNIT_OUTPUT'].strip.empty?
+      ENV['JUNIT_OUTPUT']
+    else
+      'spec/reports/rspec.xml'
+    end
+
   config.add_formatter  :progress
-  config.add_formatter  RspecJunitFormatter, ENV['JUNIT_OUTPUT'].presence || 'spec/reports/rspec.xml'
+  config.add_formatter  RspecJunitFormatter, formatter_outpath_path
 
   config.expect_with :rspec do |expectations|
     expectations.include_chain_clauses_in_custom_matcher_descriptions = true
