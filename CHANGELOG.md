@@ -4,6 +4,10 @@ Inspired by [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 Note: this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.19.2] - Unreleased
+### Added
+* Add require for `active_support/core_ext` to support active_support >= 7.1 on Ruby 3.2.
+
 ## [0.19.1] - 2022-12-16
 ### Fixed
 - Fixed a bug in `ProcessSettings::Watchdog` preventing it from raising out of sync errors
