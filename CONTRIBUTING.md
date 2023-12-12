@@ -9,6 +9,7 @@ All contributors to this project must adhere to the [Community Code of Conduct](
 1. Install the ruby version specified in the [.ruby-version](https://github.com/Invoca/process_settings/blob/master/.ruby-version) file (preferably you're using [rvm](https://rvm.io/) or [rbenv](https://github.com/rbenv/rbenv) to manage ruby versions)
 2. Make a fork of ProcessSettings, then clone your fork to your machine
 3. Run `bundle install` in your ProcessSettings directory to install dependencies
+4. Run `mkdir tmp` (if it doesn't already exist). This is needed to run the tests.
 
 ## Branching
 
