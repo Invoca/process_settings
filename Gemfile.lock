@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    process_settings (0.19.2)
+    process_settings (0.19.3)
       activesupport
       json
       listen (~> 3.0)
@@ -26,7 +26,7 @@ GEM
       thor (>= 0.14.0)
     ast (2.4.2)
     base64 (0.2.0)
-    bigdecimal (3.1.4)
+    bigdecimal (3.1.5)
     bump (0.6.1)
     coderay (1.1.3)
     concurrent-ruby (1.2.2)
