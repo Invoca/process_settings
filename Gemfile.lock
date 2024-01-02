@@ -5,7 +5,7 @@ PATH
       activesupport
       json
       listen (~> 3.0)
-      psych (~> 3.2)
+      psych (>= 3.2)
 
 GEM
   remote: http://rubygems.org/
@@ -52,7 +52,8 @@ GEM
     pry (0.14.1)
       coderay (~> 1.1)
       method_source (~> 1.0)
-    psych (3.3.4)
+    psych (5.1.2)
+      stringio
     rainbow (3.1.1)
     rake (13.0.6)
     rb-fsevent (0.11.2)
@@ -94,6 +95,7 @@ GEM
     simplecov-html (0.12.3)
     simplecov-lcov (0.8.0)
     simplecov_json_formatter (0.1.4)
+    stringio (3.1.0)
     thor (1.2.1)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
