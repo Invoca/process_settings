@@ -60,8 +60,11 @@ module ProcessSettings
 
         class << self
           def included(including_klass)
-            including_klass.define_method(:teardown) do
-              ProcessSettings.instance = initial_instance
+            including_klass.class_eval do
+              def teardown
+                super
+                ProcessSettings.instance = initial_instance
+              end
             end
           end
         end

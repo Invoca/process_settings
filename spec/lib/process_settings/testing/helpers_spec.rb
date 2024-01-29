@@ -40,7 +40,11 @@ describe ProcessSettings::Testing::Helpers do
     include ProcessSettings::Testing::RSpec::Helpers
   end
 
-  class TestClassMinitest
+  class DummyMinitestTest
+    def teardown; end
+  end
+
+  class TestClassMinitest < DummyMinitestTest
     class << self
       def after_blocks
         Array(instance_method(:teardown))
