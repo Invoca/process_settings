@@ -4,6 +4,11 @@ Inspired by [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 Note: this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.19.4] - Unreleased
+### Changed
+* Fix ProcessSettings::Testing::Minitest::Helpers to prepend #teardown instead of overriding it.
+* Fix ProcessSettings::Testing::Minitest::Helpers#teardown to call super after resetting the ProcessSettings instance.
+
 ## [0.19.3] - 2024-01-02
 ### Changed
 * Allow `psych` major versions greater than 3.2.

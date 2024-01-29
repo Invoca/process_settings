@@ -60,13 +60,16 @@ module ProcessSettings
 
         class << self
           def included(including_klass)
-            including_klass.class_eval do
-              def teardown
-                super
-                ProcessSettings.instance = initial_instance
-              end
-            end
+            # Prepend the teardown method in case the test class has already defined one.
+            including_klass.prepend(TeardownProcessSettings)
           end
+        end
+      end
+
+      module TeardownProcessSettings
+        def teardown
+          ProcessSettings.instance = initial_instance
+          super
         end
       end
     end
