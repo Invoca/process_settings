@@ -2,6 +2,7 @@
 
 require 'spec_helper'
 require 'process_settings/testing/helpers'
+require 'minitest'
 
 describe ProcessSettings::Testing::Helpers do
   class TestClassDefaultToRSpec
@@ -40,11 +41,15 @@ describe ProcessSettings::Testing::Helpers do
     include ProcessSettings::Testing::RSpec::Helpers
   end
 
-  class TestClassMinitest
+  class TestClassMinitest < Minitest::Test
     class << self
       def after_blocks
         Array(instance_method(:teardown))
       end
+    end
+
+    def initialize
+      super("Dummy Test Case")
     end
 
     def call_after_block
