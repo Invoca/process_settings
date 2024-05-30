@@ -73,7 +73,7 @@ module ProcessSettings
       end
 
       def from_file(file_path, only_meta: false)
-        json_doc = Psych.load_file(file_path)
+        json_doc = Psych.safe_load_file(file_path)
         from_array(json_doc, only_meta: only_meta)
       end
     end
