@@ -14,7 +14,7 @@ apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
   name: process_settings-gem
-  title: ProcessSetting
+  title: ProcessSettings
   description: Targeted process settings that dynamically reload without restarting
     the process
   tags:
