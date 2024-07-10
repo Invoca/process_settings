@@ -5,6 +5,7 @@ source 'http://rubygems.org'
 gemspec
 
 gem 'appraisal'
+gem 'appraisal-matrix'
 gem 'bump', '~> 0.6.1'
 gem 'pry'
 gem 'rake'
