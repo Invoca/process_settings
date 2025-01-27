@@ -21,6 +21,8 @@ metadata:
   - ruby
   - gem
   - executable
+  - public
+  - rails-dependent
   annotations:
     buildkite.com/project-slug: invoca/process-settings
     github.com/project-slug: invoca/process_settings
