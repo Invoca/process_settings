@@ -19,3 +19,6 @@ gem 'ruby-prof'
 gem 'ruby-prof-flamegraph'
 gem 'simplecov'
 gem 'simplecov-lcov'
+
+gem "base64", "~> 0.2.0"
+gem "bigdecimal", "~> 3.1"
