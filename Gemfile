@@ -7,7 +7,6 @@ gemspec
 gem 'appraisal'
 gem 'appraisal-matrix'
 gem 'bump', '~> 0.6.1'
-gem 'mutex_m'
 gem 'pry'
 gem 'rake'
 gem 'rspec'
@@ -20,7 +19,9 @@ gem 'ruby-prof-flamegraph'
 gem 'simplecov'
 gem 'simplecov-lcov'
 
-gem "base64", "~> 0.2.0"
-gem "bigdecimal", "~> 3.1"
 
 gem "concurrent-ruby", "~> 1.3", "< 1.3.5"
+
+gem "base64", ">= 0.2.0"
+gem "bigdecimal", ">= 3.1"
+gem "mutex_m", ">= 0.2.0"
