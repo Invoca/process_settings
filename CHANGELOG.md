@@ -4,6 +4,13 @@ Inspired by [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 Note: this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.21.0] - Unreleased
+### Changed
+* Updated `lib/process_settings/monitor.rb` to use new deprecation syntax for Rails 7.2+.
+
+### Added
+* Added new runtime dependencies to eliminate warnings in Ruby 3.4 and eventually support Ruby 3.5.
+
 ## [0.20.0] - 2024-05-30
 ### Changed
 * Changed ProcessSettings to directly use `safe_load_file` method.
