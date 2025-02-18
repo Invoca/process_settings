@@ -99,7 +99,7 @@ describe ProcessSettings::TargetedSettings do
     it "confirms meta: is at end" do
       expect do
         described_class.from_array(TARGETED_SETTINGS.reverse)
-      end.to raise_error(ArgumentError, /got \{"filename"=>"honeypot.yml",/)
+      end.to raise_error(ArgumentError, /got \{"filename"\s*=>\s*"honeypot.yml",/)
     end
 
     it "requires meta: at end" do

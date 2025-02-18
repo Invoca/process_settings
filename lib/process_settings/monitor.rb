@@ -12,6 +12,10 @@ module ProcessSettings
       attr_reader :logger, :file_path
       attr_writer :instance
 
+      def deprecator
+        @deprecator ||= ActiveSupport::Deprecation.new('1.0', 'ProcessSettings')
+      end
+
       def file_path=(new_file_path)
         clear_instance
 
@@ -33,18 +37,18 @@ module ProcessSettings
         if @instance
           @instance
         else
-          ActiveSupport::Deprecation.warn("`ProcessSettings::Monitor.instance` lazy create is deprecated and will be removed in v1.0. Assign a `FileMonitor` object to `ProcessSettings.instance =` instead.")
+          deprecator.warn("`ProcessSettings::Monitor.instance` lazy create is deprecated and will be removed in v1.0. Assign a `FileMonitor` object to `ProcessSettings.instance =` instead.")
           @instance = default_instance
         end
       end
 
       def default_instance
-        ActiveSupport::Deprecation.warn("`ProcessSettings::Monitor.instance` is deprecated and will be removed in v1.0. Assign a `FileMonitor` object to `ProcessSettings.instance =` instead.")
+        deprecator.warn("`ProcessSettings::Monitor.instance` is deprecated and will be removed in v1.0. Assign a `FileMonitor` object to `ProcessSettings.instance =` instead.")
         @default_instance ||= new_from_settings
       end
 
       def logger=(new_logger)
-        ActiveSupport::Deprecation.warn("ProcessSettings::Monitor.logger is deprecated and will be removed in v1.0.")
+        deprecator.warn("ProcessSettings::Monitor.logger is deprecated and will be removed in v1.0.")
         @logger = new_logger
         Listen.logger = new_logger unless Listen.instance_variable_get(:@logger)
       end

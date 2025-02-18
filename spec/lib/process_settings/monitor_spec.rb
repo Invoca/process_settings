@@ -32,7 +32,7 @@ describe ProcessSettings::Monitor do
     after  { FileUtils.rm_f(settings_file) }
 
     before do
-      allow(ActiveSupport::Deprecation).to receive(:warn).with(anything, :initialize)
+      allow_any_instance_of(ActiveSupport::Deprecation).to receive(:warn).with(anything, :initialize)
       allow_any_instance_of(ActiveSupport::Deprecation).to receive(:warn).with("initialize is deprecated and will be removed from ProcessSettings 1.0", anything)
     end
 
@@ -58,7 +58,7 @@ describe ProcessSettings::Monitor do
   describe "class methods" do
     describe '[] operator' do
       subject(:process_monitor) do
-        allow(ActiveSupport::Deprecation).to receive(:warn).with(anything, :initialize)
+        allow_any_instance_of(ActiveSupport::Deprecation).to receive(:warn).with(anything, :initialize)
         allow_any_instance_of(ActiveSupport::Deprecation).to receive(:warn).with("initialize is deprecated and will be removed from ProcessSettings 1.0", anything)
         described_class.new(MONITOR_SETTINGS_PATH, logger: logger)
       end
@@ -257,7 +257,7 @@ describe ProcessSettings::Monitor do
 
   context "with process_settings" do
     subject(:process_monitor) do
-      allow(ActiveSupport::Deprecation).to receive(:warn).with(anything, :initialize)
+      allow_any_instance_of(ActiveSupport::Deprecation).to receive(:warn).with(anything, :initialize)
       allow_any_instance_of(ActiveSupport::Deprecation).to receive(:warn).with(any_args)
       described_class.new(MONITOR_SETTINGS_PATH, logger: logger)
     end
@@ -294,7 +294,7 @@ describe ProcessSettings::Monitor do
 
     describe "#when_updated" do
       subject(:process_monitor) do
-        allow(ActiveSupport::Deprecation).to receive(:warn).with(anything, :initialize)
+        allow_any_instance_of(ActiveSupport::Deprecation).to receive(:warn).with(anything, :initialize)
         allow_any_instance_of(ActiveSupport::Deprecation).to receive(:warn).with(any_args)
         described_class.new(MONITOR_SETTINGS_PATH, logger: logger, environment: 'development') # development so we can test monitoring
       end
@@ -477,7 +477,7 @@ describe ProcessSettings::Monitor do
 
   describe "#statically_targeted_settings" do
     let(:process_monitor) do
-      allow(ActiveSupport::Deprecation).to receive(:warn).with(any_args)
+      allow_any_instance_of(ActiveSupport::Deprecation).to receive(:warn).with(any_args)
       allow_any_instance_of(ActiveSupport::Deprecation).to receive(:warn).with(any_args)
       described_class.new(MONITOR_SETTINGS_PATH, logger: logger)
     end
@@ -527,7 +527,7 @@ describe ProcessSettings::Monitor do
 
   describe "#targeted_value" do
     let(:process_monitor) do
-      allow(ActiveSupport::Deprecation).to receive(:warn).with(anything, :initialize)
+      allow_any_instance_of(ActiveSupport::Deprecation).to receive(:warn).with(anything, :initialize)
       allow_any_instance_of(ActiveSupport::Deprecation).to receive(:warn).with("initialize is deprecated and will be removed from ProcessSettings 1.0", anything)
       described_class.new(MONITOR_SETTINGS_PATH, logger: logger)
     end

@@ -1,34 +1,10 @@
 name: Pipeline
-on: [push]
+on:
+  push:
+  schedule:
+  - cron: '0 1 * * 1' # Every Monday at 1AM UTC
 jobs:
   tests:
-    name: Unit Tests
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        ruby: ['3.0', 3.1, 3.2, 3.3]
-        gemfile:
-        - Gemfile
-        - gemfiles/activesupport_6_0.gemfile
-        - gemfiles/activesupport_6_1.gemfile
-        - gemfiles/activesupport_7_0.gemfile
-        - gemfiles/activesupport_7_1.gemfile
-    env:
-      BUNDLE_GEMFILE: ${{ matrix.gemfile }}
-    steps:
-    - uses: actions/checkout@v2
-    - uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: ${{ matrix.ruby }}
-        bundler: 2.3.10
-        bundler-cache: true
-    - name: Unit Tests
-      run: |
-        mkdir -p tmp
-        bundle exec rspec
-    - name: Coveralls
-      if: ${{ matrix.gemfile == 'Gemfile' }}
-      uses: coverallsapp/github-action@master
-      with:
-        github-token: ${{ secrets.github_token }}
+    uses: Invoca/ruby-test-matrix-workflow/.github/workflows/ruby-test-matrix.yml@main
+    with:
+      pre-test-hook: "mkdir -p tmp"

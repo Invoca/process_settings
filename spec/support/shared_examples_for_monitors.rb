@@ -3,7 +3,7 @@
 # RSpec shared examples for ProcessSettings::Monitor
 RSpec.shared_examples "AbstractMonitor" do |settings, logger, scoped_setting|
   let(:monitor) do
-    allow(ActiveSupport::Deprecation).to receive(:warn).with(anything, :initialize)
+    allow_any_instance_of(ActiveSupport::Deprecation).to receive(:warn).with(anything, :initialize)
     allow_any_instance_of(ActiveSupport::Deprecation).to receive(:deprecation_warning).with(any_args)
     described_class.new(settings, logger: logger)
   end
