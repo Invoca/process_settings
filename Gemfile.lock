@@ -5,6 +5,8 @@ PATH
       activesupport
       json
       listen (~> 3.0)
+      logger
+      ostruct
       psych (>= 3.2)
 
 GEM
@@ -24,7 +26,7 @@ GEM
       bundler
       rake
       thor (>= 0.14.0)
-    appraisal-matrix (0.2.0)
+    appraisal-matrix (0.3.0)
       appraisal (~> 2.2)
     ast (2.4.2)
     base64 (0.2.0)
@@ -43,9 +45,11 @@ GEM
     listen (3.9.0)
       rb-fsevent (~> 0.10, >= 0.10.3)
       rb-inotify (~> 0.9, >= 0.9.10)
+    logger (1.6.6)
     method_source (1.1.0)
     minitest (5.24.1)
     mutex_m (0.2.0)
+    ostruct (0.6.1)
     parallel (1.25.1)
     parser (3.3.4.0)
       ast (~> 2.4.1)
@@ -86,9 +90,6 @@ GEM
       unicode-display_width (~> 1.0, >= 1.0.1)
     rubocop-git (0.1.3)
       rubocop (>= 0.24.1)
-    ruby-prof (0.18.0)
-    ruby-prof-flamegraph (0.3.0)
-      ruby-prof (~> 0.13)
     ruby-progressbar (1.13.0)
     simplecov (0.22.0)
       docile (~> 1.1)
@@ -98,7 +99,7 @@ GEM
     simplecov-lcov (0.8.0)
     simplecov_json_formatter (0.1.4)
     stringio (3.1.1)
-    thor (1.3.1)
+    thor (1.3.2)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
     unicode-display_width (1.8.0)
@@ -122,8 +123,6 @@ DEPENDENCIES
   rspec_junit_formatter
   rubocop (= 0.54.0)
   rubocop-git
-  ruby-prof
-  ruby-prof-flamegraph
   simplecov
   simplecov-lcov
 

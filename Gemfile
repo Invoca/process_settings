@@ -14,8 +14,6 @@ gem 'rspec-mocks', '>= 3.12.5'
 gem 'rspec_junit_formatter'
 gem 'rubocop', '0.54.0'
 gem 'rubocop-git'
-gem 'ruby-prof'
-gem 'ruby-prof-flamegraph'
 gem 'simplecov'
 gem 'simplecov-lcov'
 
