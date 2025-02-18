@@ -13,8 +13,8 @@ describe ProcessSettings do
 
     describe 'when lazy loading' do
       before do
-        expect(ActiveSupport::Deprecation).to receive(:warn).with("`ProcessSettings::Monitor.instance` lazy create is deprecated and will be removed in v1.0. Assign a `FileMonitor` object to `ProcessSettings.instance =` instead.")
-        expect(ActiveSupport::Deprecation).to receive(:warn).with("`ProcessSettings::Monitor.instance` is deprecated and will be removed in v1.0. Assign a `FileMonitor` object to `ProcessSettings.instance =` instead.")
+        expect_any_instance_of(ActiveSupport::Deprecation).to receive(:warn).with("`ProcessSettings::Monitor.instance` lazy create is deprecated and will be removed in v1.0. Assign a `FileMonitor` object to `ProcessSettings.instance =` instead.")
+        expect_any_instance_of(ActiveSupport::Deprecation).to receive(:warn).with("`ProcessSettings::Monitor.instance` is deprecated and will be removed in v1.0. Assign a `FileMonitor` object to `ProcessSettings.instance =` instead.")
         expect(ProcessSettings::Monitor).to receive(:new_from_settings).and_return(instance)
       end
 

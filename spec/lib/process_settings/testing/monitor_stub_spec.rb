@@ -14,7 +14,7 @@ describe ProcessSettings::Testing::MonitorStub do
                   EOS
 
   subject do
-    allow(ActiveSupport::Deprecation).to receive(:warn).with("ProcessSettings::Testing::MonitorStub is deprecated and will be removed in future versions. Use ProcessSettings::Testing::Monitor instead.", anything)
+    allow_any_instance_of(ActiveSupport::Deprecation).to receive(:warn).with("ProcessSettings::Testing::MonitorStub is deprecated and will be removed in future versions. Use ProcessSettings::Testing::Monitor instead.", anything)
     ProcessSettings::Testing::MonitorStub.new(SETTINGS_HASH)
   end
 

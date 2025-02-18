@@ -13,7 +13,8 @@ module ProcessSettings
     class MonitorStub
       class << self
         def new(*_args)
-          ActiveSupport::Deprecation.warn("ProcessSettings::Testing::MonitorStub is deprecated and will be removed in future versions. Use ProcessSettings::Testing::Monitor instead.", caller)
+          deprecator = ActiveSupport::Deprecation.new('1.0', 'ProcessSettings')
+          deprecator.warn("ProcessSettings::Testing::MonitorStub is deprecated and will be removed in future versions. Use ProcessSettings::Testing::Monitor instead.", caller)
           super
         end
       end
