@@ -2,7 +2,7 @@
 
 require "appraisal/matrix"
 
-appraisal_matrix(activesupport: "6.1") do |activesupport:|
+appraisal_matrix(activesupport: "7.0") do |activesupport:|
   if activesupport < Gem::Version.new("7.1")
     gem "benchmark"
   end
