@@ -32,4 +32,5 @@ spec:
   type: library
   lifecycle: production
   owner: octothorpe
+  system: runtime-configuration
   dependsOn: []
