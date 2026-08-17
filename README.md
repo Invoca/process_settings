@@ -167,6 +167,36 @@ This will be applied in any process that has (`service_name == "frontend"` OR `s
 ### Precedence
 The settings YAML files are always combined in alphabetical order by file path. Later settings take precedence over the earlier ones.
 
+Settings are **not** merged, so make sure to review best practices when using targets.
+
+#### Process Setting Lookup Best Practices When Using Targeting
+
+1. In your business logic, lookup process settings as granularly as possible.
+    1. E.g. Instead of querying `ProcessSettings['cat_calendar_config']` and then getting the `'cats_per_calender_minimum'` key from the resulting hash, do `ProcessSettings['cat_calendar_config', 'cats_per_calendar_minimum']`.
+2. If you can't do granular process setting lookups, make sure any files with targets redefine all required keys in the process settings config.
+
+Example for 2: If your business logic is looking up `ProcessSettings['general_calendar_config']` to use the output like a generic hash, you should define target overrides like the `eu_general_calendar_override.yml` example below:
+
+For an example `all.yml` file like this:
+
+```
+settings:
+  general_calendar_config:
+    turtle_calendar_color: "blue"
+    parrot_calendar_color: "red"
+```
+
+Make sure your target file redefines all required keys like this `eu_general_calendar_override.yml` example:
+
+```
+target:
+  data_silo: eu
+settings:
+  general_calendar_config:
+    turtle_calendar_color: "yellow"
+    parrot_calendar_color: "red"
+```
+
 ### Forked Processes
 When using `ProcessSettings` within an environment that is forking threads (like `unicorn` web servers), you can restart the `FileMonitor`
 after the fork with `restart_after_fork`.
